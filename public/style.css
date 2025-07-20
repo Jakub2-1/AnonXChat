@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+/* Reset & base */
+* { box-sizing:border-box; margin:0; padding:0 }
+html, body {
+  width:100%; height:100%;
+  background:#101010; color:#fafafa;
+  font-family:'Inter',sans-serif;
+  overflow:hidden;
+}
+.panel { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center }
+.hidden { display:none !important }
+
+/* Welcome */
+#welcome h1 {
+  font-size:4rem; color:#0af; text-shadow:0 0 8px #0af;
+  animation:neon 2s ease-in-out infinite alternate;
+  margin-bottom:1rem;
+}
+@keyframes neon {
+  from { text-shadow:0 0 4px #08c }
+  to   { text-shadow:0 0 12px #0ff }
+}
+.color-label { color:#ccc; margin-bottom:.5rem }
+#welcome input[type="color"] {
+  width:3rem; height:3rem; border:none; margin-bottom:1rem; cursor:pointer
+}
+#welcome button {
+  padding:.8rem 2rem;
+  background:#0af; color:#101010;
+  border:none; border-radius:24px;
+  cursor:pointer; transition:transform .1s
+}
+#welcome button:active { transform:scale(.95) }
+
+/* Chat */
+#chat {
+  position:relative; width:100%; height:100%;
+  display:flex; flex-direction:column; padding:1.5rem 1rem 0;
+  background:#141414;
+}
+#status {
+  width:100%; text-align:center; padding:.6rem; margin-bottom:1rem;
+  background:rgba(255,255,255,0.05); border-radius:8px;
+  color:#ccc; font-size:.9rem;
+}
+#messages {
+  flex:1; width:100%; padding:1rem;
+  background:rgba(20,20,20,0.8); border-radius:16px;
+  overflow-y:auto; box-shadow:inset 0 2px 8px rgba(0,0,0,0.9);
+  margin-bottom:0;
+}
+.message {
+  max-width:75%; margin-bottom:.8rem; padding:.8rem 1rem;
+  border-radius:16px; font-size:.95rem; line-height:1.4; color:#fff;
+  backdrop-filter:blur(4px);
+}
+/* backgrounds set by JS */
+.message.you, .message.partner { /* no default bg */ }
+.message .time {
+  position:absolute; bottom:4px; right:8px;
+  font-size:.65rem; color:#bbb;
+}
+#typing { height:1.2rem; margin:0 0 4.5rem; color:#888; font-style:italic }
+
+/* Fixed input bar */
+#form {
+  position:fixed; bottom:1rem; left:50%; transform:translateX(-50%);
+  display:flex; gap:.5rem; width:calc(100% - 2rem); max-width:600px;
+  padding:.8rem 1rem; background:rgba(0,0,0,0.7);
+  border-radius:32px; backdrop-filter:blur(10px);
+  box-shadow:0 4px 16px rgba(0,0,0,0.8); z-index:10
+}
+#input {
+  flex:1; padding:.8rem 1rem;
+  background:rgba(255,255,255,0.05); border:none; border-radius:24px;
+  color:#fff; outline:none; transition:background .2s
+}
+#input:focus { background:rgba(255,255,255,0.15) }
+#form button {
+  padding:.6rem 1.4rem; font-size:.9rem;
+  background:#0af; color:#101010; border:none; border-radius:24px;
+  cursor:pointer; transition:background .2s,transform .1s
+}
+#form button:hover { background:#08c }
+#form button:active { transform:scale(.96) }
+/* ─── Typing Indicator ───────────────────────── */
+#typing {
+  position: fixed;
+  bottom: 4.5rem;              /* 1.5rem nad vstupní lištou */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.2rem 0.6rem;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #aaa;
+  font-style: italic;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  transition: opacity 0.2s;
+  opacity: 0;                  /* skryté, pokud žádný typing */
+  pointer-events: none;
+  z-index: 11;
+}
+
+/* když partner píše, dáme viditelnost */
+#typing.active {
+  opacity: 1;
+}

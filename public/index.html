@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AnonXChat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Welcome screen -->
+  <div id="welcome" class="panel">
+    <h1>AnonXChat</h1>
+    <label for="colorPicker" class="color-label">Choose your bubble color:</label>
+    <input type="color" id="colorPicker" value="#1abc9c" />
+    <button id="startBtn">Start Chat</button>
+  </div>
+
+  <!-- Chat screen -->
+  <div id="chat" class="panel hidden">
+    <div id="status">Connecting…</div>
+    <div id="messages"></div>
+    <div id="typing"></div>
+    <form id="form">
+      <input id="input" autocomplete="off" placeholder="Type a message…" />
+      <button type="submit">Send</button>
+      <button type="button" id="skipBtn">Skip</button>
+      <button type="button" id="stopBtn">Stop</button>
+    </form>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="chat.js"></script>
+</body>
+</html>
