@@ -21,22 +21,18 @@ io.on('connection', socket => {
       waiting = null;
       const room = socket.id + '#' + partner.id;
 
-      // Smazat chat pokud je to stejný partner jako předtím
-      if (socket.lastPartnerId === partner.id) {
-        io.to(socket.id).emit('clearChat');
-        io.to(partner.id).emit('clearChat');
-      }
-
       socket.join(room);
       partner.join(room);
       socket.room = partner.room = room;
 
-      // Uložit posledního partnera
-      socket.lastPartnerId = partner.id;
-      partner.lastPartnerId = socket.id;
-
-      io.to(socket.id).emit('setColors', { you: socket.chosenColor, them: partner.chosenColor });
-      io.to(partner.id).emit('setColors', { you: partner.chosenColor, them: socket.chosenColor });
+      io.to(socket.id).emit('setColors', {
+        you: socket.chosenColor,
+        them: partner.chosenColor
+      });
+      io.to(partner.id).emit('setColors', {
+        you: partner.chosenColor,
+        them: socket.chosenColor
+      });
 
       io.to(room).emit('status', '✅ Partner found!');
       io.to(room).emit('showChat');
@@ -65,23 +61,18 @@ io.on('connection', socket => {
       const partner = waiting;
       waiting = null;
       const room = socket.id + '#' + partner.id;
-
-      // Smazat chat pokud je to stejný partner jako předtím
-      if (socket.lastPartnerId === partner.id) {
-        io.to(socket.id).emit('clearChat');
-        io.to(partner.id).emit('clearChat');
-      }
-
       socket.join(room);
       partner.join(room);
       socket.room = partner.room = room;
 
-      // Uložit posledního partnera
-      socket.lastPartnerId = partner.id;
-      partner.lastPartnerId = socket.id;
-
-      io.to(socket.id).emit('setColors', { you: socket.chosenColor, them: partner.chosenColor });
-      io.to(partner.id).emit('setColors', { you: partner.chosenColor, them: socket.chosenColor });
+      io.to(socket.id).emit('setColors', {
+        you: socket.chosenColor,
+        them: partner.chosenColor
+      });
+      io.to(partner.id).emit('setColors', {
+        you: partner.chosenColor,
+        them: socket.chosenColor
+      });
 
       io.to(room).emit('status', '✅ Partner found!');
       io.to(room).emit('showChat');
