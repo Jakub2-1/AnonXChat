@@ -35,6 +35,7 @@ io.on('connection', socket => {
       });
 
       io.to(room).emit('status', '✅ Partner found!');
+      io.to(room).emit('clearChat');
       io.to(room).emit('showChat');
     } else {
       waiting = socket;
