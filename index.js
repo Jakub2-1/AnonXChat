@@ -10,40 +10,37 @@ app.use(express.static('public'));
 let waiting = null;
 
 io.on('connection', socket => {
-  socket.lastPartnerId = null;
   socket.emit('showWelcome');
-socket.on('start', ({ color }) => {
-  socket.chosenColor = color;
-  socket.emit('status', '⏳ Looking for partner…');
 
-  if (waiting && waiting.id !== socket.id) {
-    const partner = waiting;
-    waiting = null;
-    const room = socket.id + '#' + partner.id;
+  socket.on('start', ({ color }) => {
+    socket.chosenColor = color;
+    socket.emit('status', '⏳ Looking for partner…');
 
-    socket.join(room);
-    partner.join(room);
-    socket.room = partner.room = room;
+    if (waiting && waiting.id !== socket.id) {
+      const partner = waiting;
+      waiting = null;
+      const room = socket.id + '#' + partner.id;
 
-    // 💥 Sledování partnera a mazání chatu:
-    if (socket.lastPartnerId === partner.id) {
-      io.to(socket.id).emit('clearChat');
-      io.to(partner.id).emit('clearChat');
+      socket.join(room);
+      partner.join(room);
+      socket.room = partner.room = room;
+
+      io.to(socket.id).emit('setColors', {
+        you: socket.chosenColor,
+        them: partner.chosenColor
+      });
+      io.to(partner.id).emit('setColors', {
+        you: partner.chosenColor,
+        them: socket.chosenColor
+      });
+
+      io.to(room).emit('status', '✅ Partner found!');
+      io.to(room).emit('showChat');
+    } else {
+      waiting = socket;
     }
+  });
 
-    socket.lastPartnerId = partner.id;
-    partner.lastPartnerId = socket.id;
-
-    io.to(room).emit('setColors', {
-      you: socket.chosenColor,
-      them: partner.chosenColor
-    });
-    io.to(room).emit('status', '✅ Partner found!');
-    io.to(room).emit('showChat');
-  } else {
-    waiting = socket;
-  }
-});
   socket.on('skip', () => {
     if (socket.room) {
       socket.to(socket.room).emit('status', '🔄 Partner skipped.');
@@ -102,7 +99,7 @@ socket.on('start', ({ color }) => {
 
   socket.on('msg', text => {
     if (socket.room) {
-      io.to(socket.room).emit('msg', { text, time: Date.now() });
+      socket.to(socket.room).emit('msg', { text, time: Date.now() });
     }
   });
 
