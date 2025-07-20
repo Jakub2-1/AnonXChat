@@ -113,3 +113,6 @@ socket.on('typing', isTyping => {
     typingEl.classList.remove('active');
   }
 });
+socket.on('clearChat', () => {
+  clearChat();
+});
