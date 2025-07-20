@@ -102,7 +102,7 @@ socket.on('start', ({ color }) => {
 
   socket.on('msg', text => {
     if (socket.room) {
-      socket.to(socket.room).emit('msg', { text, time: Date.now() });
+      io.to(socket.room).emit('msg', { text, time: Date.now() });
     }
   });
 
