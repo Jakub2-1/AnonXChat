@@ -1,123 +1,108 @@
-const socket      = io();
-const welcomeEl   = document.getElementById('welcome');
-const startBtn    = document.getElementById('startBtn');
-const colorPicker = document.getElementById('colorPicker');
-const chatEl      = document.getElementById('chat');
-const statusEl    = document.getElementById('status');
-const messagesEl  = document.getElementById('messages');
-const typingEl    = document.getElementById('typing');
-const form        = document.getElementById('form');
-const input       = document.getElementById('input');
-const skipBtn     = document.getElementById('skipBtn');
-const stopBtn     = document.getElementById('stopBtn');
-
-let myColor    = colorPicker.value;
-let theirColor = '#888';
+// proměnné
+let socket;
+let mySide = 'right';
+let partnerActive = true;
 let typingTimeout;
 
-function clearChat() {
-  messagesEl.innerHTML = '';
-  typingEl.textContent = '';
+// helper na čas
+function getTimeNow() {
+  let d = new Date();
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function hexToRgb(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+// Přepínání stránek
+function showChatPage() {
+  document.getElementById('mainPage').style.display = 'none';
+  document.getElementById('chatPage').style.display = 'flex';
+  document.getElementById('onlineCount').style.display = '';
+  document.getElementById('notification').style.display = 'none';
+}
+function showMainPage() {
+  document.getElementById('mainPage').style.display = 'flex';
+  document.getElementById('chatPage').style.display = 'none';
+  document.getElementById('notification').style.display = 'none';
+}
+function showNotif(msg, btns = false) {
+  document.getElementById('notifMsg').textContent = msg;
+  document.getElementById('notification').style.display = '';
+  document.getElementById('notifBtns').style.display = btns ? '' : 'none';
+  document.getElementById('chatPage').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'none';
 }
 
-function applyColors() {
-  const [yr, yg, yb] = hexToRgb(myColor);
-  const [tr, tg, tb] = hexToRgb(theirColor);
-  document.querySelectorAll('.message.you')
-    .forEach(el => el.style.background = `rgba(${yr},${yg},${yb},0.2)`);
-  document.querySelectorAll('.message.partner')
-    .forEach(el => el.style.background = `rgba(${tr},${tg},${tb},0.1)`);
+// Přidání zprávy
+function addMsg(text, side, time) {
+  const el = document.createElement('div');
+  el.className = 'msg-bubble msg-' + side;
+  el.innerHTML = text + '<span class="msg-time">' + (time || getTimeNow()) + '</span>';
+  document.getElementById('messages').appendChild(el);
+  document.getElementById('messages').scrollTop = 99999;
 }
 
-// **Okamžité přepnutí UI po kliknutí**
-startBtn.addEventListener('click', () => {
-  myColor = colorPicker.value;
-  socket.emit('start', { color: myColor });
+// Odeslání zprávy
+function sendMsg() {
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  addMsg(text, mySide);
+  socket.emit('msg', text);
+  inp.value = '';
+}
 
-  welcomeEl.classList.add('hidden');
-  chatEl.classList.remove('hidden');
-  statusEl.textContent = '⏳ Looking for partner…';
-  clearChat();
-});
+// START BTN
+document.getElementById('startBtn').onclick = function() {
+  showChatPage();
+  startSocket();
+}
 
-socket.on('showChat', () => {
-  statusEl.textContent = '✅ Partner found!';
-  applyColors();
-});
-
-socket.on('status', txt => {
-  statusEl.textContent = txt;
-});
-
-socket.on('setColors', ({ you, them }) => {
-  myColor    = you;
-  theirColor = them;
-  applyColors();
-});
-
-skipBtn.addEventListener('click', () => {
-  socket.emit('skip');
-  clearChat();
-  statusEl.textContent = '⏳ Looking for someone new…';
-});
-
-stopBtn.addEventListener('click', () => {
-  socket.emit('stop');
-  welcomeEl.classList.remove('hidden');
-  chatEl.classList.add('hidden');
-  clearChat();
-});
-
-socket.on('msg', ({ text, time }) => {
-  const div = document.createElement('div');
-  div.className = 'message partner';
-  const t = new Date(time);
-  div.innerHTML = `<strong>Partner:</strong> ${text}
-    <span class="time">${t.getHours()}:${String(t.getMinutes()).padStart(2,'0')}</span>`;
-  messagesEl.appendChild(div);
-  applyColors();
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-});
-
-form.addEventListener('submit', e => {
+// CHAT FORM SUBMIT
+document.getElementById('chatForm').onsubmit = function(e) {
   e.preventDefault();
-  const txt = input.value.trim();
-  if (!txt) return;
-  const now = new Date();
-  const div = document.createElement('div');
-  div.className = 'message you';
-  div.innerHTML = `<strong>You:</strong> ${txt}
-    <span class="time">${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}</span>`;
-  messagesEl.appendChild(div);
-  applyColors();
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  socket.emit('msg', txt);
-  input.value = '';
-});
+  sendMsg();
+};
 
-input.addEventListener('input', () => {
-  socket.emit('typing', true);
-  clearTimeout(typingTimeout);
-  typingTimeout = setTimeout(() => socket.emit('typing', false), 800);
-});
-socket.on('typing', isTyping => {
-  if (isTyping) {
-    typingEl.textContent = 'Partner is typing…';
-    typingEl.classList.add('active');
-  } else {
-    typingEl.classList.remove('active');
-  }
-});
-socket.on('clearChat', () => {
-  clearChat();
-});
-const onlineCountEl = document.getElementById('onlineCount');
+// CONTINUE/RETURN BTN
+document.getElementById('continueBtn').onclick = function() {
+  showNotif('Looking for a new partner...');
+  setTimeout(()=>location.reload(),800); // Prototypově reload (lepší řešení: socket.io leave+rejoin)
+};
+document.getElementById('returnBtn').onclick = function() {
+  showMainPage();
+  setTimeout(()=>location.reload(),500); // Restart stránky na homepage
+};
 
-socket.on('onlineCount', count => {
-  if (onlineCountEl) onlineCountEl.textContent = `🟢 Online: ${count}`;
-});
+// SOCKET.IO
+function startSocket() {
+  socket = io();
+  socket.on('connect', ()=> {
+    addMsg('⏳ Looking for a partner...', mySide);
+  });
+  socket.on('online', (count)=>{
+    document.getElementById('onlineCount').textContent = "Online: " + count;
+  });
+  socket.on('partner', ()=> {
+    addMsg('✅ Partner found!', mySide);
+  });
+  socket.on('msg', (data)=>{
+    addMsg(data, mySide==='right' ? 'left' : 'right');
+  });
+  socket.on('typing', ()=> {
+    document.getElementById('typingIndicator').style.display = '';
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(()=> {
+      document.getElementById('typingIndicator').style.display = 'none';
+    }, 2000);
+  });
+  socket.on('partner_left', ()=> {
+    showNotif('Partner has left the chat.', true);
+    partnerActive = false;
+  });
+  socket.on('disconnect', ()=> {
+    showNotif('Disconnected from server.', false);
+  });
+
+  // Indikace psaní
+  document.getElementById('chatInput').addEventListener('input', ()=>{
+    if (partnerActive) socket.emit('typing');
+  });
+}
