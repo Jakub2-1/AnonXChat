@@ -1,12 +1,13 @@
 {
-  "name": "anonxchat",
+  "name": "anonx-chat",
   "version": "1.0.0",
+  "description": "Anonymous 1v1 Chat App (Omegle-style) with Node.js and Socket.io",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2"
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
   }
 }
