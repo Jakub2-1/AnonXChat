@@ -72,7 +72,8 @@ document.getElementById('returnBtn').onclick = function() {
 };
 // SKIP BTN = najde nového partnera bez návratu na hlavní
 document.getElementById('skipBtn').onclick = function() {
-    if (socket) socket.disconnect();
+    if (socket) socket.emit('leave_chat');
+socket.disconnect();
 
     // Vyčistit chat zprávy
     document.getElementById('messages').innerHTML = '';
@@ -89,7 +90,8 @@ document.getElementById('skipBtn').onclick = function() {
 
 // END CHAT BTN = konec chatu, návrat na hlavní
 document.getElementById('endBtn').onclick = function() {
-    if (socket) socket.disconnect();
+    if (socket) socket.emit('leave_chat');
+socket.disconnect();
 
     // Vyčistí zprávy a vrátí na hlavní stránku
     document.getElementById('messages').innerHTML = '';
