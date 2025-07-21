@@ -51,7 +51,12 @@ io.on("connection", (socket) => {
       socket.to(socket.room).emit("typing");
     }
   });
-
+// Oznámení od uživatele že opouští chat (např. přes skip nebo end chat)
+socket.on("leave_chat", () => {
+    if (socket.room) {
+        socket.to(socket.room).emit("partner_left");
+    }
+});
   // Skip / Disconnect
   socket.on("disconnect", () => {
     onlineCount--;
