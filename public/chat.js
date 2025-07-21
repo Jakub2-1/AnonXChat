@@ -116,3 +116,8 @@ socket.on('typing', isTyping => {
 socket.on('clearChat', () => {
   clearChat();
 });
+const onlineCountEl = document.getElementById('onlineCount');
+
+socket.on('onlineCount', count => {
+  if (onlineCountEl) onlineCountEl.textContent = `🟢 Online: ${count}`;
+});
