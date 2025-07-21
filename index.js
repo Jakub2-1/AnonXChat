@@ -8,10 +8,12 @@ const io = new Server(server);
 app.use(express.static('public'));
 
 let waiting = null;
-
+const updateOnlineCount = () => {
+  io.emit('onlineCount', io.engine.clientsCount);
+};
 io.on('connection', socket => {
   socket.emit('showWelcome');
-
+updateOnlineCount();
   socket.on('start', ({ color }) => {
     socket.chosenColor = color;
     socket.emit('status', '⏳ Looking for partner…');
@@ -110,7 +112,8 @@ io.on('connection', socket => {
   });
 
   socket.on('disconnect', () => {
-    if (socket === waiting) waiting = null;
+updateOnlineCount();
+if (socket === waiting) waiting = null;
     if (socket.room) {
       socket.to(socket.room).emit('status', '🚨 Partner disconnected.');
       const ids = Array.from(io.sockets.adapter.rooms.get(socket.room) || []);
