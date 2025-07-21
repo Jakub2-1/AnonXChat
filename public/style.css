@@ -194,3 +194,33 @@ body {
   .chat-container {max-width:98vw; border-radius:1.2rem; padding:10px 2px 8px 2px;}
   .messages {padding: 0 3px 10px 3px;}
 }
+.chat-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 12px;
+}
+
+.skip-btn, .end-btn {
+  flex: 1;
+  padding: 14px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px #222;
+  transition: transform 0.15s;
+  color: #23272f;
+}
+
+.skip-btn {
+  background: linear-gradient(90deg, #facc15, #f97316);
+}
+
+.end-btn {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.skip-btn:hover, .end-btn:hover {
+  transform: scale(1.05);
+}
