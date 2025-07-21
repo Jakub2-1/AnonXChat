@@ -70,17 +70,29 @@ document.getElementById('returnBtn').onclick = function() {
   showMainPage();
   setTimeout(()=>location.reload(),500); // Restart stránky na homepage
 };
-// SKIP / END BTN
+// SKIP BTN = najde nového partnera bez návratu na hlavní
 document.getElementById('skipBtn').onclick = function() {
-    if (socket) {
-        socket.disconnect();
-        showNotif('🔄 Skipping to a new partner...');
-        setTimeout(() => location.reload(), 700);
-    }
+    if (socket) socket.disconnect();
+
+    // Vyčistit chat zprávy
+    document.getElementById('messages').innerHTML = '';
+
+    // Info že hledá nového partnera
+    showNotif('🔄 Looking for a new partner...');
+
+    // Spustí nový chat po krátké pauze
+    setTimeout(() => {
+        showChatPage();
+        startSocket();
+    }, 700);
 };
 
+// END CHAT BTN = konec chatu, návrat na hlavní
 document.getElementById('endBtn').onclick = function() {
     if (socket) socket.disconnect();
+
+    // Vyčistí zprávy a vrátí na hlavní stránku
+    document.getElementById('messages').innerHTML = '';
     showMainPage();
 };
 // SOCKET.IO
