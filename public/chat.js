@@ -70,7 +70,19 @@ document.getElementById('returnBtn').onclick = function() {
   showMainPage();
   setTimeout(()=>location.reload(),500); // Restart stránky na homepage
 };
+// SKIP / END BTN
+document.getElementById('skipBtn').onclick = function() {
+    if (socket) {
+        socket.disconnect();
+        showNotif('🔄 Skipping to a new partner...');
+        setTimeout(() => location.reload(), 700);
+    }
+};
 
+document.getElementById('endBtn').onclick = function() {
+    if (socket) socket.disconnect();
+    showMainPage();
+};
 // SOCKET.IO
 function startSocket() {
   socket = io();
