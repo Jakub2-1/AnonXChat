@@ -72,7 +72,7 @@ document.getElementById('chatForm').onsubmit = function(e) {
 
 // CONTINUE/RETURN BTN
 document.getElementById('continueBtn').onclick = function() {
-  showNotif('Looking for a new partner...');
+  showLoadingOverlay();
   setTimeout(()=>location.reload(),800); // Prototypově reload (lepší řešení: socket.io leave+rejoin)
 };
 document.getElementById('returnBtn').onclick = function() {
