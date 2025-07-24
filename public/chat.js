@@ -42,6 +42,8 @@ function showMainPage() {
   const chatPage = document.getElementById('chatPage');
   const notification = document.getElementById('notification');
   const loadingOverlay = document.getElementById('loadingOverlay');
+  const logo = document.querySelector('.glow');
+  const startBtn = document.getElementById('startBtn');
   
   // Fade out current page
   if (chatPage.style.display !== 'none') {
@@ -55,6 +57,16 @@ function showMainPage() {
       mainPage.style.display = 'flex';
       mainPage.style.opacity = '0';
       
+      // Explicitly ensure logo and start button are visible
+      if (logo) {
+        logo.style.display = '';
+        logo.style.opacity = '1';
+      }
+      if (startBtn) {
+        startBtn.style.display = '';
+        startBtn.style.opacity = '1';
+      }
+      
       setTimeout(() => {
         mainPage.style.opacity = '1';
       }, 10);
@@ -64,6 +76,19 @@ function showMainPage() {
     notification.style.display = 'none';
     loadingOverlay.style.display = 'none';
     mainPage.style.display = 'flex';
+    
+    // Explicitly ensure logo and start button are visible
+    if (logo) {
+      logo.style.display = '';
+      logo.style.opacity = '1';
+    }
+    if (startBtn) {
+      startBtn.style.display = '';
+      startBtn.style.opacity = '1';
+    }
+    
+    // Ensure main page is visible
+    mainPage.style.opacity = '1';
   }
 }
 
