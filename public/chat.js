@@ -16,11 +16,13 @@ function showChatPage() {
   document.getElementById('chatPage').style.display = 'flex';
   document.getElementById('onlineCount').style.display = '';
   document.getElementById('notification').style.display = 'none';
+  document.getElementById('loadingOverlay').style.display = 'none';
 }
 function showMainPage() {
   document.getElementById('mainPage').style.display = 'flex';
   document.getElementById('chatPage').style.display = 'none';
   document.getElementById('notification').style.display = 'none';
+  document.getElementById('loadingOverlay').style.display = 'none';
 }
 function showNotif(msg, btns = false) {
   document.getElementById('notifMsg').textContent = msg;
@@ -28,6 +30,13 @@ function showNotif(msg, btns = false) {
   document.getElementById('notifBtns').style.display = btns ? '' : 'none';
   document.getElementById('chatPage').style.display = 'none';
   document.getElementById('mainPage').style.display = 'none';
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+function showLoadingOverlay() {
+  document.getElementById('mainPage').style.display = 'none';
+  document.getElementById('chatPage').style.display = 'none';
+  document.getElementById('notification').style.display = 'none';
+  document.getElementById('loadingOverlay').style.display = 'flex';
 }
 
 // Přidání zprávy
@@ -51,7 +60,7 @@ function sendMsg() {
 
 // START BTN
 document.getElementById('startBtn').onclick = function() {
-  showChatPage();
+  showLoadingOverlay();
   startSocket();
 }
 
@@ -63,7 +72,7 @@ document.getElementById('chatForm').onsubmit = function(e) {
 
 // CONTINUE/RETURN BTN
 document.getElementById('continueBtn').onclick = function() {
-  showNotif('Looking for a new partner...');
+  showLoadingOverlay();
   setTimeout(()=>location.reload(),800); // Prototypově reload (lepší řešení: socket.io leave+rejoin)
 };
 document.getElementById('returnBtn').onclick = function() {
@@ -78,12 +87,11 @@ socket.disconnect();
     // Vyčistit chat zprávy
     document.getElementById('messages').innerHTML = '';
 
-    // Info že hledá nového partnera
-    showNotif('🔄 Looking for a new partner...');
+    // Show loading overlay while looking for new partner
+    showLoadingOverlay();
 
     // Spustí nový chat po krátké pauze
     setTimeout(() => {
-        showChatPage();
         startSocket();
     }, 700);
 };
@@ -101,12 +109,13 @@ socket.disconnect();
 function startSocket() {
   socket = io();
   socket.on('connect', ()=> {
-    addMsg('⏳ Looking for a partner...', mySide);
+    // Overlay is already showing, no need for additional message
   });
   socket.on('online', (count)=>{
     document.getElementById('onlineCount').textContent = "Online: " + count;
   });
   socket.on('partner', ()=> {
+    showChatPage();
     addMsg('✅ Partner found!', mySide);
   });
   socket.on('msg', (data)=>{
