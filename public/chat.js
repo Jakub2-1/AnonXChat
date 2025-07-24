@@ -72,12 +72,23 @@ document.getElementById('chatForm').onsubmit = function(e) {
 
 // CONTINUE/RETURN BTN
 document.getElementById('continueBtn').onclick = function() {
+  // Clear chat messages
+  document.getElementById('messages').innerHTML = '';
+  
+  // Show loading overlay while looking for new partner
   showLoadingOverlay();
-  setTimeout(()=>location.reload(),800); // Prototypově reload (lepší řešení: socket.io leave+rejoin)
+  
+  // Start new chat after short pause
+  setTimeout(() => {
+    startSocket();
+  }, 700);
 };
 document.getElementById('returnBtn').onclick = function() {
+  // Clear chat messages
+  document.getElementById('messages').innerHTML = '';
+  
+  // Return to main page
   showMainPage();
-  setTimeout(()=>location.reload(),500); // Restart stránky na homepage
 };
 // SKIP BTN = najde nového partnera bez návratu na hlavní
 document.getElementById('skipBtn').onclick = function() {
@@ -129,7 +140,7 @@ function startSocket() {
     }, 2000);
   });
   socket.on('partner_left', ()=> {
-    showNotif('Partner has left the chat.', true);
+    showNotif('Partner left', true);
     partnerActive = false;
   });
   socket.on('disconnect', ()=> {
