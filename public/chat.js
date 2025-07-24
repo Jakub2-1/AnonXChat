@@ -118,6 +118,12 @@ socket.disconnect();
 };
 // SOCKET.IO
 function startSocket() {
+  // Disconnect existing socket if it exists
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+  
   socket = io();
   socket.on('connect', ()=> {
     // Overlay is already showing, no need for additional message
