@@ -10,33 +10,118 @@ function getTimeNow() {
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-// Přepínání stránek
+// Přepínání stránek s animacemi
 function showChatPage() {
-  document.getElementById('mainPage').style.display = 'none';
-  document.getElementById('chatPage').style.display = 'flex';
-  document.getElementById('onlineCount').style.display = '';
-  document.getElementById('notification').style.display = 'none';
-  document.getElementById('loadingOverlay').style.display = 'none';
+  const mainPage = document.getElementById('mainPage');
+  const chatPage = document.getElementById('chatPage');
+  const onlineCount = document.getElementById('onlineCount');
+  const notification = document.getElementById('notification');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  
+  // Fade out current page
+  loadingOverlay.style.opacity = '0';
+  setTimeout(() => {
+    mainPage.style.display = 'none';
+    notification.style.display = 'none';
+    loadingOverlay.style.display = 'none';
+    
+    // Show chat page with animation
+    chatPage.style.display = 'flex';
+    chatPage.style.opacity = '0';
+    onlineCount.style.display = '';
+    
+    setTimeout(() => {
+      chatPage.style.opacity = '1';
+      loadingOverlay.style.opacity = '1';
+    }, 10);
+  }, 150);
 }
+
 function showMainPage() {
-  document.getElementById('mainPage').style.display = 'flex';
-  document.getElementById('chatPage').style.display = 'none';
-  document.getElementById('notification').style.display = 'none';
-  document.getElementById('loadingOverlay').style.display = 'none';
+  const mainPage = document.getElementById('mainPage');
+  const chatPage = document.getElementById('chatPage');
+  const notification = document.getElementById('notification');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  
+  // Fade out current page
+  if (chatPage.style.display !== 'none') {
+    chatPage.style.opacity = '0';
+    setTimeout(() => {
+      chatPage.style.display = 'none';
+      notification.style.display = 'none';
+      loadingOverlay.style.display = 'none';
+      
+      // Show main page with animation
+      mainPage.style.display = 'flex';
+      mainPage.style.opacity = '0';
+      
+      setTimeout(() => {
+        mainPage.style.opacity = '1';
+      }, 10);
+    }, 150);
+  } else {
+    chatPage.style.display = 'none';
+    notification.style.display = 'none';
+    loadingOverlay.style.display = 'none';
+    mainPage.style.display = 'flex';
+  }
 }
+
 function showNotif(msg, btns = false) {
-  document.getElementById('notifMsg').textContent = msg;
-  document.getElementById('notification').style.display = '';
-  document.getElementById('notifBtns').style.display = btns ? '' : 'none';
-  document.getElementById('chatPage').style.display = 'none';
-  document.getElementById('mainPage').style.display = 'none';
-  document.getElementById('loadingOverlay').style.display = 'none';
+  const notification = document.getElementById('notification');
+  const notifMsg = document.getElementById('notifMsg');
+  const notifBtns = document.getElementById('notifBtns');
+  const chatPage = document.getElementById('chatPage');
+  const mainPage = document.getElementById('mainPage');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  
+  notifMsg.textContent = msg;
+  notifBtns.style.display = btns ? '' : 'none';
+  
+  // Fade out current page
+  if (chatPage.style.display !== 'none') {
+    chatPage.style.opacity = '0';
+  }
+  
+  setTimeout(() => {
+    chatPage.style.display = 'none';
+    mainPage.style.display = 'none';
+    loadingOverlay.style.display = 'none';
+    
+    // Show notification with animation
+    notification.style.display = '';
+    notification.style.opacity = '0';
+    
+    setTimeout(() => {
+      notification.style.opacity = '1';
+    }, 10);
+  }, 150);
 }
+
 function showLoadingOverlay() {
-  document.getElementById('mainPage').style.display = 'none';
-  document.getElementById('chatPage').style.display = 'none';
-  document.getElementById('notification').style.display = 'none';
-  document.getElementById('loadingOverlay').style.display = 'flex';
+  const mainPage = document.getElementById('mainPage');
+  const chatPage = document.getElementById('chatPage');
+  const notification = document.getElementById('notification');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  
+  // Fade out current page
+  if (mainPage.style.display !== 'none') {
+    mainPage.style.opacity = '0';
+  }
+  
+  setTimeout(() => {
+    mainPage.style.display = 'none';
+    chatPage.style.display = 'none';
+    notification.style.display = 'none';
+    
+    // Show loading overlay with animation
+    loadingOverlay.style.display = 'flex';
+    loadingOverlay.style.opacity = '0';
+    
+    setTimeout(() => {
+      loadingOverlay.style.opacity = '1';
+    }, 10);
+  }, 150);
 }
 
 // Přidání zprávy
