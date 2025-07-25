@@ -928,7 +928,7 @@ function startSocket() {
     playChatEnd();
   });
   socket.on('disconnect', ()=> {
-    showNotif('Disconnected from server.', false);
+    showNotif('Disconnected from server.', true);
   });
 
   // Indikace psaní
