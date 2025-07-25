@@ -758,6 +758,7 @@ function showPublicBadge() {
   }
 }
 
+copilot/fix-3eb2b44d-a472-4c79-82c7-50d483d4c4c8
 // Theme management with premium access control
 function getAvailableThemes() {
   const freeThemes = Object.keys(themeDefinitions).filter(key => 
@@ -799,6 +800,86 @@ function setTheme(themeName) {
     return true;
   }
   return false;
+
+// Theme management - Updated to support modal selection
+function switchTheme() {
+  // Open theme selection modal instead of cycling
+  showThemeModal();
+}
+
+function showThemeModal() {
+  const themeModal = document.getElementById('themeModal');
+  if (!themeModal) return;
+  
+  // Update modal text based on current language
+  updateThemeModalTexts();
+  
+  // Mark current theme as selected
+  updateThemeSelection();
+  
+  themeModal.style.display = 'flex';
+  themeModal.style.opacity = '0';
+  setTimeout(() => {
+    themeModal.style.opacity = '1';
+  }, 10);
+}
+
+function hideThemeModal() {
+  const themeModal = document.getElementById('themeModal');
+  if (!themeModal) return;
+  
+  themeModal.style.opacity = '0';
+  setTimeout(() => {
+    themeModal.style.display = 'none';
+  }, 300);
+}
+
+function updateThemeModalTexts() {
+  const title = document.querySelector('.theme-modal-title');
+  if (title) {
+    title.textContent = currentLanguage === 'cs' ? 'Vyberte motiv' : 'Select Theme';
+  }
+  
+  const categoryTitles = document.querySelectorAll('.theme-category-title');
+  if (categoryTitles.length >= 2) {
+    categoryTitles[0].textContent = 'Free';
+    categoryTitles[1].textContent = currentLanguage === 'cs' ? 'Premium 🔒' : 'Premium 🔒';
+  }
+}
+
+function updateThemeSelection() {
+  const options = document.querySelectorAll('.theme-option');
+  options.forEach(option => {
+    option.classList.remove('selected');
+    if (option.dataset.theme === currentTheme) {
+      option.classList.add('selected');
+    }
+  });
+}
+
+function selectTheme(themeName) {
+  if (themeName === 'premium') {
+    // Show premium message
+    showNotif(currentLanguage === 'cs' ? 
+      '🔒 Premium motivy budou dostupné v budoucí verzi!' : 
+      '🔒 Premium themes will be available in future version!', false);
+    return;
+  }
+  
+  // Apply the selected theme
+  currentTheme = themeName;
+  applyMainTheme(currentTheme);
+  localStorage.setItem('selectedTheme', currentTheme);
+  
+  // Update theme icon
+  updateThemeSwitcher();
+  
+  // Hide modal
+  hideThemeModal();
+  
+  // Apply random color variation
+  randomizeTheme();
+main
 }
 
 function applyMainTheme(themeName) {
@@ -1032,12 +1113,27 @@ function applyTheme(theme) {
   root.style.setProperty('--theme-shadow', theme.shadow);
 }
 
+// Language system object
+const lang = {
+  setLanguage: function(langCode) {
+    if (langCode === 'cz') langCode = 'cs'; // Handle both 'cz' and 'cs'
+    if (languageDefinitions[langCode]) {
+      currentLanguage = langCode;
+      localStorage.setItem('selectedLanguage', currentLanguage);
+      updateAllTexts();
+      updateLanguageToggle();
+    }
+  },
+  
+  getText: function(key) {
+    return getText(key);
+  }
+};
+
 // Language switching functionality
 function switchLanguage() {
-  currentLanguage = currentLanguage === 'cs' ? 'en' : 'cs';
-  localStorage.setItem('selectedLanguage', currentLanguage);
-  updateAllTexts();
-  updateLanguageToggle();
+  const newLang = currentLanguage === 'cs' ? 'en' : 'cs';
+  lang.setLanguage(newLang);
 }
 
 function updateLanguageToggle() {
@@ -1208,8 +1304,7 @@ function showChatPage() {
     chatPage.style.opacity = '0';
     onlineCount.style.display = '';
     
-    // Update floating button visibility
-    updateFloatingButtonVisibility();
+    // Note: floating button functionality updated - now using bug feedback button
     
     setTimeout(() => {
       chatPage.style.opacity = '1';
@@ -1262,8 +1357,7 @@ function showMainPage() {
       mainPage.style.display = 'flex';
       mainPage.style.opacity = '0';
       
-      // Update floating button visibility
-      updateFloatingButtonVisibility();
+      // Note: floating button functionality updated - now using bug feedback button
       
       // Explicitly ensure logo and start button are visible
       if (logo) {
@@ -1285,8 +1379,7 @@ function showMainPage() {
     loadingOverlay.style.display = 'none';
     mainPage.style.display = 'flex';
     
-    // Update floating button visibility
-    updateFloatingButtonVisibility();
+    // Note: floating button functionality updated - now using bug feedback button
     
     // Explicitly ensure logo and start button are visible
     if (logo) {
@@ -1327,8 +1420,7 @@ function showNotif(msg, btns = false) {
     mainPage.style.display = 'none';
     loadingOverlay.style.display = 'none';
     
-    // Update floating button visibility
-    updateFloatingButtonVisibility();
+    // Note: floating button functionality updated - now using bug feedback button
     
     // Show notification with animation
     notification.style.display = '';
@@ -1365,8 +1457,7 @@ function showLoadingOverlay() {
     chatPage.style.display = 'none';
     notification.style.display = 'none';
     
-    // Update floating button visibility
-    updateFloatingButtonVisibility();
+    // Note: floating button functionality updated - now using bug feedback button
     
     // Show loading overlay with animation
     loadingOverlay.style.display = 'flex';
@@ -1964,8 +2055,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set up page visibility handling for tab switching
   setupPageVisibilityHandling();
   
-  // Set up floating idea button
-  setupFloatingIdeaButton();
+  // Set up bug feedback button
+  setupBugFeedbackButton();
+  
+  // Set up theme modal
+  setupThemeModal();
   
   // Show welcome message for new users
   if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {
@@ -1982,33 +2076,69 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Floating Idea Button Setup - now using native <a> element
-function setupFloatingIdeaButton() {
-  const floatingButton = document.getElementById('floatingIdeaButton');
-  if (!floatingButton) return;
+// Bug Feedback Button Setup
+function setupBugFeedbackButton() {
+  const bugButton = document.getElementById('bugFeedbackButton');
+  const tooltip = document.getElementById('feedbackTooltip');
+  const instagramBtn = document.getElementById('openInstagramBtn');
   
-  // No click handling needed - using native <a> navigation
-  // Only handle visibility
-  updateFloatingButtonVisibility();
+  if (!bugButton || !tooltip || !instagramBtn) return;
+  
+  // Show/hide tooltip on click
+  bugButton.addEventListener('click', function() {
+    if (tooltip.style.display === 'none' || !tooltip.style.display) {
+      tooltip.style.display = 'block';
+    } else {
+      tooltip.style.display = 'none';
+    }
+  });
+  
+  // Open Instagram when button is clicked
+  instagramBtn.addEventListener('click', function() {
+    window.open('https://www.instagram.com/anonx_chat/', '_blank', 'noopener,noreferrer');
+    tooltip.style.display = 'none';
+  });
+  
+  // Hide tooltip when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!bugButton.contains(e.target) && !tooltip.contains(e.target)) {
+      tooltip.style.display = 'none';
+    }
+  });
 }
 
-// Update floating button visibility based on current page
-function updateFloatingButtonVisibility() {
-  const floatingButton = document.getElementById('floatingIdeaButton');
-  const mainPage = document.getElementById('mainPage');
-  const chatPage = document.getElementById('chatPage');
+// Theme Modal Setup
+function setupThemeModal() {
+  const themeModal = document.getElementById('themeModal');
+  const themeModalClose = document.getElementById('themeModalClose');
+  const themeOptions = document.querySelectorAll('.theme-option');
   
-  if (!floatingButton) return;
+  if (!themeModal || !themeModalClose) return;
   
-  // Show button only when main page is visible
-  const isMainPageVisible = mainPage && mainPage.style.display !== 'none';
-  const isChatPageVisible = chatPage && chatPage.style.display !== 'none';
+  // Close modal when close button is clicked
+  themeModalClose.addEventListener('click', hideThemeModal);
   
-  if (isMainPageVisible && !isChatPageVisible) {
-    floatingButton.classList.remove('hidden');
-  } else {
-    floatingButton.classList.add('hidden');
-  }
+  // Close modal when clicking outside
+  themeModal.addEventListener('click', function(e) {
+    if (e.target === themeModal) {
+      hideThemeModal();
+    }
+  });
+  
+  // Handle theme selection
+  themeOptions.forEach(option => {
+    option.addEventListener('click', function() {
+      const themeName = this.dataset.theme;
+      selectTheme(themeName);
+    });
+  });
+  
+  // Handle ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && themeModal.style.display === 'flex') {
+      hideThemeModal();
+    }
+  });
 }
 
 // Page Visibility API handling for graceful tab switching
