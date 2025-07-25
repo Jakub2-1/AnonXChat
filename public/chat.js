@@ -7,6 +7,22 @@ let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default 
 let currentTheme = localStorage.getItem('selectedTheme') || 'phantom'; // Default to phantom theme
 let currentThemeData = null;
 
+// User statistics management
+let userStats = JSON.parse(localStorage.getItem('anonx_stats') || '{}');
+let currentChatStart = null;
+let lastRatingDate = null;
+
+// Initialize user stats if not exists
+if (!userStats.totalChats) userStats.totalChats = 0;
+if (!userStats.totalTime) userStats.totalTime = 0;
+if (!userStats.heartCount) userStats.heartCount = 0;
+if (!userStats.poopCount) userStats.poopCount = 0;
+if (!userStats.ghostCount) userStats.ghostCount = 0;
+if (!userStats.currentStreak) userStats.currentStreak = 0;
+if (!userStats.lastStreakDate) userStats.lastStreakDate = null;
+if (!userStats.showPublicBadge) userStats.showPublicBadge = false;
+if (!userStats.cleanChats) userStats.cleanChats = 0;
+
 // Sound system
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -114,6 +130,216 @@ function playPartnerFound() {
 
 function playChatEnd() {
   createSound(400, 0.2, 'sine');
+}
+
+// Statistics and Rating System
+function saveUserStats() {
+  localStorage.setItem('anonx_stats', JSON.stringify(userStats));
+}
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  if (userStats.lastStreakDate !== today) {
+    userStats.currentStreak = userStats.lastStreakDate === new Date(Date.now() - 86400000).toDateString() ? userStats.currentStreak + 1 : 1;
+    userStats.lastStreakDate = today;
+    saveUserStats();
+  }
+}
+
+function getKarmaLevel() {
+  const totalRatings = userStats.heartCount + userStats.poopCount;
+  if (totalRatings === 0) return "Nováček";
+  
+  const poopRatio = userStats.poopCount / totalRatings;
+  const heartRatio = userStats.heartCount / totalRatings;
+  
+  if (poopRatio > 0.3) return "Problematik";
+  if (heartRatio > 0.7) return "Anděl";
+  if (heartRatio > 0.5) return "Příjemný";
+  return "Průměrný";
+}
+
+function shouldShowBehaviorWarning() {
+  const totalRatings = userStats.heartCount + userStats.poopCount;
+  if (totalRatings < 5) return false;
+  
+  const poopRatio = userStats.poopCount / totalRatings;
+  return poopRatio > 0.3;
+}
+
+function updateStatsDisplay() {
+  document.getElementById('totalChats').textContent = userStats.totalChats;
+  document.getElementById('avgLength').textContent = userStats.totalChats > 0 ? 
+    Math.round(userStats.totalTime / userStats.totalChats / 60) + 'm' : '0m';
+  document.getElementById('heartCount').textContent = userStats.heartCount;
+  document.getElementById('poopCount').textContent = userStats.poopCount;
+  document.getElementById('currentStreak').textContent = userStats.currentStreak;
+  document.getElementById('karmaLevel').textContent = getKarmaLevel();
+  document.getElementById('showPublicBadge').checked = userStats.showPublicBadge;
+  
+  // Update challenges display
+  updateChallengesDisplay();
+}
+
+function updateChallengesDisplay() {
+  if (!window.challengesSystem) return;
+  
+  const challengesList = document.getElementById('challengesList');
+  const totalPointsEl = document.getElementById('totalPoints');
+  
+  // Get available challenges (not completed, max 5)
+  const availableChallenges = window.challengesSystem.getAvailableChallenges().slice(0, 5);
+  
+  challengesList.innerHTML = '';
+  
+  availableChallenges.forEach(challenge => {
+    const progress = window.challengesSystem.getChallengeProgress(challenge.id);
+    if (!progress) return;
+    
+    const challengeEl = document.createElement('div');
+    challengeEl.className = `challenge-item ${progress.completed ? 'completed' : ''}`;
+    
+    const percentage = Math.min((progress.progress / challenge.target) * 100, 100);
+    
+    challengeEl.innerHTML = `
+      <div class="challenge-header">
+        <div class="challenge-name">${challenge.name}</div>
+        <div class="challenge-points">${challenge.points} bodů</div>
+      </div>
+      <div class="challenge-description">${challenge.description}</div>
+      <div class="challenge-progress">
+        <div class="challenge-progress-bar" style="width: ${percentage}%"></div>
+      </div>
+      <div class="challenge-progress-text">${progress.progress}/${challenge.target}</div>
+    `;
+    
+    challengesList.appendChild(challengeEl);
+  });
+  
+  // Update total points
+  totalPointsEl.textContent = window.challengesSystem.getTotalPoints();
+}
+
+function showRatingModal() {
+  const ratingModal = document.getElementById('ratingModal');
+  ratingModal.style.display = 'flex';
+  ratingModal.style.opacity = '0';
+  setTimeout(() => {
+    ratingModal.style.opacity = '1';
+  }, 10);
+}
+
+function hideRatingModal() {
+  const ratingModal = document.getElementById('ratingModal');
+  ratingModal.style.opacity = '0';
+  setTimeout(() => {
+    ratingModal.style.display = 'none';
+  }, 300);
+}
+
+// Handle rating modal close events
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const ratingModal = document.getElementById('ratingModal');
+    if (ratingModal.style.display === 'flex') {
+      hideRatingModal();
+      handlePostRating(); // Continue with default action
+    }
+    
+    const statsPanel = document.getElementById('statsPanel');
+    if (statsPanel.style.display === 'flex') {
+      hideStatsPanel();
+    }
+  }
+});
+
+// Handle clicking outside modals
+document.addEventListener('click', function(e) {
+  const ratingModal = document.getElementById('ratingModal');
+  if (ratingModal.style.display === 'flex' && e.target === ratingModal) {
+    hideRatingModal();
+    handlePostRating(); // Continue with default action
+  }
+  
+  const statsPanel = document.getElementById('statsPanel');
+  if (statsPanel.style.display === 'flex' && e.target === statsPanel) {
+    hideStatsPanel();
+  }
+});
+
+function submitRating(rating) {
+  if (lastRatingDate === new Date().toDateString()) {
+    hideRatingModal();
+    return; // Already rated today
+  }
+  
+  // Update statistics
+  if (rating === 'heart') userStats.heartCount++;
+  else if (rating === 'poop') userStats.poopCount++;
+  else if (rating === 'ghost') userStats.ghostCount++;
+  
+  lastRatingDate = new Date().toDateString();
+  updateStreak();
+  
+  // Record chat end time and update total time
+  if (currentChatStart) {
+    const chatDuration = (Date.now() - currentChatStart) / 1000;
+    userStats.totalTime += chatDuration;
+  }
+  
+  userStats.totalChats++;
+  saveUserStats();
+  
+  hideRatingModal();
+  
+  // Show behavior warning if needed
+  if (shouldShowBehaviorWarning()) {
+    setTimeout(() => {
+      showNotif('💡 Tip: Zkus být více přátelský v chatech. Kvalitní konverzace přináší lepší zážitky!', false);
+    }, 1000);
+  }
+}
+
+function showStatsPanel() {
+  updateStatsDisplay();
+  const statsPanel = document.getElementById('statsPanel');
+  statsPanel.style.display = 'flex';
+  statsPanel.style.opacity = '0';
+  setTimeout(() => {
+    statsPanel.style.opacity = '1';
+  }, 10);
+}
+
+function hideStatsPanel() {
+  const statsPanel = document.getElementById('statsPanel');
+  statsPanel.style.opacity = '0';
+  setTimeout(() => {
+    statsPanel.style.display = 'none';
+  }, 300);
+}
+
+function generatePublicBadge() {
+  if (!userStats.showPublicBadge || userStats.totalChats === 0) {
+    return null;
+  }
+  
+  const totalRatings = userStats.heartCount + userStats.poopCount;
+  if (totalRatings < 3) return null; // Need at least 3 ratings to show badge
+  
+  return `Tahle duše má ${userStats.totalChats} pokeců, ${userStats.heartCount}x ❤️, ${userStats.poopCount}x 💩`;
+}
+
+function showPublicBadge() {
+  const badge = generatePublicBadge();
+  const publicBadge = document.getElementById('publicBadge');
+  const badgeText = document.getElementById('badgeText');
+  
+  if (badge) {
+    badgeText.textContent = badge;
+    publicBadge.style.display = 'block';
+  } else {
+    publicBadge.style.display = 'none';
+  }
 }
 
 // Theme management
@@ -424,6 +650,115 @@ document.getElementById('themeSwitcher').onclick = function() {
   switchTheme();
 }
 
+// STATS BUTTON
+document.getElementById('statsButton').onclick = function() {
+  showStatsPanel();
+}
+
+// STATS PANEL CLOSE
+document.getElementById('statsClose').onclick = function() {
+  hideStatsPanel();
+}
+
+// PUBLIC BADGE CHECKBOX
+document.getElementById('showPublicBadge').onchange = function() {
+  userStats.showPublicBadge = this.checked;
+  saveUserStats();
+}
+
+// RATING BUTTONS
+let ratingAction = 'continue'; // 'continue' for skip, 'return' for end
+
+document.getElementById('ratingHeart').onclick = function() {
+  submitRating('heart');
+}
+
+document.getElementById('ratingPoop').onclick = function() {
+  submitRating('poop');
+}
+
+document.getElementById('ratingGhost').onclick = function() {
+  submitRating('ghost');
+}
+
+function setRatingAction(action) {
+  ratingAction = action;
+}
+
+function submitRating(rating) {
+  if (lastRatingDate === new Date().toDateString()) {
+    hideRatingModal();
+    handlePostRating();
+    return; // Already rated today
+  }
+  
+  // Update statistics
+  if (rating === 'heart') userStats.heartCount++;
+  else if (rating === 'poop') userStats.poopCount++;
+  else if (rating === 'ghost') userStats.ghostCount++;
+  
+  // Track clean chats (heart or ghost, but not poop)
+  if (rating === 'heart' || rating === 'ghost') {
+    userStats.cleanChats++;
+  }
+  
+  lastRatingDate = new Date().toDateString();
+  updateStreak();
+  
+  // Record chat end time and update total time
+  let chatDuration = 0;
+  if (currentChatStart) {
+    chatDuration = (Date.now() - currentChatStart) / 1000;
+    userStats.totalTime += chatDuration;
+  }
+  
+  userStats.totalChats++;
+  saveUserStats();
+  
+  // Update challenges
+  if (window.challengesSystem) {
+    window.challengesSystem.updateChallengeProgress('rating_given', { rating });
+    window.challengesSystem.updateChallengeProgress('chat_completed', { 
+      duration: chatDuration,
+      theme: currentTheme 
+    });
+    window.challengesSystem.updateChallengeProgress('streak_updated', { streak: userStats.currentStreak });
+    window.challengesSystem.trackThemeUsage(currentTheme);
+  }
+  
+  hideRatingModal();
+  
+  // Show behavior warning if needed
+  if (shouldShowBehaviorWarning()) {
+    setTimeout(() => {
+      showNotif('💡 Tip: Zkus být více přátelský v chatech. Kvalitní konverzace přináší lepší zážitky!', false);
+    }, 1000);
+  } else {
+    handlePostRating();
+  }
+}
+
+function handlePostRating() {
+  // Clear chat messages
+  document.getElementById('messages').innerHTML = '';
+  
+  if (ratingAction === 'continue') {
+    // Randomize theme for new chat
+    randomizeTheme();
+    
+    // Show loading overlay while looking for new partner
+    showLoadingOverlay();
+    
+    // Start new chat after short pause
+    setTimeout(() => {
+      startSocket();
+    }, 700);
+  } else {
+    // Return to main page
+    showMainPage();
+  }
+}
+
 // SOUND TOGGLE BTN
 document.getElementById('soundToggle').onclick = function() {
   soundEnabled = !soundEnabled;
@@ -468,37 +803,31 @@ document.getElementById('returnBtn').onclick = function() {
 // SKIP BTN = najde nového partnera bez návratu na hlavní
 document.getElementById('skipBtn').onclick = function() {
     if (socket) socket.emit('leave_chat');
-socket.disconnect();
+    socket.disconnect();
 
     // Play chat end sound
     playChatEnd();
 
-    // Vyčistit chat zprávy
-    document.getElementById('messages').innerHTML = '';
-
-    // Randomize theme for new chat
-    randomizeTheme();
-
-    // Show loading overlay while looking for new partner
-    showLoadingOverlay();
-
-    // Spustí nový chat po krátké pauze
-    setTimeout(() => {
-        startSocket();
-    }, 700);
+    // Set action for rating
+    setRatingAction('continue');
+    
+    // Show rating modal first
+    showRatingModal();
 };
 
 // END CHAT BTN = konec chatu, návrat na hlavní
 document.getElementById('endBtn').onclick = function() {
     if (socket) socket.emit('leave_chat');
-socket.disconnect();
+    socket.disconnect();
 
     // Play chat end sound
     playChatEnd();
 
-    // Vyčistí zprávy a vrátí na hlavní stránku
-    document.getElementById('messages').innerHTML = '';
-    showMainPage();
+    // Set action for rating
+    setRatingAction('return');
+    
+    // Show rating modal first
+    showRatingModal();
 };
 // SOCKET.IO
 function startSocket() {
@@ -516,8 +845,10 @@ function startSocket() {
     document.getElementById('onlineCount').textContent = "Online: " + count;
   });
   socket.on('partner', ()=> {
+    currentChatStart = Date.now(); // Track chat start time
     showChatPage();
     addMsg('✅ Partner found!', mySide);
+    showPublicBadge(); // Show public badge if enabled
     
     // Play partner found sound
     playPartnerFound();
@@ -533,7 +864,8 @@ function startSocket() {
     }, 2000);
   });
   socket.on('partner_left', ()=> {
-    showNotif('Partner left', true);
+    setRatingAction('continue'); // Default to continue when partner leaves
+    showRatingModal(); // Show rating modal when partner leaves
     partnerActive = false;
     
     // Play chat end sound
@@ -560,4 +892,12 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Set initial theme variation
   randomizeTheme();
+  
+  // Show welcome message for new users
+  if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {
+    setTimeout(() => {
+      showNotif('🎉 Vítej v AnonX Chat! Dokončuj chaty, získávej hodnocení a plň výzvy pro odblokování speciálních odměn. Začni svůj první pokec! 📊', false);
+      localStorage.setItem('anonx_welcome_shown', 'true');
+    }, 2000);
+  }
 });
