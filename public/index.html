@@ -14,6 +14,9 @@
   <div class="theme-switcher" id="themeSwitcher" title="Switch Theme">
     <span class="theme-icon" id="themeIcon">👻</span>
   </div>
+  <div class="stats-button" id="statsButton" title="Moje statistiky">
+    <span class="stats-icon">📊</span>
+  </div>
   <div id="loadingOverlay" class="loading-overlay" style="display:none;">
     <div class="loading-bubble">
       <div class="loading-text">Looking for a partner...</div>
@@ -30,6 +33,9 @@
     </div>
   </div>
   <div id="chatPage" class="chat-container">
+    <div class="public-badge" id="publicBadge" style="display:none;">
+      <span class="badge-text" id="badgeText"></span>
+    </div>
     <div class="messages" id="messages"></div>
     <div id="typingIndicator" class="typing-indicator" style="display:none;">
       <span class="typing-dot"></span>
@@ -54,7 +60,86 @@
       <button class="notif-btn" id="returnBtn">Go Back</button>
     </div>
   </div>
+  
+  <!-- Rating Modal -->
+  <div id="ratingModal" class="rating-modal" style="display:none;">
+    <div class="rating-content">
+      <h3 class="rating-title">Jaký byl tvůj pokec?</h3>
+      <div class="rating-options">
+        <button class="rating-btn" id="ratingHeart" data-rating="heart">
+          <span class="rating-emoji">❤️</span>
+          <span class="rating-text">Líbilo se mi</span>
+        </button>
+        <button class="rating-btn" id="ratingPoop" data-rating="poop">
+          <span class="rating-emoji">💩</span>
+          <span class="rating-text">Byla to bída</span>
+        </button>
+        <button class="rating-btn" id="ratingGhost" data-rating="ghost">
+          <span class="rating-emoji">👻</span>
+          <span class="rating-text">Jen náhodný pokec</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Statistics Panel -->
+  <div id="statsPanel" class="stats-panel" style="display:none;">
+    <div class="stats-content">
+      <div class="stats-header">
+        <h3 class="stats-title">Moje statistiky</h3>
+        <button class="stats-close" id="statsClose">×</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" id="totalChats">0</div>
+          <div class="stat-label">Celkem chatů</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="avgLength">0m</div>
+          <div class="stat-label">Průměrná délka</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="heartCount">0</div>
+          <div class="stat-label">❤️ hodnocení</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="poopCount">0</div>
+          <div class="stat-label">💩 hodnocení</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="currentStreak">0</div>
+          <div class="stat-label">Dnešní streak</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="karmaLevel">---</div>
+          <div class="stat-label">Karma úroveň</div>
+        </div>
+      </div>
+      <div class="stats-options">
+        <label class="stats-checkbox">
+          <input type="checkbox" id="showPublicBadge">
+          <span class="checkmark"></span>
+          Zobrazit veřejný odznak
+        </label>
+      </div>
+      
+      <!-- Challenges Section -->
+      <div class="challenges-section">
+        <h4 class="challenges-title">Aktuální výzvy</h4>
+        <div class="challenges-list" id="challengesList">
+          <!-- Challenges will be populated by JavaScript -->
+        </div>
+        <div class="challenges-summary">
+          <div class="total-points">
+            <span class="points-label">Celkem bodů:</span>
+            <span class="points-value" id="totalPoints">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="challenges.js"></script>
   <script src="chat.js"></script>
 </body>
 </html>
