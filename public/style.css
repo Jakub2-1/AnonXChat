@@ -250,7 +250,7 @@ body.theme-glow .glow {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   animation: fade-in 0.6s ease-out;
   transition: all 0.3s ease;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .language-switcher {
@@ -268,7 +268,7 @@ body.theme-glow .glow {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   animation: fade-in 0.6s ease-out;
   transition: all 0.3s ease;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .theme-switcher:hover, .language-switcher:hover {
