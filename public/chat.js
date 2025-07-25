@@ -4,7 +4,8 @@ let mySide = 'right';
 let partnerActive = true;
 let typingTimeout;
 let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default to true
-let currentTheme = localStorage.getItem('selectedTheme') || 'poltergeist'; // Default to poltergeist theme
+let currentTheme = localStorage.getItem('selectedTheme') || 'glow'; // Default to glow theme (free)
+let hasPremiumAccess = localStorage.getItem('anonx_premium') === 'true'; // Premium access flag
 let currentThemeData = null;
 let currentPartnerId = null; // Store current partner ID for favorites
 
@@ -229,22 +230,73 @@ const languageDefinitions = {
   }
 };
 
-// Theme definitions - Updated skeleton icon
+// Theme definitions with FREE/PREMIUM categorization
 const themeDefinitions = {
-  phantom: {
-    name: 'Phantom',
-    icon: '💀', // Changed from 👻 to 💀 (skull/skeleton icon)
-    className: 'theme-phantom'
-  },
+  // FREE THEMES
   glow: {
-    name: 'Glow', 
+    name: 'Glow',
     icon: '🌟',
-    className: 'theme-glow'
+    className: 'theme-glow',
+    category: 'free',
+    description: 'Bright and cheerful light theme'
   },
+  goth: {
+    name: 'Goth',
+    icon: '💀',
+    className: 'theme-goth',
+    category: 'free', 
+    description: 'Dark gothic atmosphere'
+  },
+  
+  // PREMIUM THEMES
   poltergeist: {
     name: 'Poltergeist',
     icon: '👁️‍🗨️',
-    className: 'theme-poltergeist'
+    className: 'theme-poltergeist',
+    category: 'premium',
+    description: 'Disturbing supernatural energy'
+  },
+  hellokitty: {
+    name: 'Hello Kitty',
+    icon: '🎀',
+    className: 'theme-hellokitty',
+    category: 'premium',
+    description: 'Kawaii pink and cute vibes'
+  },
+  chill: {
+    name: 'Chill',
+    icon: '🌊',
+    className: 'theme-chill',
+    category: 'premium',
+    description: 'Relaxing ocean blues'
+  },
+  chaos: {
+    name: 'Chaos',
+    icon: '💥',
+    className: 'theme-chaos',
+    category: 'premium',
+    description: 'Wild multicolor madness'
+  },
+  phantom: {
+    name: 'Phantom',
+    icon: '👻',
+    className: 'theme-phantom',
+    category: 'premium',
+    description: 'Ethereal ghostly presence'
+  },
+  retroneon: {
+    name: 'Retro Neon',
+    icon: '🌈',
+    className: 'theme-retroneon',
+    category: 'premium',
+    description: '80s cyberpunk neon lights'
+  },
+  digitalvoid: {
+    name: 'Digital Void',
+    icon: '🕳️',
+    className: 'theme-digitalvoid',
+    category: 'premium',
+    description: 'Matrix-like digital darkness'
   }
 };
 
@@ -706,6 +758,49 @@ function showPublicBadge() {
   }
 }
 
+copilot/fix-3eb2b44d-a472-4c79-82c7-50d483d4c4c8
+// Theme management with premium access control
+function getAvailableThemes() {
+  const freeThemes = Object.keys(themeDefinitions).filter(key => 
+    themeDefinitions[key].category === 'free'
+  );
+  
+  if (hasPremiumAccess) {
+    return Object.keys(themeDefinitions);
+  }
+  
+  return freeThemes;
+}
+
+function canUseTheme(themeName) {
+  const theme = themeDefinitions[themeName];
+  if (!theme) return false;
+  
+  return theme.category === 'free' || hasPremiumAccess;
+}
+
+function switchTheme() {
+  const availableThemes = getAvailableThemes();
+  const currentIndex = availableThemes.indexOf(currentTheme);
+  const nextIndex = (currentIndex + 1) % availableThemes.length;
+  const nextTheme = availableThemes[nextIndex];
+  
+  if (canUseTheme(nextTheme)) {
+    currentTheme = nextTheme;
+    applyMainTheme(currentTheme);
+    localStorage.setItem('selectedTheme', currentTheme);
+  }
+}
+
+function setTheme(themeName) {
+  if (canUseTheme(themeName)) {
+    currentTheme = themeName;
+    applyMainTheme(currentTheme);
+    localStorage.setItem('selectedTheme', currentTheme);
+    return true;
+  }
+  return false;
+
 // Theme management - Updated to support modal selection
 function switchTheme() {
   // Open theme selection modal instead of cycling
@@ -784,6 +879,7 @@ function selectTheme(themeName) {
   
   // Apply random color variation
   randomizeTheme();
+main
 }
 
 function applyMainTheme(themeName) {
@@ -805,23 +901,26 @@ function applyMainTheme(themeName) {
   body.classList.add(themeData.className);
   themeIcon.textContent = themeData.icon;
   
-  // Add deep goth overlays for phantom theme
-  if (themeName === 'phantom') {
+  // Add special effects for specific themes
+  if (themeName === 'goth') {
     createDeepGothOverlays();
-  }
-  
-  // Add poltergeist effects for poltergeist theme
-  if (themeName === 'poltergeist') {
-    createPoltergeistEffects();
-  }
-  
-  // Still apply color variations for variety within the theme
-  if (themeName === 'phantom') {
-    randomizeTheme(); // Keep color variety for phantom
   } else if (themeName === 'poltergeist') {
-    randomizePoltergeistTheme(); // Special color variations for poltergeist
+    createPoltergeistEffects();
+  } else if (themeName === 'retroneon') {
+    createRetroNeonEffects();
+  } else if (themeName === 'digitalvoid') {
+    createDigitalVoidEffects();
+  }
+  
+  // Apply color variations for themes that support them
+  if (themeName === 'goth' || themeName === 'phantom') {
+    randomizeTheme(); 
+  } else if (themeName === 'poltergeist') {
+    randomizePoltergeistTheme();
+  } else if (themeName === 'chaos') {
+    randomizeChaosTheme();
   } else {
-    randomizeTheme(); // Keep color variety for glow
+    randomizeTheme();
   }
 }
 
@@ -850,13 +949,71 @@ function createDeepGothOverlays() {
 
 // Remove theme overlays
 function removeThemeOverlays() {
-  const overlays = ['fogOverlay', 'sparklesOverlay', 'shadowsOverlay', 'poltergeistGlitchOverlay', 'poltergeistStaticOverlay'];
+  const overlays = [
+    'fogOverlay', 'sparklesOverlay', 'shadowsOverlay', 
+    'poltergeistGlitchOverlay', 'poltergeistStaticOverlay',
+    'retroNeonOverlay', 'digitalVoidOverlay'
+  ];
   overlays.forEach(id => {
     const element = document.getElementById(id);
     if (element) {
       element.remove();
     }
   });
+}
+
+// Create retro neon effects
+function createRetroNeonEffects() {
+  const body = document.body;
+  
+  const retroOverlay = document.createElement('div');
+  retroOverlay.className = 'retro-neon-overlay';
+  retroOverlay.id = 'retroNeonOverlay';
+  body.appendChild(retroOverlay);
+}
+
+// Create digital void effects  
+function createDigitalVoidEffects() {
+  const body = document.body;
+  
+  const digitalOverlay = document.createElement('div');
+  digitalOverlay.className = 'digital-void-overlay';
+  digitalOverlay.id = 'digitalVoidOverlay';
+  body.appendChild(digitalOverlay);
+}
+
+// Chaos theme color variations
+function randomizeChaosTheme() {
+  const chaosVariations = [
+    {
+      name: 'Rainbow Explosion',
+      primary: '#ff0080',
+      secondary: '#00ff80', 
+      accent: '#8000ff',
+      glow: 'rgba(255, 0, 128, 0.8)',
+      shadow: 'rgba(255, 0, 128, 0.4)'
+    },
+    {
+      name: 'Electric Storm', 
+      primary: '#ffff00',
+      secondary: '#ff4000',
+      accent: '#0080ff', 
+      glow: 'rgba(255, 255, 0, 0.8)',
+      shadow: 'rgba(255, 255, 0, 0.4)'
+    },
+    {
+      name: 'Cosmic Chaos',
+      primary: '#ff8000',
+      secondary: '#8000ff',
+      accent: '#00ff40',
+      glow: 'rgba(255, 128, 0, 0.8)', 
+      shadow: 'rgba(255, 128, 0, 0.4)'
+    }
+  ];
+  
+  const randomIndex = Math.floor(Math.random() * chaosVariations.length);
+  currentThemeData = chaosVariations[randomIndex];
+  applyTheme(currentThemeData);
 }
 
 // Create poltergeist atmospheric effects
@@ -876,7 +1033,21 @@ function createPoltergeistEffects() {
   body.appendChild(staticOverlay);
 }
 
-// Poltergeist theme color variations - disturbing variations
+// Premium access management (for testing)
+function togglePremiumAccess() {
+  hasPremiumAccess = !hasPremiumAccess;
+  localStorage.setItem('anonx_premium', hasPremiumAccess);
+  
+  // If current theme becomes unavailable, switch to a free theme
+  if (!canUseTheme(currentTheme)) {
+    currentTheme = 'glow';
+    applyMainTheme(currentTheme);
+    localStorage.setItem('selectedTheme', currentTheme);
+  }
+  
+  // Show notification
+  showNotif(hasPremiumAccess ? '💎 Premium access activated!' : '🔒 Premium access deactivated', false);
+}
 function randomizePoltergeistTheme() {
   const poltergeistVariations = [
     {
@@ -1329,10 +1500,124 @@ document.getElementById('startBtn').onclick = function() {
   startSocket();
 }
 
-// THEME SWITCHER BTN
+// THEME SWITCHER BTN - Now opens theme selector modal
 document.getElementById('themeSwitcher').onclick = function() {
-  switchTheme();
+  showThemeSelector();
 }
+
+// Theme Selector Modal Functions
+function showThemeSelector() {
+  populateThemeSelector();
+  const modal = document.getElementById('themeSelectorModal');
+  modal.style.display = 'flex';
+  modal.style.opacity = '0';
+  setTimeout(() => {
+    modal.style.opacity = '1';
+  }, 10);
+}
+
+function hideThemeSelector() {
+  const modal = document.getElementById('themeSelectorModal');
+  modal.style.opacity = '0';
+  setTimeout(() => {
+    modal.style.display = 'none';
+  }, 300);
+}
+
+function populateThemeSelector() {
+  const freeGrid = document.getElementById('freeThemesGrid');
+  const premiumGrid = document.getElementById('premiumThemesGrid');
+  const premiumHint = document.getElementById('premiumHint');
+  
+  // Clear existing items
+  freeGrid.innerHTML = '';
+  premiumGrid.innerHTML = '';
+  
+  // Populate free themes
+  Object.entries(themeDefinitions).forEach(([key, theme]) => {
+    if (theme.category === 'free') {
+      const themeItem = createThemeItem(key, theme, true);
+      freeGrid.appendChild(themeItem);
+    }
+  });
+  
+  // Populate premium themes
+  Object.entries(themeDefinitions).forEach(([key, theme]) => {
+    if (theme.category === 'premium') {
+      const themeItem = createThemeItem(key, theme, hasPremiumAccess);
+      premiumGrid.appendChild(themeItem);
+    }
+  });
+  
+  // Show/hide premium hint
+  premiumHint.style.display = hasPremiumAccess ? 'none' : 'flex';
+}
+
+function createThemeItem(themeKey, theme, canUse) {
+  const item = document.createElement('div');
+  item.className = `theme-item ${currentTheme === themeKey ? 'active' : ''} ${!canUse ? 'locked' : ''}`;
+  
+  item.innerHTML = `
+    <span class="theme-icon">${theme.icon}</span>
+    <div class="theme-name">${theme.name}</div>
+    <div class="theme-description">${theme.description}</div>
+    ${!canUse ? '<div class="theme-lock-overlay"><span class="theme-lock-icon">🔒</span></div>' : ''}
+  `;
+  
+  if (canUse) {
+    item.onclick = () => {
+      selectTheme(themeKey);
+    };
+  } else {
+    item.title = 'Unlock all themes with Premium access';
+  }
+  
+  return item;
+}
+
+function selectTheme(themeKey) {
+  if (setTheme(themeKey)) {
+    // Update active state in modal
+    document.querySelectorAll('.theme-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    
+    // Find and activate the selected theme item
+    const themeItems = document.querySelectorAll('.theme-item');
+    themeItems.forEach(item => {
+      if (item.querySelector('.theme-name').textContent === themeDefinitions[themeKey].name) {
+        item.classList.add('active');
+      }
+    });
+    
+    // Close modal after selection
+    setTimeout(() => {
+      hideThemeSelector();
+    }, 500);
+  }
+}
+
+// THEME SELECTOR CLOSE
+document.getElementById('themeSelectorClose').onclick = function() {
+  hideThemeSelector();
+}
+
+// Handle theme selector modal close with escape key and outside click
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const themeSelectorModal = document.getElementById('themeSelectorModal');
+    if (themeSelectorModal.style.display === 'flex') {
+      hideThemeSelector();
+    }
+  }
+});
+
+document.addEventListener('click', function(e) {
+  const themeSelectorModal = document.getElementById('themeSelectorModal');
+  if (themeSelectorModal.style.display === 'flex' && e.target === themeSelectorModal) {
+    hideThemeSelector();
+  }
+});
 
 // LANGUAGE SWITCHER BTN
 document.getElementById('languageSwitcher').onclick = function() {
@@ -1747,6 +2032,12 @@ function startSocket(preferFavorites = false) {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+  // Validate current theme and switch if necessary
+  if (!canUseTheme(currentTheme)) {
+    currentTheme = 'glow'; // Default to free theme
+    localStorage.setItem('selectedTheme', currentTheme);
+  }
+  
   // Set up sound toggle
   updateSoundToggle();
   
@@ -1777,6 +2068,12 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('anonx_welcome_shown', 'true');
     }, 2000);
   }
+  
+  // Add double-click on theme switcher to toggle premium (for testing)
+  let clickCount = 0;
+  document.getElementById('themeSwitcher').addEventListener('dblclick', function() {
+    togglePremiumAccess();
+  });
 });
 
 // Bug Feedback Button Setup
