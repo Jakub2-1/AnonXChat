@@ -79,6 +79,13 @@
           <span class="rating-text">Jen náhodný pokec</span>
         </button>
       </div>
+      <div class="favorite-option" id="favoriteOption" style="display:none;">
+        <p class="favorite-text">Ten chat byl super? Přidej do oblíbených!</p>
+        <button class="favorite-btn" id="addToFavoritesBtn">
+          <span class="favorite-emoji">⭐</span>
+          <span class="favorite-text">Přidat do oblíbených</span>
+        </button>
+      </div>
     </div>
   </div>
   
@@ -114,6 +121,44 @@
           <div class="stat-number" id="karmaLevel">---</div>
           <div class="stat-label">Karma úroveň</div>
         </div>
+      </div>
+      
+      <!-- Leveling Section -->
+      <div class="leveling-section">
+        <h4 class="level-title">
+          <span class="level-icon">🏆</span>
+          <span id="currentLevelName">Nováček</span>
+          <span class="level-number" id="currentLevelNumber">1</span>
+        </h4>
+        <div class="xp-bar">
+          <div class="xp-progress" id="xpProgress" style="width: 0%"></div>
+        </div>
+        <div class="xp-text">
+          <span id="currentXP">0</span> / <span id="nextLevelXP">50</span> XP
+          <span class="xp-to-next" id="xpToNext">(50 do dalšího levelu)</span>
+        </div>
+      </div>
+      
+      <!-- Favorites Section -->
+      <div class="favorites-section">
+        <h4 class="favorites-title">
+          <span class="favorites-icon">⭐</span>
+          Oblíbení partneři
+        </h4>
+        <div class="favorites-stats">
+          <div class="favorite-stat">
+            <span class="favorite-count" id="favoritePartnersCount">0</span>
+            <span class="favorite-label">Oblíbených</span>
+          </div>
+          <div class="favorite-stat">
+            <span class="favorite-count" id="mutualFavoritesCount">0</span>
+            <span class="favorite-label">Vzájemných</span>
+          </div>
+        </div>
+        <button class="favorites-btn" id="connectWithFavoriteBtn" style="display:none;">
+          <span class="favorites-emoji">💫</span>
+          Spojit s oblíbeným
+        </button>
       </div>
       <div class="stats-options">
         <label class="stats-checkbox">
