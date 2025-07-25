@@ -31,6 +31,54 @@ async function saveUsers(users) {
   }
 }
 
+// Leveling system configuration
+const LEVEL_CONFIG = {
+  xpPerChat: 10,
+  xpPerMinute: 2,
+  xpBonus: {
+    heart: 15,
+    ghost: 5,
+    poop: 0
+  },
+  levels: [
+    { level: 1, name: "Nováček", xpRequired: 0 },
+    { level: 2, name: "Pokecník", xpRequired: 50 },
+    { level: 3, name: "Komunikátor", xpRequired: 150 },
+    { level: 4, name: "Společník", xpRequired: 300 },
+    { level: 5, name: "Chatmaster", xpRequired: 500 },
+    { level: 6, name: "Konverzační mistr", xpRequired: 800 },
+    { level: 7, name: "Sociální guru", xpRequired: 1200 },
+    { level: 8, name: "Legendární partner", xpRequired: 1700 },
+    { level: 9, name: "Chat veterán", xpRequired: 2500 },
+    { level: 10, name: "Mistr anonymity", xpRequired: 3500 }
+  ]
+};
+
+function calculateXP(chatDuration, rating) {
+  let xp = LEVEL_CONFIG.xpPerChat; // Base XP for completing a chat
+  xp += Math.floor(chatDuration / 60) * LEVEL_CONFIG.xpPerMinute; // XP per minute
+  xp += LEVEL_CONFIG.xpBonus[rating] || 0; // Rating bonus
+  return xp;
+}
+
+function getUserLevel(totalXP) {
+  let currentLevel = LEVEL_CONFIG.levels[0];
+  for (const level of LEVEL_CONFIG.levels) {
+    if (totalXP >= level.xpRequired) {
+      currentLevel = level;
+    } else {
+      break;
+    }
+  }
+  return currentLevel;
+}
+
+function getNextLevel(totalXP) {
+  const currentLevel = getUserLevel(totalXP);
+  const nextLevelIndex = LEVEL_CONFIG.levels.findIndex(l => l.level === currentLevel.level) + 1;
+  return nextLevelIndex < LEVEL_CONFIG.levels.length ? LEVEL_CONFIG.levels[nextLevelIndex] : null;
+}
+
 async function updateUserStats(userId, rating, chatDuration) {
   const users = await loadUsers();
   
@@ -42,7 +90,11 @@ async function updateUserStats(userId, rating, chatDuration) {
       poopCount: 0,
       ghostCount: 0,
       lastRatingDate: null,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      // New fields for favorite partners and leveling
+      totalXP: 0,
+      favoritePartners: [],
+      mutualFavorites: []
     };
   }
   
@@ -54,17 +106,26 @@ async function updateUserStats(userId, rating, chatDuration) {
     return false; // Already rated today
   }
   
+  // Calculate XP gained
+  const xpGained = calculateXP(chatDuration, rating);
+  
   // Update statistics
   user.totalChats++;
   user.totalTime += chatDuration;
   user.lastRatingDate = today;
+  user.totalXP = (user.totalXP || 0) + xpGained;
   
   if (rating === 'heart') user.heartCount++;
   else if (rating === 'poop') user.poopCount++;
   else if (rating === 'ghost') user.ghostCount++;
   
+  // Initialize new fields for existing users
+  if (!user.favoritePartners) user.favoritePartners = [];
+  if (!user.mutualFavorites) user.mutualFavorites = [];
+  if (user.totalXP === undefined) user.totalXP = 0;
+  
   await saveUsers(users);
-  return true;
+  return { success: true, xpGained, level: getUserLevel(user.totalXP) };
 }
 
 // Rating API endpoint
@@ -81,15 +142,128 @@ app.post('/rate', async (req, res) => {
       return res.status(400).json({ error: 'Invalid rating value' });
     }
     
-    const success = await updateUserStats(userId, rating, chatDuration);
+    const result = await updateUserStats(userId, rating, chatDuration);
     
-    if (!success) {
+    if (!result) {
       return res.status(429).json({ error: 'Already rated today' });
     }
     
-    res.json({ success: true, message: 'Rating submitted successfully' });
+    res.json({ 
+      success: true, 
+      message: 'Rating submitted successfully',
+      xpGained: result.xpGained,
+      level: result.level
+    });
   } catch (error) {
     console.error('Error processing rating:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Add partner to favorites
+app.post('/favorites/add', async (req, res) => {
+  try {
+    const { userId, partnerId } = req.body;
+    
+    if (!userId || !partnerId || userId === partnerId) {
+      return res.status(400).json({ error: 'Invalid user or partner ID' });
+    }
+    
+    const users = await loadUsers();
+    
+    if (!users[userId]) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const user = users[userId];
+    if (!user.favoritePartners) user.favoritePartners = [];
+    if (!user.mutualFavorites) user.mutualFavorites = [];
+    
+    // Add to favorites if not already there
+    if (!user.favoritePartners.includes(partnerId)) {
+      user.favoritePartners.push(partnerId);
+    }
+    
+    // Check if this creates a mutual favorite
+    if (users[partnerId] && users[partnerId].favoritePartners && 
+        users[partnerId].favoritePartners.includes(userId)) {
+      // Mutual favorite detected
+      if (!user.mutualFavorites.includes(partnerId)) {
+        user.mutualFavorites.push(partnerId);
+      }
+      if (!users[partnerId].mutualFavorites) users[partnerId].mutualFavorites = [];
+      if (!users[partnerId].mutualFavorites.includes(userId)) {
+        users[partnerId].mutualFavorites.push(userId);
+      }
+    }
+    
+    await saveUsers(users);
+    
+    res.json({ 
+      success: true, 
+      message: 'Partner added to favorites',
+      mutualFavorite: user.mutualFavorites.includes(partnerId)
+    });
+  } catch (error) {
+    console.error('Error adding favorite:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Remove partner from favorites
+app.post('/favorites/remove', async (req, res) => {
+  try {
+    const { userId, partnerId } = req.body;
+    
+    if (!userId || !partnerId) {
+      return res.status(400).json({ error: 'Invalid user or partner ID' });
+    }
+    
+    const users = await loadUsers();
+    
+    if (!users[userId]) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const user = users[userId];
+    if (!user.favoritePartners) user.favoritePartners = [];
+    if (!user.mutualFavorites) user.mutualFavorites = [];
+    
+    // Remove from favorites
+    user.favoritePartners = user.favoritePartners.filter(id => id !== partnerId);
+    user.mutualFavorites = user.mutualFavorites.filter(id => id !== partnerId);
+    
+    // Remove mutual favorite status from partner
+    if (users[partnerId] && users[partnerId].mutualFavorites) {
+      users[partnerId].mutualFavorites = users[partnerId].mutualFavorites.filter(id => id !== userId);
+    }
+    
+    await saveUsers(users);
+    
+    res.json({ success: true, message: 'Partner removed from favorites' });
+  } catch (error) {
+    console.error('Error removing favorite:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get user favorites
+app.get('/favorites/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const users = await loadUsers();
+    
+    if (!users[userId]) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const user = users[userId];
+    res.json({
+      favoritePartners: user.favoritePartners || [],
+      mutualFavorites: user.mutualFavorites || []
+    });
+  } catch (error) {
+    console.error('Error getting favorites:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -105,12 +279,21 @@ app.get('/stats/:userId', async (req, res) => {
     }
     
     const user = users[userId];
+    const currentLevel = getUserLevel(user.totalXP || 0);
+    const nextLevel = getNextLevel(user.totalXP || 0);
+    
     res.json({
       totalChats: user.totalChats,
       averageLength: user.totalChats > 0 ? Math.round(user.totalTime / user.totalChats / 60) : 0,
       heartCount: user.heartCount,
       poopCount: user.poopCount,
-      ghostCount: user.ghostCount
+      ghostCount: user.ghostCount,
+      totalXP: user.totalXP || 0,
+      level: currentLevel,
+      nextLevel: nextLevel,
+      xpToNextLevel: nextLevel ? nextLevel.xpRequired - (user.totalXP || 0) : 0,
+      favoritePartnersCount: (user.favoritePartners || []).length,
+      mutualFavoritesCount: (user.mutualFavorites || []).length
     });
   } catch (error) {
     console.error('Error getting user stats:', error);
@@ -120,6 +303,28 @@ app.get('/stats/:userId', async (req, res) => {
 
 let waiting = null;
 let onlineCount = 0;
+let connectedUsers = new Map(); // Store socket to userId mapping
+
+// Function to find mutual favorite partner
+async function findMutualFavoritePartner(userId) {
+  const users = await loadUsers();
+  const user = users[userId];
+  
+  if (!user || !user.mutualFavorites || user.mutualFavorites.length === 0) {
+    return null;
+  }
+  
+  // Check if any mutual favorites are online and available
+  for (const [socket, socketUserId] of connectedUsers) {
+    if (user.mutualFavorites.includes(socketUserId) && 
+        socket.partner === null && 
+        socket !== waiting) {
+      return socket;
+    }
+  }
+  
+  return null;
+}
 
 io.on("connection", (socket) => {
   onlineCount++;
@@ -127,26 +332,68 @@ io.on("connection", (socket) => {
 
   socket.partner = null;
   socket.lastActive = Date.now();
+  socket.currentPartnerId = null; // Store partner's user ID for favorites
 
-  // Párování
-  if (waiting && waiting !== socket) {
-    socket.partner = waiting;
-    waiting.partner = socket;
+  // Generate or receive user ID
+  socket.on('set_user_id', (userId) => {
+    socket.userId = userId;
+    connectedUsers.set(socket, userId);
+  });
 
-    socket.join(socket.id + "#" + waiting.id);
-    waiting.join(socket.id + "#" + waiting.id);
+  // Párování with favorite partners priority
+  socket.on('start_pairing', async () => {
+    if (socket.userId) {
+      // First try to find a mutual favorite partner
+      const favoritePartner = await findMutualFavoritePartner(socket.userId);
+      
+      if (favoritePartner && favoritePartner !== socket) {
+        // Pair with mutual favorite
+        socket.partner = favoritePartner;
+        favoritePartner.partner = socket;
+        socket.currentPartnerId = favoritePartner.userId;
+        favoritePartner.currentPartnerId = socket.userId;
 
-    socket.room = socket.id + "#" + waiting.id;
-    waiting.room = socket.room;
+        const roomName = socket.id + "#" + favoritePartner.id;
+        socket.join(roomName);
+        favoritePartner.join(roomName);
 
-    socket.emit("partner");
-    waiting.emit("partner");
+        socket.room = roomName;
+        favoritePartner.room = roomName;
 
-    waiting = null;
-  } else {
-    waiting = socket;
-    socket.emit("status", "⏳ Looking for partner...");
-  }
+        socket.emit("partner", { type: "favorite", partnerId: favoritePartner.userId });
+        favoritePartner.emit("partner", { type: "favorite", partnerId: socket.userId });
+
+        // Remove from waiting if applicable
+        if (waiting === favoritePartner) {
+          waiting = null;
+        }
+        
+        return;
+      }
+    }
+    
+    // Standard pairing logic
+    if (waiting && waiting !== socket) {
+      socket.partner = waiting;
+      waiting.partner = socket;
+      if (socket.userId) socket.currentPartnerId = waiting.userId;
+      if (waiting.userId) waiting.currentPartnerId = socket.userId;
+
+      socket.join(socket.id + "#" + waiting.id);
+      waiting.join(socket.id + "#" + waiting.id);
+
+      socket.room = socket.id + "#" + waiting.id;
+      waiting.room = socket.room;
+
+      socket.emit("partner", { type: "random", partnerId: waiting.userId });
+      waiting.emit("partner", { type: "random", partnerId: socket.userId });
+
+      waiting = null;
+    } else {
+      waiting = socket;
+      socket.emit("status", "⏳ Looking for partner...");
+    }
+  });
 
   // Zpráva
   socket.on("msg", (text) => {
@@ -173,6 +420,9 @@ socket.on("leave_chat", () => {
     onlineCount--;
     io.emit("online", onlineCount);
 
+    // Remove from connected users map
+    connectedUsers.delete(socket);
+
     if (waiting === socket) {
       waiting = null;
     }
@@ -181,6 +431,7 @@ socket.on("leave_chat", () => {
       if (socket.partner) {
         socket.partner.partner = null;
         socket.partner.room = null;
+        socket.partner.currentPartnerId = null;
       }
     }
   });

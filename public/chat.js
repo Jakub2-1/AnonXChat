@@ -6,6 +6,7 @@ let typingTimeout;
 let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default to true
 let currentTheme = localStorage.getItem('selectedTheme') || 'phantom'; // Default to phantom theme
 let currentThemeData = null;
+let currentPartnerId = null; // Store current partner ID for favorites
 
 // Anonymous user ID management
 let anonUserId = localStorage.getItem('anonx_user_id');
@@ -29,6 +30,9 @@ if (!userStats.currentStreak) userStats.currentStreak = 0;
 if (!userStats.lastStreakDate) userStats.lastStreakDate = null;
 if (!userStats.showPublicBadge) userStats.showPublicBadge = false;
 if (!userStats.cleanChats) userStats.cleanChats = 0;
+if (!userStats.totalXP) userStats.totalXP = 0;
+if (!userStats.favoritePartners) userStats.favoritePartners = [];
+if (!userStats.mutualFavorites) userStats.mutualFavorites = [];
 
 // Sound system
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -184,8 +188,132 @@ function updateStatsDisplay() {
   document.getElementById('karmaLevel').textContent = getKarmaLevel();
   document.getElementById('showPublicBadge').checked = userStats.showPublicBadge;
   
+  // Update level display
+  updateLevelDisplay();
+  
+  // Update favorites display
+  updateFavoritesDisplay();
+  
   // Update challenges display
   updateChallengesDisplay();
+}
+
+// Leveling system functions
+function getLevelData(xp) {
+  const levels = [
+    { level: 1, name: "Nováček", xpRequired: 0 },
+    { level: 2, name: "Pokecník", xpRequired: 50 },
+    { level: 3, name: "Komunikátor", xpRequired: 150 },
+    { level: 4, name: "Společník", xpRequired: 300 },
+    { level: 5, name: "Chatmaster", xpRequired: 500 },
+    { level: 6, name: "Konverzační mistr", xpRequired: 800 },
+    { level: 7, name: "Sociální guru", xpRequired: 1200 },
+    { level: 8, name: "Legendární partner", xpRequired: 1700 },
+    { level: 9, name: "Chat veterán", xpRequired: 2500 },
+    { level: 10, name: "Mistr anonymity", xpRequired: 3500 }
+  ];
+  
+  let currentLevel = levels[0];
+  let nextLevel = levels[1];
+  
+  for (let i = 0; i < levels.length; i++) {
+    if (xp >= levels[i].xpRequired) {
+      currentLevel = levels[i];
+      nextLevel = levels[i + 1] || null;
+    } else {
+      break;
+    }
+  }
+  
+  return { currentLevel, nextLevel };
+}
+
+function updateLevelDisplay() {
+  const { currentLevel, nextLevel } = getLevelData(userStats.totalXP || 0);
+  
+  document.getElementById('currentLevelName').textContent = currentLevel.name;
+  document.getElementById('currentLevelNumber').textContent = currentLevel.level;
+  document.getElementById('currentXP').textContent = userStats.totalXP || 0;
+  
+  if (nextLevel) {
+    document.getElementById('nextLevelXP').textContent = nextLevel.xpRequired;
+    document.getElementById('xpToNext').textContent = `(${nextLevel.xpRequired - (userStats.totalXP || 0)} do dalšího levelu)`;
+    
+    const progress = Math.min(100, ((userStats.totalXP || 0) - currentLevel.xpRequired) / (nextLevel.xpRequired - currentLevel.xpRequired) * 100);
+    document.getElementById('xpProgress').style.width = progress + '%';
+  } else {
+    document.getElementById('nextLevelXP').textContent = 'MAX';
+    document.getElementById('xpToNext').textContent = '(Maximální level!)';
+    document.getElementById('xpProgress').style.width = '100%';
+  }
+}
+
+function updateFavoritesDisplay() {
+  document.getElementById('favoritePartnersCount').textContent = (userStats.favoritePartners || []).length;
+  document.getElementById('mutualFavoritesCount').textContent = (userStats.mutualFavorites || []).length;
+  
+  const connectBtn = document.getElementById('connectWithFavoriteBtn');
+  if ((userStats.mutualFavorites || []).length > 0) {
+    connectBtn.style.display = 'block';
+  } else {
+    connectBtn.style.display = 'none';
+  }
+}
+
+// Favorite partners functions
+async function addToFavorites(partnerId) {
+  try {
+    const response = await fetch('/favorites/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: anonUserId,
+        partnerId: partnerId
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Update local storage
+      if (!userStats.favoritePartners) userStats.favoritePartners = [];
+      if (!userStats.favoritePartners.includes(partnerId)) {
+        userStats.favoritePartners.push(partnerId);
+      }
+      
+      if (result.mutualFavorite) {
+        if (!userStats.mutualFavorites) userStats.mutualFavorites = [];
+        if (!userStats.mutualFavorites.includes(partnerId)) {
+          userStats.mutualFavorites.push(partnerId);
+        }
+        showNotif('💫 Skvělé! Máte vzájemně oblíbeného partnera! Nyní se můžete spojit mimo běžné párování.', false);
+      } else {
+        showNotif('⭐ Partner přidán do oblíbených!', false);
+      }
+      
+      saveUserStats();
+      updateFavoritesDisplay();
+    }
+  } catch (error) {
+    console.error('Error adding favorite:', error);
+    showNotif('❌ Nepodařilo se přidat partnera do oblíbených.', false);
+  }
+}
+
+async function connectWithFavorite() {
+  if ((userStats.mutualFavorites || []).length === 0) {
+    showNotif('🤷 Nemáte žádné vzájemně oblíbené partnery online.', false);
+    return;
+  }
+  
+  // Hide stats panel and start searching for favorite
+  hideStatsPanel();
+  showLoadingOverlay();
+  
+  // Use special favorite pairing
+  startSocket(true); // true = prefer favorites
 }
 
 function updateChallengesDisplay() {
@@ -229,6 +357,15 @@ function updateChallengesDisplay() {
 
 function showRatingModal() {
   const ratingModal = document.getElementById('ratingModal');
+  const favoriteOption = document.getElementById('favoriteOption');
+  
+  // Show favorite option only if we have a current partner and rating was positive
+  if (currentPartnerId) {
+    favoriteOption.style.display = 'block';
+  } else {
+    favoriteOption.style.display = 'none';
+  }
+  
   ratingModal.style.display = 'flex';
   ratingModal.style.opacity = '0';
   setTimeout(() => {
@@ -696,6 +833,18 @@ document.getElementById('showPublicBadge').onchange = function() {
   saveUserStats();
 }
 
+// ADD TO FAVORITES BUTTON
+document.getElementById('addToFavoritesBtn').onclick = function() {
+  if (currentPartnerId) {
+    addToFavorites(currentPartnerId);
+  }
+}
+
+// CONNECT WITH FAVORITE BUTTON
+document.getElementById('connectWithFavoriteBtn').onclick = function() {
+  connectWithFavorite();
+}
+
 // RATING BUTTONS
 let ratingAction = 'continue'; // 'continue' for skip, 'return' for end
 
@@ -730,12 +879,46 @@ async function submitRatingToBackend(rating, chatDuration) {
       })
     });
     
+    const result = await response.json();
+    
+    if (result.success && result.xpGained) {
+      // Update local XP and show notification
+      userStats.totalXP = (userStats.totalXP || 0) + result.xpGained;
+      saveUserStats();
+      updateLevelDisplay();
+      
+      // Show XP gained notification
+      showXPNotification(result.xpGained, result.level);
+    }
+    
     if (!response.ok) {
       console.error('Failed to submit rating to backend');
     }
   } catch (error) {
     console.error('Error submitting rating:', error);
   }
+}
+
+function showXPNotification(xpGained, level) {
+  // Create XP notification popup
+  const popup = document.createElement('div');
+  popup.className = 'xp-popup';
+  popup.innerHTML = `
+    <div class="xp-popup-content">
+      <div class="xp-icon">✨</div>
+      <div class="xp-gained">+${xpGained} XP</div>
+      <div class="xp-level">${level.name} (Lvl ${level.level})</div>
+    </div>
+  `;
+  
+  document.body.appendChild(popup);
+  
+  // Animate and remove
+  setTimeout(() => popup.classList.add('show'), 100);
+  setTimeout(() => {
+    popup.classList.remove('show');
+    setTimeout(() => document.body.removeChild(popup), 300);
+  }, 3000);
 }
 
 function submitRating(rating) {
@@ -886,7 +1069,7 @@ document.getElementById('endBtn').onclick = function() {
     showRatingModal();
 };
 // SOCKET.IO
-function startSocket() {
+function startSocket(preferFavorites = false) {
   // Disconnect existing socket if it exists
   if (socket) {
     socket.disconnect();
@@ -894,16 +1077,34 @@ function startSocket() {
   }
   
   socket = io();
+  
   socket.on('connect', ()=> {
-    // Overlay is already showing, no need for additional message
+    // Send user ID to server for favorite matching
+    socket.emit('set_user_id', anonUserId);
+    
+    // Start pairing process
+    socket.emit('start_pairing');
   });
+  
   socket.on('online', (count)=>{
     document.getElementById('onlineCount').textContent = "Online: " + count;
   });
-  socket.on('partner', ()=> {
+  
+  socket.on('partner', (data)=> {
     currentChatStart = Date.now(); // Track chat start time
     showChatPage();
-    addMsg('✅ Partner found!', mySide);
+    
+    // Extract partner ID from socket event if available
+    if (data && data.partnerId) {
+      currentPartnerId = data.partnerId;
+    }
+    
+    if (data && data.type === 'favorite') {
+      addMsg('💫 Spojení s oblíbeným partnerem!', mySide);
+    } else {
+      addMsg('✅ Partner found!', mySide);
+    }
+    
     showPublicBadge(); // Show public badge if enabled
     
     // Play partner found sound
@@ -927,8 +1128,10 @@ function startSocket() {
     // Play chat end sound
     playChatEnd();
   });
+  
   socket.on('disconnect', ()=> {
     showNotif('Disconnected from server.', true);
+    currentPartnerId = null; // Clear partner ID on disconnect
   });
 
   // Indikace psaní
