@@ -45,6 +45,25 @@
   --theme-font-family: 'Poppins', 'Arial', sans-serif;
 }
 
+/* Poltergeist Theme (Dark & Disturbing) */
+.theme-poltergeist {
+  --theme-bg-primary: #0a0a0a;
+  --theme-bg-secondary: #1a1a1a;
+  --theme-bg-accent: #0f0f0f;
+  --theme-text-primary: #f0f0f0;
+  --theme-text-secondary: #cccccc;
+  --theme-bubble-dark: rgba(255, 255, 255, 0.05);
+  --theme-bubble-accent: #ff2e2e;
+  --theme-glow-disturbing: rgba(255, 46, 46, 0.8);
+  --theme-shadow-disturbing: rgba(255, 46, 46, 0.4);
+  --theme-primary: #ff2e2e;
+  --theme-secondary: #00cfff;
+  --theme-accent: #00cfff;
+  --theme-glow: rgba(255, 46, 46, 0.8);
+  --theme-shadow: rgba(255, 46, 46, 0.4);
+  --theme-font-family: 'Orbitron', 'VT323', 'Share Tech Mono', monospace;
+}
+
 body {
   margin: 0;
   font-family: var(--theme-font-family, 'Inter', sans-serif);
@@ -67,6 +86,14 @@ body.theme-glow {
   background: linear-gradient(135deg, var(--theme-bg-primary) 0%, var(--theme-bg-secondary) 50%, var(--theme-bg-accent) 100%);
   color: var(--theme-text-primary);
   font-family: var(--theme-font-family);
+}
+
+body.theme-poltergeist {
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  font-weight: 400;
+  letter-spacing: 0.5px;
 }
 
 /* Aurora animated background - Default */
@@ -95,6 +122,14 @@ body.theme-phantom::before {
 body.theme-glow::before {
   background: linear-gradient(45deg, #e0f2fe, #fce7f3, #fef3c7, #dbeafe);
   background-size: 400% 400%;
+}
+
+/* Poltergeist theme background - Disturbing chaos */
+body.theme-poltergeist::before {
+  background: linear-gradient(45deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #0a0a0a 75%, #000000 100%);
+  background-size: 400% 400%;
+  animation: aurora-poltergeist 8s ease infinite;
+  filter: contrast(1.2) brightness(0.8);
 }
 
 body::after {
@@ -127,6 +162,15 @@ body.theme-glow::after {
   background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
               radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.2) 0%, transparent 50%),
               radial-gradient(circle at 40% 40%, rgba(251, 191, 36, 0.15) 0%, transparent 50%);
+}
+
+/* Poltergeist theme overlay - Disturbing energy */
+body.theme-poltergeist::after {
+  background: radial-gradient(circle at 20% 80%, rgba(255, 46, 46, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(0, 207, 255, 0.2) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+              radial-gradient(circle at 60% 60%, rgba(255, 46, 46, 0.1) 0%, transparent 30%);
+  animation: aurora-overlay-poltergeist 12s ease infinite reverse, poltergeist-disturbance 15s linear infinite;
 }
 
 @keyframes aurora {
@@ -314,6 +358,80 @@ body.theme-phantom .shadows-overlay {
   66% {
     transform: translateX(-25px) translateY(25px) rotate(-1deg);
     opacity: 0.8;
+  }
+}
+
+/* Poltergeist Theme Animations */
+@keyframes aurora-poltergeist {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: contrast(1.2) brightness(0.8) hue-rotate(0deg);
+  }
+  25% {
+    background-position: 50% 25%;
+    filter: contrast(1.4) brightness(0.6) hue-rotate(10deg);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: contrast(1.1) brightness(0.9) hue-rotate(-5deg);
+  }
+  75% {
+    background-position: 25% 75%;
+    filter: contrast(1.3) brightness(0.7) hue-rotate(5deg);
+  }
+}
+
+@keyframes aurora-overlay-poltergeist {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1) rotate(0deg);
+    filter: brightness(0.8) saturate(1.2) hue-rotate(0deg);
+  }
+  33% {
+    opacity: 0.6;
+    transform: scale(1.03) rotate(0.5deg);
+    filter: brightness(1.2) saturate(1.5) hue-rotate(15deg);
+  }
+  66% {
+    opacity: 0.4;
+    transform: scale(0.97) rotate(-0.3deg);
+    filter: brightness(0.9) saturate(1.3) hue-rotate(-10deg);
+  }
+}
+
+@keyframes poltergeist-disturbance {
+  0% {
+    transform: translateX(0) translateY(0) scale(1) rotate(0deg);
+  }
+  10% {
+    transform: translateX(1px) translateY(-1px) scale(1.001) rotate(0.1deg);
+  }
+  20% {
+    transform: translateX(-1px) translateY(2px) scale(0.999) rotate(-0.1deg);
+  }
+  30% {
+    transform: translateX(1px) translateY(1px) scale(1.001) rotate(0.05deg);
+  }
+  40% {
+    transform: translateX(0) translateY(-1px) scale(1) rotate(-0.05deg);
+  }
+  50% {
+    transform: translateX(-1px) translateY(0) scale(1.001) rotate(0.1deg);
+  }
+  60% {
+    transform: translateX(1px) translateY(1px) scale(0.999) rotate(0deg);
+  }
+  70% {
+    transform: translateX(0) translateY(-1px) scale(1.001) rotate(-0.1deg);
+  }
+  80% {
+    transform: translateX(-1px) translateY(1px) scale(1) rotate(0.05deg);
+  }
+  90% {
+    transform: translateX(1px) translateY(0) scale(1.001) rotate(-0.05deg);
+  }
+  100% {
+    transform: translateX(0) translateY(0) scale(1) rotate(0deg);
   }
 }
 .glow {
@@ -1244,6 +1362,47 @@ body.theme-glow .glow {
   animation: text-glow 2s ease-in-out infinite alternate;
 }
 
+/* Poltergeist loading text with signal flickering */
+body.theme-poltergeist .loading-text {
+  font-family: var(--theme-font-family);
+  color: var(--theme-text-primary);
+  text-shadow: 0 0 20px var(--theme-glow-disturbing), 0 0 40px var(--theme-glow-disturbing);
+  animation: poltergeist-signal-flicker 1.5s ease-in-out infinite, text-glow 2s ease-in-out infinite alternate;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+@keyframes poltergeist-signal-flicker {
+  0%, 80%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 20px var(--theme-glow-disturbing), 0 0 40px var(--theme-glow-disturbing);
+  }
+  81% {
+    opacity: 0.3;
+    text-shadow: 0 0 5px var(--theme-glow-disturbing);
+  }
+  82% {
+    opacity: 1;
+    text-shadow: 0 0 20px var(--theme-glow-disturbing), 0 0 40px var(--theme-glow-disturbing);
+  }
+  83% {
+    opacity: 0.1;
+    text-shadow: 0 0 2px var(--theme-glow-disturbing);
+  }
+  84% {
+    opacity: 0.8;
+    text-shadow: 0 0 15px var(--theme-glow-disturbing), 0 0 30px var(--theme-glow-disturbing);
+  }
+  85% {
+    opacity: 0.2;
+    text-shadow: 0 0 3px var(--theme-glow-disturbing);
+  }
+  86%, 90% {
+    opacity: 1;
+    text-shadow: 0 0 20px var(--theme-glow-disturbing), 0 0 40px var(--theme-glow-disturbing);
+  }
+}
+
 @keyframes text-glow {
   0% {
     text-shadow: 0 0 20px var(--theme-glow), 0 0 40px var(--theme-glow);
@@ -1478,6 +1637,344 @@ body.theme-glow .custom-tooltip {
 
 body.theme-glow .custom-tooltip::after {
   border-top-color: rgba(59, 130, 246, 0.95);
+}
+
+/* Poltergeist Theme UI Elements */
+body.theme-poltergeist .glow {
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  text-shadow: 0 0 20px var(--theme-glow-disturbing), 
+               0 0 40px var(--theme-glow-disturbing),
+               0 0 60px var(--theme-shadow-disturbing),
+               0 0 80px var(--theme-primary),
+               0 0 100px var(--theme-primary);
+  letter-spacing: 3px;
+  animation: glow-pulse-poltergeist 2s ease-in-out infinite alternate, poltergeist-title-glitch 8s ease-in-out infinite;
+  font-weight: 700;
+}
+
+@keyframes glow-pulse-poltergeist {
+  0% {
+    text-shadow: 0 0 20px var(--theme-glow-disturbing), 
+                 0 0 40px var(--theme-glow-disturbing),
+                 0 0 60px var(--theme-shadow-disturbing),
+                 0 0 80px var(--theme-primary);
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow: 0 0 30px var(--theme-glow-disturbing), 
+                 0 0 50px var(--theme-glow-disturbing),
+                 0 0 80px var(--theme-shadow-disturbing),
+                 0 0 100px var(--theme-primary),
+                 0 0 120px var(--theme-accent);
+    transform: scale(1.01);
+    filter: brightness(1.2);
+  }
+  100% {
+    text-shadow: 0 0 25px var(--theme-glow-disturbing), 
+                 0 0 45px var(--theme-glow-disturbing),
+                 0 0 70px var(--theme-shadow-disturbing),
+                 0 0 90px var(--theme-primary);
+    transform: scale(1.005);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes poltergeist-title-glitch {
+  0%, 96%, 100% {
+    transform: translateX(0) scaleX(1);
+  }
+  97% {
+    transform: translateX(2px) scaleX(0.98);
+  }
+  98% {
+    transform: translateX(-1px) scaleX(1.02);
+  }
+  99% {
+    transform: translateX(1px) scaleX(0.99);
+  }
+}
+
+body.theme-poltergeist .start-btn {
+  background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 50%, var(--theme-accent) 100%);
+  box-shadow: 0 8px 32px var(--theme-shadow),
+              0 0 0 1px rgba(255, 255, 255, 0.1),
+              0 0 40px var(--theme-glow-disturbing),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--theme-primary);
+  font-family: var(--theme-font-family);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+body.theme-poltergeist .start-btn:hover {
+  box-shadow: 0 15px 50px var(--theme-shadow),
+              0 0 0 1px rgba(255, 255, 255, 0.2),
+              0 0 60px var(--theme-glow-disturbing),
+              0 0 80px var(--theme-primary),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: poltergeist-button-glitch 0.3s ease-in-out;
+}
+
+@keyframes poltergeist-button-glitch {
+  0%, 100% {
+    transform: scale(1.05) translateY(-2px);
+  }
+  25% {
+    transform: scale(1.05) translateY(-2px) translateX(1px);
+  }
+  50% {
+    transform: scale(1.05) translateY(-2px) translateX(-1px);
+  }
+  75% {
+    transform: scale(1.05) translateY(-2px) translateX(1px);
+  }
+}
+
+/* Poltergeist Chat Bubbles */
+body.theme-poltergeist .msg-bubble {
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 46, 46, 0.2);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5),
+              0 0 20px var(--theme-shadow-disturbing);
+  font-family: var(--theme-font-family);
+  animation: bubble-appear 0.4s ease-out, poltergeist-message-glitch 6s ease-in-out infinite;
+}
+
+body.theme-poltergeist .msg-right {
+  background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 50%, var(--theme-accent) 100%);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5),
+              0 0 25px var(--theme-glow-disturbing);
+  border: 1px solid var(--theme-primary);
+  color: #ffffff;
+}
+
+body.theme-poltergeist .msg-left {
+  background: var(--theme-bubble-dark);
+  border: 1px solid rgba(255, 46, 46, 0.3);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5),
+              0 0 15px rgba(255, 46, 46, 0.2);
+  color: var(--theme-text-primary);
+}
+
+/* Poltergeist message glitch effect */
+@keyframes poltergeist-message-glitch {
+  0%, 95%, 100% {
+    transform: translateY(0) scaleX(1);
+  }
+  96% {
+    transform: translateY(-1px) scaleX(0.99);
+  }
+  97% {
+    transform: translateY(1px) scaleX(1.01);
+  }
+  98% {
+    transform: translateY(-0.5px) scaleX(0.995);
+  }
+  99% {
+    transform: translateY(0.5px) scaleX(1.005);
+  }
+}
+
+/* Poltergeist incoming message flash effect */
+body.theme-poltergeist .msg-left {
+  animation: bubble-appear 0.4s ease-out, poltergeist-message-glitch 6s ease-in-out infinite, poltergeist-flash 0.1s ease-out;
+}
+
+@keyframes poltergeist-flash {
+  0% {
+    background: rgba(255, 46, 46, 0.3);
+    box-shadow: 0 0 30px rgba(255, 46, 46, 0.8);
+  }
+  100% {
+    background: var(--theme-bubble-dark);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(255, 46, 46, 0.2);
+  }
+}
+
+/* Poltergeist Input and UI */
+body.theme-poltergeist .chat-input {
+  background: rgba(10, 10, 10, 0.8);
+  border: 1px solid rgba(255, 46, 46, 0.3);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4),
+              0 0 15px rgba(255, 46, 46, 0.1);
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+body.theme-poltergeist .chat-input:focus {
+  border-color: var(--theme-primary);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4),
+              0 0 25px var(--theme-glow-disturbing),
+              0 0 40px var(--theme-shadow-disturbing);
+  animation: poltergeist-input-focus 0.2s ease-out;
+}
+
+body.theme-poltergeist .chat-input::placeholder {
+  color: rgba(240, 240, 240, 0.4);
+  font-family: var(--theme-font-family);
+}
+
+@keyframes poltergeist-input-focus {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.01);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+body.theme-poltergeist .send-btn {
+  background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%);
+  border: 1px solid var(--theme-primary);
+  box-shadow: 0 4px 15px var(--theme-shadow),
+              0 0 20px var(--theme-glow-disturbing);
+  font-family: var(--theme-font-family);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+body.theme-poltergeist .send-btn:hover {
+  box-shadow: 0 6px 25px var(--theme-shadow),
+              0 0 30px var(--theme-glow-disturbing),
+              0 0 45px var(--theme-primary);
+  animation: poltergeist-button-glitch 0.3s ease-in-out;
+}
+
+/* Poltergeist theme switcher and other controls */
+body.theme-poltergeist .theme-switcher,
+body.theme-poltergeist .online-count,
+body.theme-poltergeist .language-switcher,
+body.theme-poltergeist .stats-button {
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(255, 46, 46, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+              0 0 20px rgba(255, 46, 46, 0.2);
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+}
+
+body.theme-poltergeist .theme-switcher:hover,
+body.theme-poltergeist .language-switcher:hover,
+body.theme-poltergeist .stats-button:hover {
+  background: rgba(10, 10, 10, 0.95);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
+              0 0 30px var(--theme-glow-disturbing);
+  animation: poltergeist-ui-glitch 0.2s ease-out;
+}
+
+@keyframes poltergeist-ui-glitch {
+  0%, 100% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(-2px) translateX(0.5px);
+  }
+}
+
+/* Poltergeist Theme Overlays */
+body.theme-poltergeist .poltergeist-glitch-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.1;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 46, 46, 0.03) 2px,
+    rgba(255, 46, 46, 0.03) 4px
+  );
+  animation: poltergeist-glitch 3s ease-in-out infinite;
+}
+
+body.theme-poltergeist .poltergeist-static-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.02;
+  z-index: -1;
+  background-image: 
+    radial-gradient(1px 1px at 10px 20px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 50px 60px, rgba(0, 207, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 90px 30px, rgba(255, 46, 46, 0.7), transparent),
+    radial-gradient(1px 1px at 130px 70px, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 170px 40px, rgba(0, 207, 255, 0.4), transparent);
+  background-repeat: repeat;
+  background-size: 180px 80px;
+  animation: poltergeist-static 0.1s linear infinite;
+}
+
+@keyframes poltergeist-glitch {
+  0%, 90%, 100% {
+    opacity: 0.05;
+    transform: translateX(0) scaleY(1);
+  }
+  91% {
+    opacity: 0.2;
+    transform: translateX(2px) scaleY(0.98);
+  }
+  92% {
+    opacity: 0.1;
+    transform: translateX(-1px) scaleY(1.02);
+  }
+  93% {
+    opacity: 0.15;
+    transform: translateX(1px) scaleY(0.99);
+  }
+  94%, 99% {
+    opacity: 0.05;
+    transform: translateX(0) scaleY(1);
+  }
+}
+
+@keyframes poltergeist-static {
+  0% {
+    background-position: 0px 0px, 20px 10px, 40px 5px, 60px 15px, 80px 8px;
+  }
+  100% {
+    background-position: 1px 1px, 21px 11px, 41px 6px, 61px 16px, 81px 9px;
+  }
+}
+
+/* Poltergeist Theme Specific Floating Button */
+body.theme-poltergeist .floating-idea-button {
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(10, 10, 10, 0.9) 50%, rgba(15, 15, 15, 0.9) 100%);
+  border: 2px solid rgba(255, 46, 46, 0.4);
+  color: #f0f0f0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 46, 46, 0.3);
+  font-family: var(--theme-font-family);
+}
+
+body.theme-poltergeist .floating-idea-button:hover {
+  background: linear-gradient(135deg, rgba(15, 15, 15, 0.95) 0%, rgba(10, 10, 10, 0.95) 50%, rgba(26, 26, 26, 0.9) 100%);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 46, 46, 0.5);
+  border-color: rgba(255, 46, 46, 0.6);
+  animation: poltergeist-ui-glitch 0.2s ease-out;
+}
+
+body.theme-poltergeist .custom-tooltip {
+  background: linear-gradient(135deg, rgba(255, 46, 46, 0.95) 0%, rgba(0, 207, 255, 0.9) 100%);
+  border-color: rgba(255, 46, 46, 0.3);
+  font-family: var(--theme-font-family);
+}
+
+body.theme-poltergeist .custom-tooltip::after {
+  border-top-color: rgba(255, 46, 46, 0.95);
 }
 
 /* Responsive design for floating idea button */
