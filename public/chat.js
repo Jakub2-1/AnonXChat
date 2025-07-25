@@ -230,9 +230,9 @@ const languageDefinitions = {
   }
 };
 
-// Theme definitions with FREE/PREMIUM categorization
+// Theme definitions with FREE/PREMIUM categorization - Updated per requirements
 const themeDefinitions = {
-  // FREE THEMES
+  // FREE THEMES - Only Glow and Goth remain free
   glow: {
     name: 'Glow',
     icon: '🌟',
@@ -248,7 +248,7 @@ const themeDefinitions = {
     description: 'Dark gothic atmosphere'
   },
   
-  // PREMIUM THEMES
+  // PREMIUM THEMES - Poltergeist moved here + new themes added
   poltergeist: {
     name: 'Poltergeist',
     icon: '👁️‍🗨️',
@@ -758,7 +758,6 @@ function showPublicBadge() {
   }
 }
 
-copilot/fix-3eb2b44d-a472-4c79-82c7-50d483d4c4c8
 // Theme management with premium access control
 function getAvailableThemes() {
   const freeThemes = Object.keys(themeDefinitions).filter(key => 
@@ -800,6 +799,7 @@ function setTheme(themeName) {
     return true;
   }
   return false;
+}
 
 // Theme management - Updated to support modal selection
 function switchTheme() {
@@ -1549,8 +1549,12 @@ function populateThemeSelector() {
     }
   });
   
-  // Show/hide premium hint
+  // Show/hide premium hint and update text
   premiumHint.style.display = hasPremiumAccess ? 'none' : 'flex';
+  const unlockText = document.getElementById('unlockText');
+  if (unlockText) {
+    unlockText.textContent = currentLanguage === 'cs' ? 'Odemkni všechny motivy' : 'Unlock all themes';
+  }
 }
 
 function createThemeItem(themeKey, theme, canUse) {
@@ -1569,7 +1573,7 @@ function createThemeItem(themeKey, theme, canUse) {
       selectTheme(themeKey);
     };
   } else {
-    item.title = 'Unlock all themes with Premium access';
+    item.title = currentLanguage === 'cs' ? 'Odemkni všechny motivy' : 'Unlock all themes';
   }
   
   return item;
@@ -1590,10 +1594,22 @@ function selectTheme(themeKey) {
       }
     });
     
+    // Update theme switcher icon
+    updateThemeSwitcher();
+    
     // Close modal after selection
     setTimeout(() => {
       hideThemeSelector();
     }, 500);
+  } else {
+    // Show premium message for locked themes
+    const theme = themeDefinitions[themeKey];
+    if (theme && theme.category === 'premium' && !hasPremiumAccess) {
+      // Create tooltip/notification about premium access
+      showNotif(currentLanguage === 'cs' ? 
+        '🔒 Premium motiv! Tato funkce bude dostupná v budoucí verzi.' : 
+        '🔒 Premium theme! This feature will be available in future version.', false);
+    }
   }
 }
 
@@ -2093,9 +2109,9 @@ function setupBugFeedbackButton() {
     }
   });
   
-  // Open Instagram when button is clicked
+  // Open Instagram when button is clicked - Updated link per requirements
   instagramBtn.addEventListener('click', function() {
-    window.open('https://www.instagram.com/anonx_chat/', '_blank', 'noopener,noreferrer');
+    window.open('https://www.instagram.com/anonx_chat', '_blank', 'noopener,noreferrer');
     tooltip.style.display = 'none';
   });
   
