@@ -1576,6 +1576,63 @@ function startSocket(preferFavorites = false) {
   });
 }
 
+// Floating Idea Button functionality
+function setupFloatingIdeaButton() {
+  const floatingIdeaButton = document.getElementById('floatingIdeaButton');
+  
+  if (!floatingIdeaButton) return;
+  
+  // Show/hide button based on current page
+  function updateFloatingIdeaButtonVisibility() {
+    const mainPage = document.getElementById('mainPage');
+    const chatPage = document.getElementById('chatPage');
+    
+    if (mainPage && mainPage.style.display !== 'none') {
+      // On main page - show button
+      floatingIdeaButton.style.display = 'flex';
+    } else {
+      // In chat or other pages - hide button
+      floatingIdeaButton.style.display = 'none';
+    }
+  }
+  
+  // Initial visibility setup
+  updateFloatingIdeaButtonVisibility();
+  
+  // Listen for page changes by observing style changes
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        updateFloatingIdeaButtonVisibility();
+      }
+    });
+  });
+  
+  // Observe both main page and chat page for style changes
+  const mainPage = document.getElementById('mainPage');
+  const chatPage = document.getElementById('chatPage');
+  
+  if (mainPage) {
+    observer.observe(mainPage, { attributes: true, attributeFilter: ['style'] });
+  }
+  if (chatPage) {
+    observer.observe(chatPage, { attributes: true, attributeFilter: ['style'] });
+  }
+  
+  // Handle click - open Instagram or show message
+  floatingIdeaButton.addEventListener('click', function() {
+    // You can customize this URL to point to your Instagram profile
+    const instagramUrl = 'https://www.instagram.com/'; // Replace with actual Instagram profile
+    
+    try {
+      window.open(instagramUrl, '_blank');
+    } catch (error) {
+      // Fallback: show notification if popup is blocked
+      showNotif('Napište nám na Instagram! 💬', false);
+    }
+  });
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
   // Set up sound toggle
@@ -1594,6 +1651,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Set up page visibility handling for tab switching
   setupPageVisibilityHandling();
+  
+  // Set up floating idea button
+  setupFloatingIdeaButton();
   
   // Show welcome message for new users
   if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {

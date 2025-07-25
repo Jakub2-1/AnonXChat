@@ -1014,6 +1014,22 @@ body.theme-glow .glow {
     font-size: 1.2rem;
   }
   
+  .floating-idea-button {
+    right: 20px;
+    top: 100px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+  
+  .floating-idea-button .idea-icon {
+    font-size: 1rem;
+  }
+  
+  .floating-idea-button .idea-text {
+    font-size: 0.8rem;
+  }
+  
   .online-count {
     right: 20px;
     padding: 6px 12px;
@@ -1311,6 +1327,81 @@ body.theme-glow .glow {
 
 .stats-button:hover .stats-icon {
   transform: scale(1.1);
+}
+
+/* Floating Idea Button */
+.floating-idea-button {
+  position: absolute;
+  top: 30px;
+  right: 440px;
+  background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 12px 16px;
+  border-radius: 1.3rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: fade-in 0.6s ease-out;
+  transition: all 0.2s ease-in-out;
+  z-index: 1000;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: #666;
+}
+
+.floating-idea-button:hover {
+  background: linear-gradient(135deg, #f8bbd9 0%, #b3e5fc 100%);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+  opacity: 1;
+}
+
+.idea-icon {
+  font-size: 1.2rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.idea-text {
+  font-size: 0.9rem;
+  transition: transform 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.floating-idea-button:hover .idea-icon,
+.floating-idea-button:hover .idea-text {
+  transform: scale(1.1);
+}
+
+/* Dark theme styles for floating idea button */
+body.theme-phantom .floating-idea-button {
+  background: linear-gradient(135deg, #333333 0%, #555555 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #cccccc;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+body.theme-phantom .floating-idea-button:hover {
+  background: linear-gradient(135deg, #444444 0%, #666666 100%);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
+}
+
+/* Light theme styles for floating idea button */
+body.theme-glow .floating-idea-button {
+  background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #4a5568;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+}
+
+body.theme-glow .floating-idea-button:hover {
+  background: linear-gradient(135deg, #f8bbd9 0%, #b3e5fc 100%);
+  box-shadow: 0 15px 45px rgba(59, 130, 246, 0.3);
 }
 
 /* Rating Modal */
