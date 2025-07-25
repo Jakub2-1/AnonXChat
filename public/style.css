@@ -362,6 +362,8 @@ body.theme-phantom .glow {
                  0 0 120px var(--theme-primary);
     transform: scale(1.02);
   }
+}
+
 /* Enhanced phantom theme UI elements */
 body.theme-phantom .start-btn {
   background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 50%, var(--theme-accent) 100%);
