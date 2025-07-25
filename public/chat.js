@@ -7,6 +7,13 @@ let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default 
 let currentTheme = localStorage.getItem('selectedTheme') || 'phantom'; // Default to phantom theme
 let currentThemeData = null;
 
+// Anonymous user ID management
+let anonUserId = localStorage.getItem('anonx_user_id');
+if (!anonUserId) {
+  anonUserId = 'anon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  localStorage.setItem('anonx_user_id', anonUserId);
+}
+
 // User statistics management
 let userStats = JSON.parse(localStorage.getItem('anonx_stats') || '{}');
 let currentChatStart = null;
@@ -270,6 +277,7 @@ document.addEventListener('click', function(e) {
 function submitRating(rating) {
   if (lastRatingDate === new Date().toDateString()) {
     hideRatingModal();
+    handlePostRating();
     return; // Already rated today
   }
   
@@ -278,17 +286,37 @@ function submitRating(rating) {
   else if (rating === 'poop') userStats.poopCount++;
   else if (rating === 'ghost') userStats.ghostCount++;
   
+  // Track clean chats (heart or ghost, but not poop)
+  if (rating === 'heart' || rating === 'ghost') {
+    userStats.cleanChats++;
+  }
+  
   lastRatingDate = new Date().toDateString();
   updateStreak();
   
   // Record chat end time and update total time
+  let chatDuration = 0;
   if (currentChatStart) {
-    const chatDuration = (Date.now() - currentChatStart) / 1000;
+    chatDuration = (Date.now() - currentChatStart) / 1000;
     userStats.totalTime += chatDuration;
   }
   
   userStats.totalChats++;
   saveUserStats();
+  
+  // Submit rating to backend
+  submitRatingToBackend(rating, chatDuration);
+  
+  // Update challenges
+  if (window.challengesSystem) {
+    window.challengesSystem.updateChallengeProgress('rating_given', { rating });
+    window.challengesSystem.updateChallengeProgress('chat_completed', { 
+      duration: chatDuration,
+      theme: currentTheme 
+    });
+    window.challengesSystem.updateChallengeProgress('streak_updated', { streak: userStats.currentStreak });
+    window.challengesSystem.trackThemeUsage(currentTheme);
+  }
   
   hideRatingModal();
   
@@ -297,6 +325,8 @@ function submitRating(rating) {
     setTimeout(() => {
       showNotif('💡 Tip: Zkus být více přátelský v chatech. Kvalitní konverzace přináší lepší zážitky!', false);
     }, 1000);
+  } else {
+    handlePostRating();
   }
 }
 
@@ -685,6 +715,29 @@ function setRatingAction(action) {
   ratingAction = action;
 }
 
+// Submit rating to backend API
+async function submitRatingToBackend(rating, chatDuration) {
+  try {
+    const response = await fetch('/rate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: anonUserId,
+        rating: rating,
+        chatDuration: chatDuration
+      })
+    });
+    
+    if (!response.ok) {
+      console.error('Failed to submit rating to backend');
+    }
+  } catch (error) {
+    console.error('Error submitting rating:', error);
+  }
+}
+
 function submitRating(rating) {
   if (lastRatingDate === new Date().toDateString()) {
     hideRatingModal();
@@ -714,6 +767,9 @@ function submitRating(rating) {
   
   userStats.totalChats++;
   saveUserStats();
+  
+  // Submit rating to backend
+  submitRatingToBackend(rating, chatDuration);
   
   // Update challenges
   if (window.challengesSystem) {
