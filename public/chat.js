@@ -15,6 +15,7 @@ let reconnectOnVisible = false;
 let disconnectTime = null;
 let pageVisibilityAtDisconnect = true;
 let justBecameVisible = false;
+let hiddenStartTime = null;
 
 // Anonymous user ID management
 let anonUserId = localStorage.getItem('anonx_user_id');
@@ -1186,34 +1187,24 @@ function startSocket(preferFavorites = false) {
   });
   
   socket.on('disconnect', (reason)=> {
-    console.log('Socket disconnected:', reason, 'Page visible:', isPageVisible, 'Just became visible:', justBecameVisible);
+    console.log('Socket disconnected:', reason, 'Page visible:', isPageVisible);
     disconnectTime = Date.now();
     
-    // If page just became visible within the last 2 seconds, suppress the error message
-    // as this disconnect likely happened while the tab was hidden
-    const suppressError = justBecameVisible;
+    // Calculate if we were recently hidden
+    const wasRecentlyHidden = hiddenStartTime && (Date.now() - hiddenStartTime) < 10000; // within 10 seconds
     
-    // If page is currently hidden, mark that we were disconnected while hidden
-    if (!isPageVisible) {
-      wasDisconnectedWhileHidden = true;
-      reconnectOnVisible = true;
-      console.log('Disconnected while page hidden - will handle on return');
-      return; // Don't show disconnect messages while page is hidden
+    // If page is currently hidden OR we were recently hidden, don't show error
+    if (!isPageVisible || wasRecentlyHidden) {
+      console.log('Disconnected while hidden or recently hidden - suppressing error');
+      return; // Don't show disconnect messages
     }
     
-    // Only show disconnect message if it's an unexpected disconnect
-    // and we shouldn't suppress the error
-    if (!suppressError && reason !== 'io client disconnect' && reason !== 'client namespace disconnect') {
-      // Check if this is a network-related disconnect while visible
+    // Only show disconnect message for genuine network issues while actively using
+    if (reason !== 'io client disconnect' && reason !== 'client namespace disconnect') {
       if (isPageVisible && (reason === 'transport close' || reason === 'transport error' || reason === 'ping timeout')) {
+        // Only show error if user has been actively on the page
         showNotif('Připojení ztraceno. Zkuste se znovu připojit.', true);
       }
-    } else if (suppressError) {
-      console.log('Suppressing disconnect error because tab was just switched back');
-      // Still clean up and show main page for tab switching case
-      setTimeout(() => {
-        showMainPage();
-      }, 100);
     }
     
     // Always clean up state on disconnect
@@ -1225,23 +1216,20 @@ function startSocket(preferFavorites = false) {
     document.getElementById('typingIndicator').style.display = 'none';
   });
   
-  // Handle reconnection
+  // Handle reconnection - keep it simple
   socket.on('reconnect', () => {
-    console.log('Socket reconnected, justBecameVisible:', justBecameVisible);
+    console.log('Socket reconnected');
     
-    // If we reconnected quickly and the user just returned to the tab,
-    // don't show any notifications - just clean up state
-    if (justBecameVisible) {
-      console.log('Reconnection after tab switch - cleaning up state silently');
-      currentPartnerId = null;
-      partnerActive = false;
-      currentChatStart = null;
-      return;
-    }
+    // If we're currently visible and reconnected, show brief confirmation
+    // But only if the page has been visible for a while (not just switched back)
+    const wasRecentlyHidden = hiddenStartTime && (Date.now() - hiddenStartTime) < 5000;
     
-    // For normal reconnections during visible state, let the user know
-    if (isPageVisible) {
-      showNotif('Připojení obnoveno.', false);
+    if (isPageVisible && !wasRecentlyHidden) {
+      setTimeout(() => {
+        if (isPageVisible) { // Double-check we're still visible
+          showNotif('Připojení obnoveno.', false);
+        }
+      }, 1000);
     }
   });
 
@@ -1308,34 +1296,23 @@ function setupPageVisibilityHandling() {
 
 function handlePageHidden() {
   console.log('Page hidden - user switched tab or minimized window');
-  // Mark the page as hidden
-  wasDisconnectedWhileHidden = false;
+  hiddenStartTime = Date.now();
 }
 
 function handlePageVisible() {
   console.log('Page visible - user returned to tab');
-  justBecameVisible = true;
   
-  // Clear the flag after a short delay to allow for async disconnect events
-  setTimeout(() => {
-    justBecameVisible = false;
-  }, 1000);
+  const wasHiddenFor = hiddenStartTime ? Date.now() - hiddenStartTime : 0;
+  console.log('Page was hidden for', wasHiddenFor, 'ms');
   
-  // Check socket state when returning to tab
-  setTimeout(() => {
-    if (socket) {
-      if (!socket.connected) {
-        console.log('Socket is disconnected when returning to tab - cleaning up');
-        handleReconnectionOnVisible();
-      } else {
-        console.log('Socket is still connected - all good');
-      }
-    }
-  }, 500); // Small delay to let socket.io process any pending disconnects
+  // If user was away for more than 1 second and socket is disconnected,
+  // assume disconnect happened while away and handle gracefully
+  if (wasHiddenFor > 1000 && socket && !socket.connected) {
+    console.log('Socket disconnected while tab was hidden - cleaning up gracefully');
+    handleReconnectionOnVisible();
+  }
   
-  // Reset flags
-  wasDisconnectedWhileHidden = false;
-  reconnectOnVisible = false;
+  hiddenStartTime = null;
 }
 
 function handleReconnectionOnVisible() {
