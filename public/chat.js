@@ -3,6 +3,136 @@ let socket;
 let mySide = 'right';
 let partnerActive = true;
 let typingTimeout;
+let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default to true
+let currentTheme = null;
+
+// Sound system
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+// Theme palettes
+const themes = [
+  {
+    name: 'Blue Dream',
+    primary: '#3b82f6',
+    secondary: '#1d4ed8', 
+    accent: '#60a5fa',
+    glow: 'rgba(59, 130, 246, 0.8)',
+    shadow: 'rgba(59, 130, 246, 0.4)'
+  },
+  {
+    name: 'Purple Magic', 
+    primary: '#8b5cf6',
+    secondary: '#7c3aed',
+    accent: '#c084fc', 
+    glow: 'rgba(139, 92, 246, 0.8)',
+    shadow: 'rgba(139, 92, 246, 0.4)'
+  },
+  {
+    name: 'Turquoise Ocean',
+    primary: '#06b6d4',
+    secondary: '#0891b2',
+    accent: '#67e8f9',
+    glow: 'rgba(6, 182, 212, 0.8)', 
+    shadow: 'rgba(6, 182, 212, 0.4)'
+  },
+  {
+    name: 'Pink Sunset',
+    primary: '#ec4899',
+    secondary: '#db2777',
+    accent: '#f9a8d4',
+    glow: 'rgba(236, 72, 153, 0.8)',
+    shadow: 'rgba(236, 72, 153, 0.4)'
+  },
+  {
+    name: 'Pastel Mint',
+    primary: '#34d399',
+    secondary: '#10b981', 
+    accent: '#a7f3d0',
+    glow: 'rgba(52, 211, 153, 0.8)',
+    shadow: 'rgba(52, 211, 153, 0.4)'
+  },
+  {
+    name: 'Pastel Lavender',
+    primary: '#a78bfa', 
+    secondary: '#8b5cf6',
+    accent: '#ddd6fe',
+    glow: 'rgba(167, 139, 250, 0.8)',
+    shadow: 'rgba(167, 139, 250, 0.4)'
+  }
+];
+
+// Simple sound generation using Web Audio API
+function createSound(frequency, duration, type = 'sine') {
+  if (!soundEnabled) return;
+  
+  try {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    oscillator.type = type;
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + duration);
+  } catch (error) {
+    console.log('Audio not available:', error);
+  }
+}
+
+// Sound effects
+function playMessageSend() {
+  createSound(800, 0.1, 'sine');
+}
+
+function playPartnerFound() {
+  // Pleasant chord-like sound
+  createSound(600, 0.3, 'sine');
+  setTimeout(() => createSound(800, 0.2, 'sine'), 100);
+}
+
+function playChatEnd() {
+  createSound(400, 0.2, 'sine');
+}
+
+// Theme randomization
+function randomizeTheme() {
+  const randomIndex = Math.floor(Math.random() * themes.length);
+  currentTheme = themes[randomIndex];
+  applyTheme(currentTheme);
+}
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  root.style.setProperty('--theme-primary', theme.primary);
+  root.style.setProperty('--theme-secondary', theme.secondary); 
+  root.style.setProperty('--theme-accent', theme.accent);
+  root.style.setProperty('--theme-glow', theme.glow);
+  root.style.setProperty('--theme-shadow', theme.shadow);
+}
+
+// Sound toggle functionality
+function updateSoundToggle() {
+  const soundToggle = document.getElementById('soundToggle');
+  const soundIcon = document.getElementById('soundIcon');
+  const soundText = soundToggle.querySelector('.sound-text');
+  
+  if (soundEnabled) {
+    soundIcon.textContent = '🔊';
+    soundText.textContent = 'Sound ON';
+    soundToggle.classList.remove('muted');
+  } else {
+    soundIcon.textContent = '🔇'; 
+    soundText.textContent = 'Sound OFF';
+    soundToggle.classList.add('muted');
+  }
+}
 
 // helper na čas
 function getTimeNow() {
@@ -166,12 +296,30 @@ function sendMsg() {
   addMsg(text, mySide);
   socket.emit('msg', text);
   inp.value = '';
+  
+  // Play message send sound
+  playMessageSend();
 }
 
 // START BTN
 document.getElementById('startBtn').onclick = function() {
+  // Randomize theme for new chat
+  randomizeTheme();
+  
   showLoadingOverlay();
   startSocket();
+}
+
+// SOUND TOGGLE BTN
+document.getElementById('soundToggle').onclick = function() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('soundEnabled', soundEnabled);
+  updateSoundToggle();
+  
+  // Test sound when enabling
+  if (soundEnabled) {
+    playMessageSend();
+  }
 }
 
 // CHAT FORM SUBMIT
@@ -184,6 +332,9 @@ document.getElementById('chatForm').onsubmit = function(e) {
 document.getElementById('continueBtn').onclick = function() {
   // Clear chat messages
   document.getElementById('messages').innerHTML = '';
+  
+  // Randomize theme for new chat
+  randomizeTheme();
   
   // Show loading overlay while looking for new partner
   showLoadingOverlay();
@@ -205,8 +356,14 @@ document.getElementById('skipBtn').onclick = function() {
     if (socket) socket.emit('leave_chat');
 socket.disconnect();
 
+    // Play chat end sound
+    playChatEnd();
+
     // Vyčistit chat zprávy
     document.getElementById('messages').innerHTML = '';
+
+    // Randomize theme for new chat
+    randomizeTheme();
 
     // Show loading overlay while looking for new partner
     showLoadingOverlay();
@@ -221,6 +378,9 @@ socket.disconnect();
 document.getElementById('endBtn').onclick = function() {
     if (socket) socket.emit('leave_chat');
 socket.disconnect();
+
+    // Play chat end sound
+    playChatEnd();
 
     // Vyčistí zprávy a vrátí na hlavní stránku
     document.getElementById('messages').innerHTML = '';
@@ -244,6 +404,9 @@ function startSocket() {
   socket.on('partner', ()=> {
     showChatPage();
     addMsg('✅ Partner found!', mySide);
+    
+    // Play partner found sound
+    playPartnerFound();
   });
   socket.on('msg', (data)=>{
     addMsg(data, mySide==='right' ? 'left' : 'right');
@@ -258,6 +421,9 @@ function startSocket() {
   socket.on('partner_left', ()=> {
     showNotif('Partner left', true);
     partnerActive = false;
+    
+    // Play chat end sound
+    playChatEnd();
   });
   socket.on('disconnect', ()=> {
     showNotif('Disconnected from server.', false);
@@ -268,3 +434,12 @@ function startSocket() {
     if (partnerActive) socket.emit('typing');
   });
 }
+
+// Initialize app
+document.addEventListener('DOMContentLoaded', function() {
+  // Set up sound toggle
+  updateSoundToggle();
+  
+  // Set initial theme
+  randomizeTheme();
+});
