@@ -23,16 +23,62 @@
   <div class="stats-button" id="statsButton" title="Moje statistiky">
     <span class="stats-icon">📊</span>
   </div>
-  <a class="floating-idea-button" id="floatingIdeaButton" 
-     href="https://www.instagram.com/anonx_chat/" 
-     target="_blank" 
-     rel="noopener noreferrer"
-     role="button" 
-     aria-label="Nahlásit bug nebo navrhnout nápad na Instagramu">
-    <span class="idea-icon">💡</span>
-    <span class="idea-text">bug/nápad</span>
-    <span class="custom-tooltip">Bug nebo nápad? 💬 Napiš na IG</span>
-  </a>
+  <!-- Bug report / feedback button - moved to bottom right -->
+  <div class="bug-feedback-button" id="bugFeedbackButton" title="Bug report / Feedback">
+    <span class="feedback-icon">📩</span>
+  </div>
+  
+  <!-- Bug feedback tooltip -->
+  <div class="feedback-tooltip" id="feedbackTooltip" style="display: none;">
+    <div class="tooltip-content">
+      <div class="tooltip-text">Našel jsi chybu nebo máš nápad? Napiš na IG 👉 @anonx_chat</div>
+      <button class="tooltip-button" id="openInstagramBtn">Otevřít Instagram</button>
+    </div>
+  </div>
+  
+  <!-- Theme Selection Modal -->
+  <div id="themeModal" class="theme-modal" style="display: none;">
+    <div class="theme-modal-content">
+      <div class="theme-modal-header">
+        <h3 class="theme-modal-title">Vyberte motiv</h3>
+        <button class="theme-modal-close" id="themeModalClose">×</button>
+      </div>
+      <div class="theme-categories">
+        <div class="theme-category">
+          <h4 class="theme-category-title">Free</h4>
+          <div class="theme-grid">
+            <div class="theme-option" data-theme="phantom">
+              <div class="theme-preview phantom-preview">💀</div>
+              <div class="theme-name">Phantom</div>
+            </div>
+            <div class="theme-option" data-theme="glow">
+              <div class="theme-preview glow-preview">🌟</div>
+              <div class="theme-name">Glow</div>
+            </div>
+            <div class="theme-option" data-theme="poltergeist">
+              <div class="theme-preview poltergeist-preview">👁️‍🗨️</div>
+              <div class="theme-name">Poltergeist</div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-category">
+          <h4 class="theme-category-title">Premium 🔒</h4>
+          <div class="theme-grid">
+            <div class="theme-option premium-locked" data-theme="premium">
+              <div class="theme-preview premium-preview">✨</div>
+              <div class="theme-name">Cosmic</div>
+              <div class="premium-badge">Premium</div>
+            </div>
+            <div class="theme-option premium-locked" data-theme="premium">
+              <div class="theme-preview premium-preview">🔥</div>
+              <div class="theme-name">Inferno</div>
+              <div class="premium-badge">Premium</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="loadingOverlay" class="loading-overlay" style="display:none;">
     <div class="loading-bubble">
       <div class="loading-text">Looking for a partner...</div>
