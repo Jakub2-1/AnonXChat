@@ -21,6 +21,7 @@ if (!userStats.ghostCount) userStats.ghostCount = 0;
 if (!userStats.currentStreak) userStats.currentStreak = 0;
 if (!userStats.lastStreakDate) userStats.lastStreakDate = null;
 if (!userStats.showPublicBadge) userStats.showPublicBadge = false;
+if (!userStats.cleanChats) userStats.cleanChats = 0;
 
 // Sound system
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -235,6 +236,36 @@ function hideRatingModal() {
     ratingModal.style.display = 'none';
   }, 300);
 }
+
+// Handle rating modal close events
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const ratingModal = document.getElementById('ratingModal');
+    if (ratingModal.style.display === 'flex') {
+      hideRatingModal();
+      handlePostRating(); // Continue with default action
+    }
+    
+    const statsPanel = document.getElementById('statsPanel');
+    if (statsPanel.style.display === 'flex') {
+      hideStatsPanel();
+    }
+  }
+});
+
+// Handle clicking outside modals
+document.addEventListener('click', function(e) {
+  const ratingModal = document.getElementById('ratingModal');
+  if (ratingModal.style.display === 'flex' && e.target === ratingModal) {
+    hideRatingModal();
+    handlePostRating(); // Continue with default action
+  }
+  
+  const statsPanel = document.getElementById('statsPanel');
+  if (statsPanel.style.display === 'flex' && e.target === statsPanel) {
+    hideStatsPanel();
+  }
+});
 
 function submitRating(rating) {
   if (lastRatingDate === new Date().toDateString()) {
@@ -624,6 +655,11 @@ function submitRating(rating) {
   else if (rating === 'poop') userStats.poopCount++;
   else if (rating === 'ghost') userStats.ghostCount++;
   
+  // Track clean chats (heart or ghost, but not poop)
+  if (rating === 'heart' || rating === 'ghost') {
+    userStats.cleanChats++;
+  }
+  
   lastRatingDate = new Date().toDateString();
   updateStreak();
   
@@ -814,4 +850,12 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Set initial theme variation
   randomizeTheme();
+  
+  // Show welcome message for new users
+  if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {
+    setTimeout(() => {
+      showNotif('🎉 Vítej v AnonX Chat! Dokončuj chaty, získávej hodnocení a plň výzvy pro odblokování speciálních odměn. Začni svůj první pokec! 📊', false);
+      localStorage.setItem('anonx_welcome_shown', 'true');
+    }, 2000);
+  }
 });

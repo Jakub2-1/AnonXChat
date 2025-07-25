@@ -681,6 +681,26 @@ body.theme-glow .glow {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
   }
+  
+  .challenges-list {
+    max-height: 150px;
+  }
+  
+  .challenge-item {
+    padding: 10px 12px;
+  }
+  
+  .challenge-name {
+    font-size: 0.8rem;
+  }
+  
+  .challenge-points {
+    font-size: 0.7rem;
+  }
+  
+  .challenge-description {
+    font-size: 0.75rem;
+  }
 }
 
 /* Mobile landscape mode improvements */

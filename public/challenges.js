@@ -338,6 +338,12 @@ class ChallengesSystem {
           this.checkChallenge('karma_legend', stats.heartCount);
         }
         
+        // Check clean chats challenges
+        if (data.rating === 'heart' || data.rating === 'ghost') {
+          this.checkChallenge('clean_five', stats.cleanChats);
+          this.checkChallenge('pure_soul', stats.cleanChats);
+        }
+        
         // Check karma ratio
         if (totalRatings > 0) {
           const karmaRatio = stats.heartCount / (stats.heartCount + stats.poopCount);
