@@ -17,6 +17,37 @@
   <div class="theme-switcher" id="themeSwitcher" title="Switch Theme">
     <span class="theme-icon" id="themeIcon">👻</span>
   </div>
+  
+  <!-- Theme Selector Modal -->
+  <div id="themeSelectorModal" class="theme-selector-modal" style="display:none;">
+    <div class="theme-selector-content">
+      <div class="theme-selector-header">
+        <h3 class="theme-selector-title">Choose Theme</h3>
+        <button class="theme-selector-close" id="themeSelectorClose">×</button>
+      </div>
+      
+      <div class="theme-section">
+        <h4 class="theme-section-title">Free Themes</h4>
+        <div class="theme-grid" id="freeThemesGrid">
+          <!-- Free themes will be populated by JavaScript -->
+        </div>
+      </div>
+      
+      <div class="theme-section">
+        <h4 class="theme-section-title">
+          Premium Themes 
+          <span class="premium-badge" id="premiumBadge">💎</span>
+        </h4>
+        <div class="theme-grid" id="premiumThemesGrid">
+          <!-- Premium themes will be populated by JavaScript -->
+        </div>
+        <div class="premium-unlock-hint" id="premiumHint" style="display:none;">
+          <span class="unlock-icon">🔒</span>
+          <span class="unlock-text">Unlock all themes with Premium access</span>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="language-switcher" id="languageSwitcher" title="Změnit jazyk / Change Language">
     <span class="language-icon" id="languageIcon">🇬🇧</span>
   </div>
