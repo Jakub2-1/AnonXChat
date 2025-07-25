@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Fog gradient -->
+    <radialGradient id="fogGradient1" cx="20%" cy="80%" r="40%">
+      <stop offset="0%" style="stop-color:rgba(30,30,60,0.4);stop-opacity:1" />
+      <stop offset="50%" style="stop-color:rgba(60,30,90,0.2);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(0,0,0,0);stop-opacity:0" />
+    </radialGradient>
+    
+    <radialGradient id="fogGradient2" cx="80%" cy="20%" r="50%">
+      <stop offset="0%" style="stop-color:rgba(40,20,60,0.3);stop-opacity:1" />
+      <stop offset="60%" style="stop-color:rgba(80,40,120,0.15);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(0,0,0,0);stop-opacity:0" />
+    </radialGradient>
+    
+    <radialGradient id="fogGradient3" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:rgba(20,10,40,0.25);stop-opacity:1" />
+      <stop offset="70%" style="stop-color:rgba(50,20,80,0.1);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(0,0,0,0);stop-opacity:0" />
+    </radialGradient>
+
+    <!-- Filter for blur effect -->
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8"/>
+    </filter>
+  </defs>
+  
+  <!-- Fog layers with different opacities and positions -->
+  <g class="fog-layer-1">
+    <ellipse cx="300" cy="800" rx="400" ry="200" fill="url(#fogGradient1)" filter="url(#blur)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 50,30; 0,0" dur="20s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.6;0.3" dur="15s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <g class="fog-layer-2">
+    <ellipse cx="1200" cy="300" rx="500" ry="250" fill="url(#fogGradient2)" filter="url(#blur)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -30,50; 0,0" dur="25s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.5;0.2" dur="18s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <g class="fog-layer-3">
+    <ellipse cx="800" cy="600" rx="600" ry="300" fill="url(#fogGradient3)" filter="url(#blur)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 40,-20; 0,0" dur="30s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.1;0.4;0.1" dur="22s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Additional smaller fog wisps -->
+  <g class="fog-wisps">
+    <circle cx="400" cy="200" r="80" fill="rgba(60,30,90,0.2)" filter="url(#blur)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 80,40; 0,0" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.1;0.3;0.1" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="1400" cy="700" r="60" fill="rgba(40,20,60,0.25)" filter="url(#blur)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -60,30; 0,0" dur="16s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.4;0.2" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="600" cy="400" r="100" fill="rgba(30,15,50,0.2)" filter="url(#blur)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 30,60; 0,0" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.15;0.35;0.15" dur="12s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

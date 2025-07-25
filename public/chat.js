@@ -136,9 +136,17 @@ function applyMainTheme(themeName) {
     body.classList.remove(theme.className);
   });
   
+  // Remove existing overlays
+  removeThemeOverlays();
+  
   // Apply new theme
   body.classList.add(themeData.className);
   themeIcon.textContent = themeData.icon;
+  
+  // Add deep goth overlays for phantom theme
+  if (themeName === 'phantom') {
+    createDeepGothOverlays();
+  }
   
   // Still apply color variations for variety within the theme
   if (themeName === 'phantom') {
@@ -146,6 +154,40 @@ function applyMainTheme(themeName) {
   } else {
     randomizeTheme(); // Keep color variety for glow
   }
+}
+
+// Create deep goth atmospheric overlays
+function createDeepGothOverlays() {
+  const body = document.body;
+  
+  // Create fog overlay
+  const fogOverlay = document.createElement('div');
+  fogOverlay.className = 'fog-overlay';
+  fogOverlay.id = 'fogOverlay';
+  body.appendChild(fogOverlay);
+  
+  // Create sparkles overlay
+  const sparklesOverlay = document.createElement('div');
+  sparklesOverlay.className = 'sparkles-overlay';
+  sparklesOverlay.id = 'sparklesOverlay';
+  body.appendChild(sparklesOverlay);
+  
+  // Create shadows overlay
+  const shadowsOverlay = document.createElement('div');
+  shadowsOverlay.className = 'shadows-overlay';
+  shadowsOverlay.id = 'shadowsOverlay';
+  body.appendChild(shadowsOverlay);
+}
+
+// Remove theme overlays
+function removeThemeOverlays() {
+  const overlays = ['fogOverlay', 'sparklesOverlay', 'shadowsOverlay'];
+  overlays.forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.remove();
+    }
+  });
 }
 
 function updateThemeSwitcher() {
