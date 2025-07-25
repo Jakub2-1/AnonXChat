@@ -7,17 +7,69 @@
   --theme-shadow: rgba(102, 126, 234, 0.4);
 }
 
+/* Phantom Theme (Dark Gothic) */
+.theme-phantom {
+  --theme-bg-primary: #0a0a0a;
+  --theme-bg-secondary: #1a0f1a;
+  --theme-bg-accent: #0f1420;
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #b0b0b0;
+  --theme-bubble-dark: rgba(20, 10, 20, 0.9);
+  --theme-bubble-accent: #8b1538;
+  --theme-glow-neon: rgba(138, 21, 56, 0.8);
+  --theme-shadow-neon: rgba(138, 21, 56, 0.4);
+  --theme-primary: #8b1538;
+  --theme-secondary: #4c1d95;
+  --theme-accent: #7c2d12;
+  --theme-glow: rgba(138, 21, 56, 0.8);
+  --theme-shadow: rgba(138, 21, 56, 0.4);
+  --theme-font-family: 'Cinzel', 'Times New Roman', serif;
+}
+
+/* Glow Theme (Light Contrast) */
+.theme-glow {
+  --theme-bg-primary: #f0f9ff;
+  --theme-bg-secondary: #fdf2f8;
+  --theme-bg-accent: #fef3c7;
+  --theme-text-primary: #1f2937;
+  --theme-text-secondary: #4b5563;
+  --theme-bubble-light: rgba(255, 255, 255, 0.9);
+  --theme-bubble-accent: #fbbf24;
+  --theme-glow-soft: rgba(251, 191, 36, 0.6);
+  --theme-shadow-soft: rgba(251, 191, 36, 0.3);
+  --theme-primary: #3b82f6;
+  --theme-secondary: #ec4899;
+  --theme-accent: #fbbf24;
+  --theme-glow: rgba(59, 130, 246, 0.6);
+  --theme-shadow: rgba(59, 130, 246, 0.3);
+  --theme-font-family: 'Poppins', 'Arial', sans-serif;
+}
+
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--theme-font-family, 'Inter', sans-serif);
   background: #0f0f1a;
   color: #fff;
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  transition: all 0.5s ease;
 }
 
-/* Aurora animated background */
+/* Theme-specific body styles */
+body.theme-phantom {
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+}
+
+body.theme-glow {
+  background: linear-gradient(135deg, var(--theme-bg-primary) 0%, var(--theme-bg-secondary) 50%, var(--theme-bg-accent) 100%);
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+}
+
+/* Aurora animated background - Default */
 body::before {
   content: '';
   position: fixed;
@@ -29,6 +81,19 @@ body::before {
   background-size: 400% 400%;
   animation: aurora 15s ease infinite;
   z-index: -2;
+  transition: all 0.5s ease;
+}
+
+/* Phantom theme background */
+body.theme-phantom::before {
+  background: linear-gradient(45deg, var(--theme-bg-primary), var(--theme-bg-secondary), #2d1b69, var(--theme-primary));
+  background-size: 400% 400%;
+}
+
+/* Glow theme background */
+body.theme-glow::before {
+  background: linear-gradient(45deg, #e0f2fe, #fce7f3, #fef3c7, #dbeafe);
+  background-size: 400% 400%;
 }
 
 body::after {
@@ -43,6 +108,21 @@ body::after {
               radial-gradient(circle at 40% 40%, rgba(0, 255, 255, 0.2) 0%, transparent 50%);
   animation: aurora-overlay 20s ease infinite reverse;
   z-index: -1;
+  transition: all 0.5s ease;
+}
+
+/* Phantom theme overlay */
+body.theme-phantom::after {
+  background: radial-gradient(circle at 20% 80%, rgba(138, 21, 56, 0.4) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(76, 29, 149, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(124, 45, 18, 0.2) 0%, transparent 50%);
+}
+
+/* Glow theme overlay */
+body.theme-glow::after {
+  background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.2) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(251, 191, 36, 0.15) 0%, transparent 50%);
 }
 
 @keyframes aurora {
@@ -78,8 +158,28 @@ body::after {
                0 0 40px rgba(255, 113, 181, 0.6),
                0 0 60px rgba(0, 255, 255, 0.4);
   letter-spacing: 2px;
-  transition: text-shadow 0.4s ease;
+  transition: all 0.4s ease;
   animation: glow-pulse 3s ease-in-out infinite alternate;
+}
+
+/* Phantom theme title */
+body.theme-phantom .glow {
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  text-shadow: 0 0 20px var(--theme-glow-neon), 
+               0 0 40px var(--theme-glow-neon),
+               0 0 60px var(--theme-shadow-neon);
+  letter-spacing: 3px;
+}
+
+/* Glow theme title */
+body.theme-glow .glow {
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  text-shadow: 0 0 15px var(--theme-glow-soft), 
+               0 0 30px var(--theme-glow-soft),
+               0 0 45px var(--theme-shadow-soft);
+  letter-spacing: 1px;
 }
 
 @keyframes glow-pulse {
@@ -109,6 +209,39 @@ body::after {
   font-weight: 500;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   animation: fade-in 0.6s ease-out;
+}
+
+.theme-switcher {
+  position: absolute;
+  top: 30px;
+  right: 160px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 16px;
+  border-radius: 1.3rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: fade-in 0.6s ease-out;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.theme-switcher:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.theme-icon {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.theme-switcher:hover .theme-icon {
+  transform: scale(1.1);
 }
 .centered {
   display: flex;
@@ -465,6 +598,18 @@ body::after {
 @media (max-width: 700px) {
   .chat-container {max-width:98vw; border-radius:1.2rem; padding:10px 2px 8px 2px;}
   .messages {padding: 0 3px 10px 3px;}
+  
+  .theme-switcher {
+    right: 120px;
+    padding: 10px 14px;
+    font-size: 1.2rem;
+  }
+  
+  .online-count {
+    right: 20px;
+    padding: 6px 12px;
+    font-size: 1rem;
+  }
 }
 
 /* Page transitions */
