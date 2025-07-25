@@ -180,12 +180,18 @@ function updateSoundToggle() {
   
   if (soundEnabled) {
     soundIcon.textContent = '🔊';
-    soundText.textContent = 'Sound ON';
+    soundText.textContent = lang.t('soundOn');
+    soundText.setAttribute('data-translate', 'soundOn');
     soundToggle.classList.remove('muted');
+    soundToggle.title = lang.t('soundOn');
+    soundToggle.setAttribute('data-translate-title', 'soundOn');
   } else {
     soundIcon.textContent = '🔇'; 
-    soundText.textContent = 'Sound OFF';
+    soundText.textContent = lang.t('soundOff');
+    soundText.setAttribute('data-translate', 'soundOff');
     soundToggle.classList.add('muted');
+    soundToggle.title = lang.t('soundOff');
+    soundToggle.setAttribute('data-translate-title', 'soundOff');
   }
 }
 
@@ -377,6 +383,12 @@ document.getElementById('startBtn').onclick = function() {
   startSocket();
 }
 
+// LANGUAGE SWITCHER BTN
+document.getElementById('languageSwitcher').onclick = function() {
+  lang.toggleLanguage();
+  updateSoundToggle(); // Update sound toggle text when language changes
+}
+
 // THEME SWITCHER BTN
 document.getElementById('themeSwitcher').onclick = function() {
   switchTheme();
@@ -471,11 +483,11 @@ function startSocket() {
     // Overlay is already showing, no need for additional message
   });
   socket.on('online', (count)=>{
-    document.getElementById('onlineCount').textContent = "Online: " + count;
+    document.getElementById('onlineCount').innerHTML = '<span data-translate="online">' + lang.t('online') + '</span>: ' + count;
   });
   socket.on('partner', ()=> {
     showChatPage();
-    addMsg('✅ Partner found!', mySide);
+    addMsg(lang.t('partnerFound'), mySide);
     
     // Play partner found sound
     playPartnerFound();
@@ -491,14 +503,14 @@ function startSocket() {
     }, 2000);
   });
   socket.on('partner_left', ()=> {
-    showNotif('Partner left', true);
+    showNotif(lang.t('partnerLeft'), true);
     partnerActive = false;
     
     // Play chat end sound
     playChatEnd();
   });
   socket.on('disconnect', ()=> {
-    showNotif('Disconnected from server.', false);
+    showNotif(lang.t('disconnected'), false);
   });
 
   // Indikace psaní
@@ -509,6 +521,9 @@ function startSocket() {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize language system
+  lang.updateUI();
+  
   // Set up sound toggle
   updateSoundToggle();
   

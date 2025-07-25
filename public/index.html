@@ -10,22 +10,25 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 </head>
 <body>
-  <div class="online-count" id="onlineCount" style="display:none;">Online: 0</div>
-  <div class="theme-switcher" id="themeSwitcher" title="Switch Theme">
+  <div class="online-count" id="onlineCount" style="display:none;"><span data-translate="online">Online</span>: 0</div>
+  <div class="language-switcher" id="languageSwitcher" data-translate-title="switchLanguage" title="Změnit jazyk">
+    <span class="language-icon" id="languageIcon">🇨🇿</span>
+  </div>
+  <div class="theme-switcher" id="themeSwitcher" data-translate-title="switchTheme" title="Změnit téma">
     <span class="theme-icon" id="themeIcon">👻</span>
   </div>
   <div id="loadingOverlay" class="loading-overlay" style="display:none;">
     <div class="loading-bubble">
-      <div class="loading-text">Looking for a partner...</div>
+      <div class="loading-text" data-translate="lookingForPartner">Hledám partnera...</div>
     </div>
   </div>
   <div id="mainPage" class="centered">
-    <div class="glow">AnonX Chat</div>
-    <button class="start-btn" id="startBtn">Start Chat</button>
+    <div class="glow" data-translate="appTitle">AnonX Chat</div>
+    <button class="start-btn" id="startBtn" data-translate="startChat">Začít chat</button>
     <div class="sound-toggle-container">
-      <button class="sound-toggle" id="soundToggle" title="Toggle sound effects">
+      <button class="sound-toggle" id="soundToggle" data-translate-title="soundOn" title="Zvuk ZAP">
         <span class="sound-icon" id="soundIcon">🔊</span>
-        <span class="sound-text">Sound ON</span>
+        <span class="sound-text" data-translate="soundOn">Zvuk ZAP</span>
       </button>
     </div>
   </div>
@@ -38,23 +41,24 @@
     </div>
     <form id="chatForm" autocomplete="off">
       <div class="chat-input-row">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." autocomplete="off" maxlength="500"/>
-        <button type="submit" class="send-btn">Send</button>
+        <input type="text" class="chat-input" id="chatInput" data-translate="messageInput" placeholder="Napište zprávu..." autocomplete="off" maxlength="500"/>
+        <button type="submit" class="send-btn" data-translate="sendButton">Odeslat</button>
       </div>
     </form>
   <div class="chat-actions">
-    <button type="button" class="skip-btn" id="skipBtn">Skip</button>
-    <button type="button" class="end-btn" id="endBtn">End Chat</button>
+    <button type="button" class="skip-btn" id="skipBtn" data-translate="skipButton">Přeskočit</button>
+    <button type="button" class="end-btn" id="endBtn" data-translate="endButton">Ukončit chat</button>
 </div>
   </div>
   <div id="notification" style="display:none;">
     <div class="notif" id="notifMsg"></div>
     <div class="notif-btns" id="notifBtns" style="display:none;">
-      <button class="notif-btn" id="continueBtn">Find New Partner</button>
-      <button class="notif-btn" id="returnBtn">Go Back</button>
+      <button class="notif-btn" id="continueBtn" data-translate="findNewPartner">Najít nového partnera</button>
+      <button class="notif-btn" id="returnBtn" data-translate="goBack">Zpět</button>
     </div>
   </div>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="translations.js"></script>
   <script src="chat.js"></script>
 </body>
 </html>
