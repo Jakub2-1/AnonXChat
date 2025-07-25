@@ -543,16 +543,16 @@ body::after {
   left: 100%;
 }
 
-/* Loading Overlay - Luxury Style */
+/* Loading Overlay - Subtle Style */
 .loading-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -570,49 +570,9 @@ body::after {
   font-size: 1.8rem;
   font-weight: 600;
   color: #fff;
-  text-shadow: 0 0 30px var(--theme-glow), 0 0 60px var(--theme-glow);
+  text-shadow: 0 0 20px var(--theme-glow), 0 0 40px var(--theme-glow);
   letter-spacing: 1.5px;
-  margin-bottom: 40px;
   animation: text-glow 2s ease-in-out infinite alternate;
-}
-
-/* Pulsating gradient circles */
-.loading-bubble::before,
-.loading-bubble::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.loading-bubble::before {
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, var(--theme-primary), var(--theme-secondary));
-  box-shadow: 0 0 40px var(--theme-glow), 0 0 80px var(--theme-shadow);
-  animation-delay: 0s;
-}
-
-.loading-bubble::after {
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(circle, var(--theme-accent), var(--theme-primary));
-  box-shadow: 0 0 30px var(--theme-glow), 0 0 60px var(--theme-shadow);
-  animation-delay: 1s;
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.6;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.2);
-    opacity: 1;
-  }
 }
 
 @keyframes text-glow {
@@ -630,5 +590,38 @@ body::after {
   }
   50% {
     transform: translateY(-10px) scale(1.02);
+  }
+}
+
+/* Subtle background pulsation effect for partner search */
+.searching-partner::before {
+  animation: aurora-search 4s ease-in-out infinite, aurora 15s ease infinite;
+}
+
+.searching-partner::after {
+  animation: aurora-overlay-search 5s ease-in-out infinite, aurora-overlay 20s ease infinite reverse;
+}
+
+@keyframes aurora-search {
+  0%, 100% {
+    opacity: 0.6;
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    opacity: 0.9;
+    filter: brightness(1.3) saturate(1.4);
+  }
+}
+
+@keyframes aurora-overlay-search {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05) rotate(0.5deg);
+    filter: brightness(1.2) saturate(1.3);
   }
 }

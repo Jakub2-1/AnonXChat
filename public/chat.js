@@ -148,6 +148,9 @@ function showChatPage() {
   const notification = document.getElementById('notification');
   const loadingOverlay = document.getElementById('loadingOverlay');
   
+  // Remove searching background effect
+  document.body.classList.remove('searching-partner');
+  
   // Fade out current page
   loadingOverlay.style.opacity = '0';
   setTimeout(() => {
@@ -174,6 +177,9 @@ function showMainPage() {
   const loadingOverlay = document.getElementById('loadingOverlay');
   const logo = document.querySelector('.glow');
   const startBtn = document.getElementById('startBtn');
+  
+  // Remove searching background effect
+  document.body.classList.remove('searching-partner');
   
   // Fade out current page
   if (chatPage.style.display !== 'none') {
@@ -230,6 +236,9 @@ function showNotif(msg, btns = false) {
   const mainPage = document.getElementById('mainPage');
   const loadingOverlay = document.getElementById('loadingOverlay');
   
+  // Remove searching background effect
+  document.body.classList.remove('searching-partner');
+  
   notifMsg.textContent = msg;
   notifBtns.style.display = btns ? '' : 'none';
   
@@ -258,6 +267,9 @@ function showLoadingOverlay() {
   const chatPage = document.getElementById('chatPage');
   const notification = document.getElementById('notification');
   const loadingOverlay = document.getElementById('loadingOverlay');
+  
+  // Add searching background effect
+  document.body.classList.add('searching-partner');
   
   // Fade out current page
   if (mainPage.style.display !== 'none') {
