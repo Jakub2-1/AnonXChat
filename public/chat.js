@@ -1163,6 +1163,14 @@ function startSocket(preferFavorites = false) {
       document.getElementById('typingIndicator').style.display = 'none';
     }, 2000);
   });
+  socket.on('status', (message) => {
+    // Update loading overlay with status message
+    const loadingText = document.querySelector('.loading-text');
+    if (loadingText) {
+      loadingText.textContent = message;
+    }
+  });
+  
   socket.on('partner_left', ()=> {
     setRatingAction('continue'); // Default to continue when partner leaves
     showRatingModal(); // Show rating modal when partner leaves
