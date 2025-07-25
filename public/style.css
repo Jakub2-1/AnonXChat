@@ -1271,6 +1271,95 @@ body.theme-glow .glow {
   transform: scale(1.1);
 }
 
+/* Floating Idea Button */
+.floating-idea-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  z-index: 1000;
+  opacity: 0.8;
+  
+  /* Default theme styling */
+  background: linear-gradient(135deg, #f8bbd9 0%, #b8e6ff 100%);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.floating-idea-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+.idea-icon {
+  display: block;
+  transition: transform 0.2s ease-in-out;
+}
+
+.floating-idea-button:hover .idea-icon {
+  transform: scale(1.1);
+}
+
+/* Theme-specific styling for floating idea button */
+body.theme-phantom .floating-idea-button {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+  border: 1px solid rgba(138, 21, 56, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4),
+              0 0 20px rgba(138, 21, 56, 0.2);
+}
+
+body.theme-phantom .floating-idea-button:hover {
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5),
+              0 0 30px rgba(138, 21, 56, 0.4);
+  border: 1px solid rgba(138, 21, 56, 0.5);
+}
+
+body.theme-glow .floating-idea-button {
+  background: linear-gradient(135deg, #f8bbd9 0%, #b8e6ff 100%);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2),
+              0 0 20px rgba(251, 191, 36, 0.3);
+}
+
+body.theme-glow .floating-idea-button:hover {
+  box-shadow: 0 12px 35px rgba(59, 130, 246, 0.3),
+              0 0 30px rgba(251, 191, 36, 0.5);
+  border: 2px solid rgba(251, 191, 36, 0.5);
+}
+
+/* Responsive design for floating idea button */
+@media (max-width: 700px) {
+  .floating-idea-button {
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .floating-idea-button {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+}
+
+/* Hide floating button when not on main page */
+.floating-idea-button.hidden {
+  display: none;
+}
+
 /* Rating Modal */
 .rating-modal {
   position: fixed;

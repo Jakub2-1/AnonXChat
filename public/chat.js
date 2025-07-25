@@ -662,6 +662,9 @@ function showChatPage() {
     chatPage.style.opacity = '0';
     onlineCount.style.display = '';
     
+    // Update floating button visibility
+    updateFloatingButtonVisibility();
+    
     setTimeout(() => {
       chatPage.style.opacity = '1';
       loadingOverlay.style.opacity = '1';
@@ -713,6 +716,9 @@ function showMainPage() {
       mainPage.style.display = 'flex';
       mainPage.style.opacity = '0';
       
+      // Update floating button visibility
+      updateFloatingButtonVisibility();
+      
       // Explicitly ensure logo and start button are visible
       if (logo) {
         logo.style.display = '';
@@ -732,6 +738,9 @@ function showMainPage() {
     notification.style.display = 'none';
     loadingOverlay.style.display = 'none';
     mainPage.style.display = 'flex';
+    
+    // Update floating button visibility
+    updateFloatingButtonVisibility();
     
     // Explicitly ensure logo and start button are visible
     if (logo) {
@@ -772,6 +781,9 @@ function showNotif(msg, btns = false) {
     mainPage.style.display = 'none';
     loadingOverlay.style.display = 'none';
     
+    // Update floating button visibility
+    updateFloatingButtonVisibility();
+    
     // Show notification with animation
     notification.style.display = '';
     notification.style.opacity = '0';
@@ -800,6 +812,9 @@ function showLoadingOverlay() {
     mainPage.style.display = 'none';
     chatPage.style.display = 'none';
     notification.style.display = 'none';
+    
+    // Update floating button visibility
+    updateFloatingButtonVisibility();
     
     // Show loading overlay with animation
     loadingOverlay.style.display = 'flex';
@@ -1262,6 +1277,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set up page visibility handling for tab switching
   setupPageVisibilityHandling();
   
+  // Set up floating idea button
+  setupFloatingIdeaButton();
+  
   // Show welcome message for new users
   if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {
     setTimeout(() => {
@@ -1270,6 +1288,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
   }
 });
+
+// Floating Idea Button Setup
+function setupFloatingIdeaButton() {
+  const floatingButton = document.getElementById('floatingIdeaButton');
+  if (!floatingButton) return;
+  
+  // Handle click event
+  floatingButton.addEventListener('click', function() {
+    window.open('https://www.instagram.com/anonx_chat', '_blank');
+  });
+  
+  // Initially show button (will be hidden when not on main page)
+  updateFloatingButtonVisibility();
+}
+
+// Update floating button visibility based on current page
+function updateFloatingButtonVisibility() {
+  const floatingButton = document.getElementById('floatingIdeaButton');
+  const mainPage = document.getElementById('mainPage');
+  const chatPage = document.getElementById('chatPage');
+  
+  if (!floatingButton) return;
+  
+  // Show button only when main page is visible
+  const isMainPageVisible = mainPage && mainPage.style.display !== 'none';
+  const isChatPageVisible = chatPage && chatPage.style.display !== 'none';
+  
+  if (isMainPageVisible && !isChatPageVisible) {
+    floatingButton.classList.remove('hidden');
+  } else {
+    floatingButton.classList.add('hidden');
+  }
+}
 
 // Page Visibility API handling for graceful tab switching
 function setupPageVisibilityHandling() {
