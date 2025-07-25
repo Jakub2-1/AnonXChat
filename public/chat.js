@@ -8,6 +8,14 @@ let currentTheme = localStorage.getItem('selectedTheme') || 'phantom'; // Defaul
 let currentThemeData = null;
 let currentPartnerId = null; // Store current partner ID for favorites
 
+// Page visibility state for handling tab switching
+let isPageVisible = true;
+let wasDisconnectedWhileHidden = false;
+let reconnectOnVisible = false;
+let disconnectTime = null;
+let pageVisibilityAtDisconnect = true;
+let justBecameVisible = false;
+
 // Anonymous user ID management
 let anonUserId = localStorage.getItem('anonx_user_id');
 if (!anonUserId) {
@@ -1119,9 +1127,14 @@ function startSocket(preferFavorites = false) {
   partnerActive = true;
   currentPartnerId = null;
   
+  // Reset reconnection flags since we're starting a new connection intentionally
+  wasDisconnectedWhileHidden = false;
+  reconnectOnVisible = false;
+  
   socket = io();
   
   socket.on('connect', ()=> {
+    console.log('Socket connected successfully');
     // Send user ID to server for favorite matching
     socket.emit('set_user_id', anonUserId);
     
@@ -1173,10 +1186,34 @@ function startSocket(preferFavorites = false) {
   });
   
   socket.on('disconnect', (reason)=> {
+    console.log('Socket disconnected:', reason, 'Page visible:', isPageVisible, 'Just became visible:', justBecameVisible);
+    disconnectTime = Date.now();
+    
+    // If page just became visible within the last 2 seconds, suppress the error message
+    // as this disconnect likely happened while the tab was hidden
+    const suppressError = justBecameVisible;
+    
+    // If page is currently hidden, mark that we were disconnected while hidden
+    if (!isPageVisible) {
+      wasDisconnectedWhileHidden = true;
+      reconnectOnVisible = true;
+      console.log('Disconnected while page hidden - will handle on return');
+      return; // Don't show disconnect messages while page is hidden
+    }
+    
     // Only show disconnect message if it's an unexpected disconnect
-    // Don't show it when user intentionally ends chat or navigates away
-    if (reason !== 'io client disconnect' && reason !== 'client namespace disconnect') {
-      showNotif('Disconnected from server.', true);
+    // and we shouldn't suppress the error
+    if (!suppressError && reason !== 'io client disconnect' && reason !== 'client namespace disconnect') {
+      // Check if this is a network-related disconnect while visible
+      if (isPageVisible && (reason === 'transport close' || reason === 'transport error' || reason === 'ping timeout')) {
+        showNotif('Připojení ztraceno. Zkuste se znovu připojit.', true);
+      }
+    } else if (suppressError) {
+      console.log('Suppressing disconnect error because tab was just switched back');
+      // Still clean up and show main page for tab switching case
+      setTimeout(() => {
+        showMainPage();
+      }, 100);
     }
     
     // Always clean up state on disconnect
@@ -1186,6 +1223,26 @@ function startSocket(preferFavorites = false) {
     
     // Clear typing indicator
     document.getElementById('typingIndicator').style.display = 'none';
+  });
+  
+  // Handle reconnection
+  socket.on('reconnect', () => {
+    console.log('Socket reconnected, justBecameVisible:', justBecameVisible);
+    
+    // If we reconnected quickly and the user just returned to the tab,
+    // don't show any notifications - just clean up state
+    if (justBecameVisible) {
+      console.log('Reconnection after tab switch - cleaning up state silently');
+      currentPartnerId = null;
+      partnerActive = false;
+      currentChatStart = null;
+      return;
+    }
+    
+    // For normal reconnections during visible state, let the user know
+    if (isPageVisible) {
+      showNotif('Připojení obnoveno.', false);
+    }
   });
 
   // Indikace psaní
@@ -1206,6 +1263,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set initial theme variation
   randomizeTheme();
   
+  // Set up page visibility handling for tab switching
+  setupPageVisibilityHandling();
+  
   // Show welcome message for new users
   if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {
     setTimeout(() => {
@@ -1214,3 +1274,85 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
   }
 });
+
+// Page Visibility API handling for graceful tab switching
+function setupPageVisibilityHandling() {
+  // Handle page visibility changes (tab switching, minimizing window)
+  document.addEventListener('visibilitychange', function() {
+    isPageVisible = !document.hidden;
+    
+    if (isPageVisible) {
+      // User returned to tab
+      handlePageVisible();
+    } else {
+      // User left tab (switched or minimized)
+      handlePageHidden();
+    }
+  });
+  
+  // Handle browser focus/blur events as backup
+  window.addEventListener('focus', function() {
+    if (!isPageVisible) {
+      isPageVisible = true;
+      handlePageVisible();
+    }
+  });
+  
+  window.addEventListener('blur', function() {
+    if (isPageVisible) {
+      isPageVisible = false;
+      handlePageHidden();
+    }
+  });
+}
+
+function handlePageHidden() {
+  console.log('Page hidden - user switched tab or minimized window');
+  // Mark the page as hidden
+  wasDisconnectedWhileHidden = false;
+}
+
+function handlePageVisible() {
+  console.log('Page visible - user returned to tab');
+  justBecameVisible = true;
+  
+  // Clear the flag after a short delay to allow for async disconnect events
+  setTimeout(() => {
+    justBecameVisible = false;
+  }, 1000);
+  
+  // Check socket state when returning to tab
+  setTimeout(() => {
+    if (socket) {
+      if (!socket.connected) {
+        console.log('Socket is disconnected when returning to tab - cleaning up');
+        handleReconnectionOnVisible();
+      } else {
+        console.log('Socket is still connected - all good');
+      }
+    }
+  }, 500); // Small delay to let socket.io process any pending disconnects
+  
+  // Reset flags
+  wasDisconnectedWhileHidden = false;
+  reconnectOnVisible = false;
+}
+
+function handleReconnectionOnVisible() {
+  console.log('Handling reconnection after returning to tab');
+  
+  // Clean up any existing socket
+  if (socket) {
+    socket.removeAllListeners();
+    socket.disconnect();
+    socket = null;
+  }
+  
+  // Reset state and show main page
+  currentPartnerId = null;
+  partnerActive = false;
+  currentChatStart = null;
+  
+  // Clear any error notifications and show main page cleanly
+  showMainPage();
+}
