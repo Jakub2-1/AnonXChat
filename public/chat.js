@@ -893,6 +893,31 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set initial theme variation
   randomizeTheme();
   
+  // Initialize page state - ensure only main page is visible
+  const mainPage = document.getElementById('mainPage');
+  const chatPage = document.getElementById('chatPage');
+  const notification = document.getElementById('notification');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  
+  // Hide all other pages
+  if (chatPage) chatPage.style.display = 'none';
+  if (notification) notification.style.display = 'none';
+  if (loadingOverlay) loadingOverlay.style.display = 'none';
+  
+  // Show and properly center main page
+  if (mainPage) {
+    mainPage.style.display = 'flex';
+    mainPage.style.opacity = '1';
+    
+    // Ensure proper centering styles are applied
+    mainPage.style.flexDirection = 'column';
+    mainPage.style.alignItems = 'center';
+    mainPage.style.justifyContent = 'center';
+    mainPage.style.minHeight = '100vh';
+    mainPage.style.width = '100%';
+    mainPage.style.height = '100vh';
+  }
+  
   // Show welcome message for new users
   if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {
     setTimeout(() => {
