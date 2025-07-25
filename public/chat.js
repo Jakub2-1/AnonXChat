@@ -46,11 +46,194 @@ if (!userStats.mutualFavorites) userStats.mutualFavorites = [];
 // Sound system
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-// Theme definitions
+// Language definitions
+let currentLanguage = localStorage.getItem('selectedLanguage') || 'cs';
+
+const languageDefinitions = {
+  cs: {
+    // Main page
+    appTitle: 'AnonX Chat',
+    startChat: 'Začít chat',
+    soundOn: 'Zvuk ZAP',
+    soundOff: 'Zvuk VYP',
+    
+    // Chat page
+    typeMessage: 'Napište svou zprávu...',
+    send: 'Odeslat',
+    skip: 'Přeskočit',
+    endChat: 'Ukončit chat',
+    
+    // Status messages
+    lookingForPartner: 'Hledám partnera...',
+    partnerFound: '✅ Partner nalezen!',
+    favoritePartnerFound: '💫 Spojení s oblíbeným partnerem!',
+    partnerLeft: 'Partner opustil chat',
+    connectionLost: 'Připojení ztraceno. Zkuste se znovu připojit.',
+    connectionRestored: 'Připojení obnoveno.',
+    
+    // Rating modal
+    ratingTitle: 'Jaký byl tvůj pokec?',
+    ratingLiked: 'Líbilo se mi',
+    ratingBad: 'Byla to bída',
+    ratingRandom: 'Jen náhodný pokec',
+    favoriteText: 'Ten chat byl super? Přidej do oblíbených!',
+    addToFavorites: 'Přidat do oblíbených',
+    
+    // Statistics
+    myStats: 'Moje statistiky',
+    totalChats: 'Celkem chatů',
+    avgLength: 'Průměrná délka',
+    currentStreak: 'Dnešní streak',
+    karmaLevel: 'Karma úroveň',
+    heartRating: '❤️ hodnocení',
+    poopRating: '💩 hodnocení',
+    showPublicBadge: 'Zobrazit veřejný odznak',
+    favoritePartners: 'Oblíbení partneři',
+    mutualFavorites: 'Vzájemných',
+    connectWithFavorite: 'Spojit s oblíbeným',
+    currentChallenges: 'Aktuální výzvy',
+    totalPoints: 'Celkem bodů:',
+    
+    // Level names
+    levelNames: {
+      1: 'Nováček',
+      2: 'Pokecník', 
+      3: 'Komunikátor',
+      4: 'Společník',
+      5: 'Chatmaster',
+      6: 'Konverzační mistr',
+      7: 'Sociální guru',
+      8: 'Legendární partner',
+      9: 'Chat veterán',
+      10: 'Mistr anonymity'
+    },
+    
+    // Karma levels
+    karmaLevels: {
+      novice: 'Nováček',
+      problematic: 'Problematik',
+      angel: 'Anděl',
+      pleasant: 'Příjemný',
+      average: 'Průměrný'
+    },
+    
+    // Notifications
+    findNewPartner: 'Najít nového partnera',
+    goBack: 'Zpět',
+    favoriteAdded: '⭐ Partner přidán do oblíbených!',
+    mutualFavorite: '💫 Skvělé! Máte vzájemně oblíbeného partnera! Nyní se můžete spojit mimo běžné párování.',
+    favoriteAddError: '❌ Nepodařilo se přidat partnera do oblíbených.',
+    noMutualFavorites: '🤷 Nemáte žádné vzájemně oblíbené partnery online.',
+    behaviorTip: '💡 Tip: Zkus být více přátelský v chatech. Kvalitní konverzace přináší lepší zážitky!',
+    welcome: '🎉 Vítej v AnonX Chat! Dokončuj chaty, získávej hodnocení a plň výzvy pro odblokování speciálních odměn. Začni svůj první pokec! 📊',
+    
+    // Time units
+    minutes: 'm',
+    
+    // Misc
+    online: 'Online:',
+    max: 'MAX',
+    maxLevel: '(Maximální level!)',
+    toNextLevel: 'do dalšího levelu',
+    favoriteCount: 'Oblíbených',
+    mutualCount: 'Vzájemných'
+  },
+  
+  en: {
+    // Main page
+    appTitle: 'AnonX Chat',
+    startChat: 'Start Chat',
+    soundOn: 'Sound ON',
+    soundOff: 'Sound OFF',
+    
+    // Chat page
+    typeMessage: 'Type your message...',
+    send: 'Send',
+    skip: 'Skip',
+    endChat: 'End Chat',
+    
+    // Status messages
+    lookingForPartner: 'Looking for a partner...',
+    partnerFound: '✅ Partner found!',
+    favoritePartnerFound: '💫 Connected with favorite partner!',
+    partnerLeft: 'Partner left the chat',
+    connectionLost: 'Connection lost. Please try to reconnect.',
+    connectionRestored: 'Connection restored.',
+    
+    // Rating modal
+    ratingTitle: 'How was your chat?',
+    ratingLiked: 'I liked it',
+    ratingBad: 'It was bad',
+    ratingRandom: 'Just random chat',
+    favoriteText: 'That chat was great? Add to favorites!',
+    addToFavorites: 'Add to favorites',
+    
+    // Statistics
+    myStats: 'My Statistics',
+    totalChats: 'Total Chats',
+    avgLength: 'Average Length',
+    currentStreak: 'Current Streak',
+    karmaLevel: 'Karma Level',
+    heartRating: '❤️ ratings',
+    poopRating: '💩 ratings',
+    showPublicBadge: 'Show public badge',
+    favoritePartners: 'Favorite Partners',
+    mutualFavorites: 'Mutual',
+    connectWithFavorite: 'Connect with favorite',
+    currentChallenges: 'Current Challenges',
+    totalPoints: 'Total Points:',
+    
+    // Level names
+    levelNames: {
+      1: 'Newcomer',
+      2: 'Chatter',
+      3: 'Communicator', 
+      4: 'Companion',
+      5: 'Chatmaster',
+      6: 'Conversation Expert',
+      7: 'Social Guru',
+      8: 'Legendary Partner',
+      9: 'Chat Veteran',
+      10: 'Master of Anonymity'
+    },
+    
+    // Karma levels
+    karmaLevels: {
+      novice: 'Novice',
+      problematic: 'Problematic',
+      angel: 'Angel',
+      pleasant: 'Pleasant',
+      average: 'Average'
+    },
+    
+    // Notifications
+    findNewPartner: 'Find New Partner',
+    goBack: 'Go Back',
+    favoriteAdded: '⭐ Partner added to favorites!',
+    mutualFavorite: '💫 Great! You have a mutual favorite partner! You can now connect outside regular pairing.',
+    favoriteAddError: '❌ Failed to add partner to favorites.',
+    noMutualFavorites: '🤷 You have no mutual favorite partners online.',
+    behaviorTip: '💡 Tip: Try to be more friendly in chats. Quality conversations bring better experiences!',
+    welcome: '🎉 Welcome to AnonX Chat! Complete chats, get ratings and fulfill challenges to unlock special rewards. Start your first chat! 📊',
+    
+    // Time units
+    minutes: 'm',
+    
+    // Misc
+    online: 'Online:',
+    max: 'MAX',
+    maxLevel: '(Maximum level!)',
+    toNextLevel: 'to next level',
+    favoriteCount: 'Favorites',
+    mutualCount: 'Mutual'
+  }
+};
+
+// Theme definitions - Updated skeleton icon
 const themeDefinitions = {
   phantom: {
     name: 'Phantom',
-    icon: '👻',
+    icon: '💀', // Changed from 👻 to 💀 (skull/skeleton icon)
     className: 'theme-phantom'
   },
   glow: {
@@ -168,15 +351,15 @@ function updateStreak() {
 
 function getKarmaLevel() {
   const totalRatings = userStats.heartCount + userStats.poopCount;
-  if (totalRatings === 0) return "Nováček";
+  if (totalRatings === 0) return getText('karmaLevels.novice');
   
   const poopRatio = userStats.poopCount / totalRatings;
   const heartRatio = userStats.heartCount / totalRatings;
   
-  if (poopRatio > 0.3) return "Problematik";
-  if (heartRatio > 0.7) return "Anděl";
-  if (heartRatio > 0.5) return "Příjemný";
-  return "Průměrný";
+  if (poopRatio > 0.3) return getText('karmaLevels.problematic');
+  if (heartRatio > 0.7) return getText('karmaLevels.angel');
+  if (heartRatio > 0.5) return getText('karmaLevels.pleasant');
+  return getText('karmaLevels.average');
 }
 
 function shouldShowBehaviorWarning() {
@@ -190,7 +373,7 @@ function shouldShowBehaviorWarning() {
 function updateStatsDisplay() {
   document.getElementById('totalChats').textContent = userStats.totalChats;
   document.getElementById('avgLength').textContent = userStats.totalChats > 0 ? 
-    Math.round(userStats.totalTime / userStats.totalChats / 60) + 'm' : '0m';
+    Math.round(userStats.totalTime / userStats.totalChats / 60) + getText('minutes') : '0' + getText('minutes');
   document.getElementById('heartCount').textContent = userStats.heartCount;
   document.getElementById('poopCount').textContent = userStats.poopCount;
   document.getElementById('currentStreak').textContent = userStats.currentStreak;
@@ -210,16 +393,16 @@ function updateStatsDisplay() {
 // Leveling system functions
 function getLevelData(xp) {
   const levels = [
-    { level: 1, name: "Nováček", xpRequired: 0 },
-    { level: 2, name: "Pokecník", xpRequired: 50 },
-    { level: 3, name: "Komunikátor", xpRequired: 150 },
-    { level: 4, name: "Společník", xpRequired: 300 },
-    { level: 5, name: "Chatmaster", xpRequired: 500 },
-    { level: 6, name: "Konverzační mistr", xpRequired: 800 },
-    { level: 7, name: "Sociální guru", xpRequired: 1200 },
-    { level: 8, name: "Legendární partner", xpRequired: 1700 },
-    { level: 9, name: "Chat veterán", xpRequired: 2500 },
-    { level: 10, name: "Mistr anonymity", xpRequired: 3500 }
+    { level: 1, name: getText('levelNames.1'), xpRequired: 0 },
+    { level: 2, name: getText('levelNames.2'), xpRequired: 50 },
+    { level: 3, name: getText('levelNames.3'), xpRequired: 150 },
+    { level: 4, name: getText('levelNames.4'), xpRequired: 300 },
+    { level: 5, name: getText('levelNames.5'), xpRequired: 500 },
+    { level: 6, name: getText('levelNames.6'), xpRequired: 800 },
+    { level: 7, name: getText('levelNames.7'), xpRequired: 1200 },
+    { level: 8, name: getText('levelNames.8'), xpRequired: 1700 },
+    { level: 9, name: getText('levelNames.9'), xpRequired: 2500 },
+    { level: 10, name: getText('levelNames.10'), xpRequired: 3500 }
   ];
   
   let currentLevel = levels[0];
@@ -246,13 +429,13 @@ function updateLevelDisplay() {
   
   if (nextLevel) {
     document.getElementById('nextLevelXP').textContent = nextLevel.xpRequired;
-    document.getElementById('xpToNext').textContent = `(${nextLevel.xpRequired - (userStats.totalXP || 0)} do dalšího levelu)`;
+    document.getElementById('xpToNext').textContent = `(${nextLevel.xpRequired - (userStats.totalXP || 0)} ${getText('toNextLevel')})`;
     
     const progress = Math.min(100, ((userStats.totalXP || 0) - currentLevel.xpRequired) / (nextLevel.xpRequired - currentLevel.xpRequired) * 100);
     document.getElementById('xpProgress').style.width = progress + '%';
   } else {
-    document.getElementById('nextLevelXP').textContent = 'MAX';
-    document.getElementById('xpToNext').textContent = '(Maximální level!)';
+    document.getElementById('nextLevelXP').textContent = getText('max');
+    document.getElementById('xpToNext').textContent = `(${getText('maxLevel')})`;
     document.getElementById('xpProgress').style.width = '100%';
   }
 }
@@ -297,9 +480,9 @@ async function addToFavorites(partnerId) {
         if (!userStats.mutualFavorites.includes(partnerId)) {
           userStats.mutualFavorites.push(partnerId);
         }
-        showNotif('💫 Skvělé! Máte vzájemně oblíbeného partnera! Nyní se můžete spojit mimo běžné párování.', false);
+        showNotif(getText('mutualFavorite'), false);
       } else {
-        showNotif('⭐ Partner přidán do oblíbených!', false);
+        showNotif(getText('favoriteAdded'), false);
       }
       
       saveUserStats();
@@ -307,13 +490,13 @@ async function addToFavorites(partnerId) {
     }
   } catch (error) {
     console.error('Error adding favorite:', error);
-    showNotif('❌ Nepodařilo se přidat partnera do oblíbených.', false);
+    showNotif(getText('favoriteAddError'), false);
   }
 }
 
 async function connectWithFavorite() {
   if ((userStats.mutualFavorites || []).length === 0) {
-    showNotif('🤷 Nemáte žádné vzájemně oblíbené partnery online.', false);
+    showNotif(getText('noMutualFavorites'), false);
     return;
   }
   
@@ -616,6 +799,136 @@ function applyTheme(theme) {
   root.style.setProperty('--theme-shadow', theme.shadow);
 }
 
+// Language switching functionality
+function switchLanguage() {
+  currentLanguage = currentLanguage === 'cs' ? 'en' : 'cs';
+  localStorage.setItem('selectedLanguage', currentLanguage);
+  updateAllTexts();
+  updateLanguageToggle();
+}
+
+function updateLanguageToggle() {
+  const languageIcon = document.getElementById('languageIcon');
+  if (languageIcon) {
+    languageIcon.textContent = currentLanguage === 'cs' ? '🇬🇧' : '🇨🇿';
+  }
+}
+
+function getText(key) {
+  const keys = key.split('.');
+  let value = languageDefinitions[currentLanguage];
+  
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k];
+    } else {
+      console.warn(`Translation key not found: ${key}`);
+      return key; // Return the key if translation not found
+    }
+  }
+  
+  return value || key;
+}
+
+function updateAllTexts() {
+  // Main page elements
+  const startBtn = document.getElementById('startBtn');
+  if (startBtn) startBtn.textContent = getText('startChat');
+  
+  // Chat input placeholder
+  const chatInput = document.getElementById('chatInput');
+  if (chatInput) chatInput.placeholder = getText('typeMessage');
+  
+  // Buttons
+  const sendBtn = document.querySelector('.send-btn');
+  if (sendBtn) sendBtn.textContent = getText('send');
+  
+  const skipBtn = document.getElementById('skipBtn');
+  if (skipBtn) skipBtn.textContent = getText('skip');
+  
+  const endBtn = document.getElementById('endBtn');
+  if (endBtn) endBtn.textContent = getText('endChat');
+  
+  // Sound toggle
+  updateSoundToggle();
+  
+  // Rating modal
+  const ratingTitle = document.querySelector('.rating-title');
+  if (ratingTitle) ratingTitle.textContent = getText('ratingTitle');
+  
+  const ratingTexts = document.querySelectorAll('.rating-text');
+  if (ratingTexts.length >= 3) {
+    ratingTexts[0].textContent = getText('ratingLiked');
+    ratingTexts[1].textContent = getText('ratingBad');
+    ratingTexts[2].textContent = getText('ratingRandom');
+  }
+  
+  const favoriteText = document.querySelector('.favorite-text');
+  if (favoriteText) favoriteText.textContent = getText('favoriteText');
+  
+  const addToFavoritesBtn = document.getElementById('addToFavoritesBtn');
+  if (addToFavoritesBtn) {
+    const favoriteTextSpan = addToFavoritesBtn.querySelector('.favorite-text');
+    if (favoriteTextSpan) favoriteTextSpan.textContent = getText('addToFavorites');
+  }
+  
+  // Statistics panel
+  const statsTitle = document.querySelector('.stats-title');
+  if (statsTitle) statsTitle.textContent = getText('myStats');
+  
+  const statLabels = document.querySelectorAll('.stat-label');
+  if (statLabels.length >= 6) {
+    statLabels[0].textContent = getText('totalChats');
+    statLabels[1].textContent = getText('avgLength');
+    statLabels[2].textContent = getText('heartRating');
+    statLabels[3].textContent = getText('poopRating');
+    statLabels[4].textContent = getText('currentStreak');
+    statLabels[5].textContent = getText('karmaLevel');
+  }
+  
+  // Update level display
+  updateLevelDisplay();
+  
+  // Update favorites section
+  const favoritesTitle = document.querySelector('.favorites-title');
+  if (favoritesTitle) favoritesTitle.textContent = getText('favoritePartners');
+  
+  const favoriteLabels = document.querySelectorAll('.favorite-label');
+  if (favoriteLabels.length >= 2) {
+    favoriteLabels[0].textContent = getText('favoriteCount');
+    favoriteLabels[1].textContent = getText('mutualCount');
+  }
+  
+  const connectWithFavoriteBtn = document.getElementById('connectWithFavoriteBtn');
+  if (connectWithFavoriteBtn) {
+    const connectText = connectWithFavoriteBtn.textContent.replace(/💫\s*/, '');
+    connectWithFavoriteBtn.innerHTML = '💫 ' + getText('connectWithFavorite');
+  }
+  
+  // Challenges section
+  const challengesTitle = document.querySelector('.challenges-title');
+  if (challengesTitle) challengesTitle.textContent = getText('currentChallenges');
+  
+  const pointsLabel = document.querySelector('.points-label');
+  if (pointsLabel) pointsLabel.textContent = getText('totalPoints');
+  
+  // Notification buttons
+  const continueBtn = document.getElementById('continueBtn');
+  if (continueBtn) continueBtn.textContent = getText('findNewPartner');
+  
+  const returnBtn = document.getElementById('returnBtn');
+  if (returnBtn) returnBtn.textContent = getText('goBack');
+  
+  // Checkbox label
+  const checkboxLabel = document.querySelector('.stats-checkbox');
+  if (checkboxLabel) {
+    const labelText = checkboxLabel.lastChild;
+    if (labelText && labelText.nodeType === Node.TEXT_NODE) {
+      labelText.textContent = getText('showPublicBadge');
+    }
+  }
+}
+
 // Sound toggle functionality
 function updateSoundToggle() {
   const soundToggle = document.getElementById('soundToggle');
@@ -624,11 +937,11 @@ function updateSoundToggle() {
   
   if (soundEnabled) {
     soundIcon.textContent = '🔊';
-    soundText.textContent = 'Sound ON';
+    soundText.textContent = getText('soundOn');
     soundToggle.classList.remove('muted');
   } else {
     soundIcon.textContent = '🔇'; 
-    soundText.textContent = 'Sound OFF';
+    soundText.textContent = getText('soundOff');
     soundToggle.classList.add('muted');
   }
 }
@@ -787,9 +1100,15 @@ function showLoadingOverlay() {
   const chatPage = document.getElementById('chatPage');
   const notification = document.getElementById('notification');
   const loadingOverlay = document.getElementById('loadingOverlay');
+  const loadingText = document.querySelector('.loading-text');
   
   // Add searching background effect
   document.body.classList.add('searching-partner');
+  
+  // Set loading text to current language
+  if (loadingText) {
+    loadingText.textContent = getText('lookingForPartner');
+  }
   
   // Fade out current page
   if (mainPage.style.display !== 'none') {
@@ -845,6 +1164,11 @@ document.getElementById('startBtn').onclick = function() {
 // THEME SWITCHER BTN
 document.getElementById('themeSwitcher').onclick = function() {
   switchTheme();
+}
+
+// LANGUAGE SWITCHER BTN
+document.getElementById('languageSwitcher').onclick = function() {
+  switchLanguage();
 }
 
 // STATS BUTTON
@@ -1000,7 +1324,7 @@ function submitRating(rating) {
   // Show behavior warning if needed
   if (shouldShowBehaviorWarning()) {
     setTimeout(() => {
-      showNotif('💡 Tip: Zkus být více přátelský v chatech. Kvalitní konverzace přináší lepší zážitky!', false);
+      showNotif(getText('behaviorTip'), false);
     }, 1000);
   } else {
     handlePostRating();
@@ -1144,7 +1468,7 @@ function startSocket(preferFavorites = false) {
   });
   
   socket.on('online', (count)=>{
-    document.getElementById('onlineCount').textContent = "Online: " + count;
+    document.getElementById('onlineCount').textContent = getText('online') + " " + count;
   });
   
   socket.on('partner', (data)=> {
@@ -1157,9 +1481,9 @@ function startSocket(preferFavorites = false) {
     }
     
     if (data && data.type === 'favorite') {
-      addMsg('💫 Spojení s oblíbeným partnerem!', mySide);
+      addMsg(getText('favoritePartnerFound'), mySide);
     } else {
-      addMsg('✅ Partner found!', mySide);
+      addMsg(getText('partnerFound'), mySide);
     }
     
     showPublicBadge(); // Show public badge if enabled
@@ -1178,10 +1502,15 @@ function startSocket(preferFavorites = false) {
     }, 2000);
   });
   socket.on('status', (message) => {
-    // Update loading overlay with status message
+    // Update loading overlay with status message - using getText for translations
     const loadingText = document.querySelector('.loading-text');
     if (loadingText) {
-      loadingText.textContent = message;
+      // If message is the default looking message, use our translation
+      if (message === '⏳ Looking for partner...') {
+        loadingText.textContent = getText('lookingForPartner');
+      } else {
+        loadingText.textContent = message; // Use the message as-is for other status updates
+      }
     }
   });
   
@@ -1211,7 +1540,7 @@ function startSocket(preferFavorites = false) {
     if (reason !== 'io client disconnect' && reason !== 'client namespace disconnect') {
       if (isPageVisible && (reason === 'transport close' || reason === 'transport error' || reason === 'ping timeout')) {
         // Only show error if user has been actively on the page
-        showNotif('Připojení ztraceno. Zkuste se znovu připojit.', true);
+        showNotif(getText('connectionLost'), true);
       }
     }
     
@@ -1235,7 +1564,7 @@ function startSocket(preferFavorites = false) {
     if (isPageVisible && !wasRecentlyHidden) {
       setTimeout(() => {
         if (isPageVisible) { // Double-check we're still visible
-          showNotif('Připojení obnoveno.', false);
+          showNotif(getText('connectionRestored'), false);
         }
       }, 1000);
     }
@@ -1256,6 +1585,10 @@ document.addEventListener('DOMContentLoaded', function() {
   updateThemeSwitcher();
   applyMainTheme(currentTheme);
   
+  // Set up language switcher
+  updateLanguageToggle();
+  updateAllTexts();
+  
   // Set initial theme variation
   randomizeTheme();
   
@@ -1265,7 +1598,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Show welcome message for new users
   if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {
     setTimeout(() => {
-      showNotif('🎉 Vítej v AnonX Chat! Dokončuj chaty, získávej hodnocení a plň výzvy pro odblokování speciálních odměn. Začni svůj první pokec! 📊', false);
+      showNotif(getText('welcome'), false);
       localStorage.setItem('anonx_welcome_shown', 'true');
     }, 2000);
   }
