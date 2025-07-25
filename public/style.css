@@ -709,8 +709,8 @@ body.theme-glow .glow {
 
 .language-switcher {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  top: 30px;
+  right: 90px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -1120,8 +1120,8 @@ body.theme-glow .glow {
   }
   
   .language-switcher {
-    right: 20px;
-    bottom: 20px;
+    top: 20px;
+    right: 70px;
     padding: 10px 14px;
     font-size: 1.2rem;
   }
@@ -1133,10 +1133,10 @@ body.theme-glow .glow {
   }
   
   .floating-idea-button {
-    right: 20px;
-    top: 100px;
+    top: 20px;
+    right: 190px;
     padding: 8px 12px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     gap: 6px;
   }
   
@@ -1491,8 +1491,8 @@ body.theme-poltergeist .loading-text {
 /* Floating Idea Button */
 .floating-idea-button {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  top: 30px;
+  right: 230px;
   background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 50%, #f8bbd9 100%);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
@@ -2003,8 +2003,8 @@ body.theme-poltergeist .custom-tooltip::after {
 
 @media (max-width: 480px) {
   .floating-idea-button {
-    bottom: 15px;
-    right: 15px;
+    top: 15px;
+    right: 150px;
     padding: 8px 12px;
     font-size: 0.85rem;
     gap: 5px;
@@ -2013,10 +2013,19 @@ body.theme-poltergeist .custom-tooltip::after {
   .idea-text {
     display: none; /* Hide text on very small screens, keep only icon */
   }
+  
+  .language-switcher {
+    top: 15px;
+    right: 60px;
+    padding: 8px 12px;
+    font-size: 1.1rem;
+  }
 }
 
 @media (min-width: 1200px) {
   .floating-idea-button {
+    top: 30px;
+    right: 250px;
     padding: 14px 18px;
     font-size: 1.1rem;
     gap: 10px;

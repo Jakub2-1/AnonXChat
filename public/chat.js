@@ -1713,20 +1713,12 @@ function setupFloatingIdeaButton() {
 // Update floating button visibility based on current page
 function updateFloatingButtonVisibility() {
   const floatingButton = document.getElementById('floatingIdeaButton');
-  const mainPage = document.getElementById('mainPage');
-  const chatPage = document.getElementById('chatPage');
   
   if (!floatingButton) return;
   
-  // Show button only when main page is visible
-  const isMainPageVisible = mainPage && mainPage.style.display !== 'none';
-  const isChatPageVisible = chatPage && chatPage.style.display !== 'none';
-  
-  if (isMainPageVisible && !isChatPageVisible) {
-    floatingButton.classList.remove('hidden');
-  } else {
-    floatingButton.classList.add('hidden');
-  }
+  // Always show button since it's now in the header
+  floatingButton.classList.remove('hidden');
+}
 }
 
 // Page Visibility API handling for graceful tab switching
