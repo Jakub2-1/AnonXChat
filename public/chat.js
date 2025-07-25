@@ -4,7 +4,7 @@ let mySide = 'right';
 let partnerActive = true;
 let typingTimeout;
 let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default to true
-let currentTheme = localStorage.getItem('selectedTheme') || 'phantom'; // Default to phantom theme
+let currentTheme = localStorage.getItem('selectedTheme') || 'poltergeist'; // Default to poltergeist theme
 let currentThemeData = null;
 let currentPartnerId = null; // Store current partner ID for favorites
 
@@ -240,6 +240,11 @@ const themeDefinitions = {
     name: 'Glow', 
     icon: '🌟',
     className: 'theme-glow'
+  },
+  poltergeist: {
+    name: 'Poltergeist',
+    icon: '👁️‍🗨️',
+    className: 'theme-poltergeist'
   }
 };
 
@@ -703,8 +708,14 @@ function showPublicBadge() {
 
 // Theme management
 function switchTheme() {
-  // Toggle between phantom and glow
-  currentTheme = currentTheme === 'phantom' ? 'glow' : 'phantom';
+  // Cycle through phantom -> glow -> poltergeist -> phantom
+  if (currentTheme === 'phantom') {
+    currentTheme = 'glow';
+  } else if (currentTheme === 'glow') {
+    currentTheme = 'poltergeist';
+  } else {
+    currentTheme = 'phantom';
+  }
   applyMainTheme(currentTheme);
   localStorage.setItem('selectedTheme', currentTheme);
 }
@@ -733,9 +744,16 @@ function applyMainTheme(themeName) {
     createDeepGothOverlays();
   }
   
+  // Add poltergeist effects for poltergeist theme
+  if (themeName === 'poltergeist') {
+    createPoltergeistEffects();
+  }
+  
   // Still apply color variations for variety within the theme
   if (themeName === 'phantom') {
     randomizeTheme(); // Keep color variety for phantom
+  } else if (themeName === 'poltergeist') {
+    randomizePoltergeistTheme(); // Special color variations for poltergeist
   } else {
     randomizeTheme(); // Keep color variety for glow
   }
@@ -766,13 +784,72 @@ function createDeepGothOverlays() {
 
 // Remove theme overlays
 function removeThemeOverlays() {
-  const overlays = ['fogOverlay', 'sparklesOverlay', 'shadowsOverlay'];
+  const overlays = ['fogOverlay', 'sparklesOverlay', 'shadowsOverlay', 'poltergeistGlitchOverlay', 'poltergeistStaticOverlay'];
   overlays.forEach(id => {
     const element = document.getElementById(id);
     if (element) {
       element.remove();
     }
   });
+}
+
+// Create poltergeist atmospheric effects
+function createPoltergeistEffects() {
+  const body = document.body;
+  
+  // Create glitch overlay for poltergeist disturbance
+  const glitchOverlay = document.createElement('div');
+  glitchOverlay.className = 'poltergeist-glitch-overlay';
+  glitchOverlay.id = 'poltergeistGlitchOverlay';
+  body.appendChild(glitchOverlay);
+  
+  // Create static noise overlay
+  const staticOverlay = document.createElement('div');
+  staticOverlay.className = 'poltergeist-static-overlay';
+  staticOverlay.id = 'poltergeistStaticOverlay';
+  body.appendChild(staticOverlay);
+}
+
+// Poltergeist theme color variations - disturbing variations
+function randomizePoltergeistTheme() {
+  const poltergeistVariations = [
+    {
+      name: 'Blood Glitch',
+      primary: '#ff2e2e',
+      secondary: '#8b0000', 
+      accent: '#00cfff',
+      glow: 'rgba(255, 46, 46, 0.8)',
+      shadow: 'rgba(255, 46, 46, 0.4)'
+    },
+    {
+      name: 'Electric Disturbance', 
+      primary: '#00cfff',
+      secondary: '#0080ff',
+      accent: '#ff2e2e', 
+      glow: 'rgba(0, 207, 255, 0.8)',
+      shadow: 'rgba(0, 207, 255, 0.4)'
+    },
+    {
+      name: 'Corrupted Signal',
+      primary: '#ff00ff',
+      secondary: '#8000ff',
+      accent: '#00ff00',
+      glow: 'rgba(255, 0, 255, 0.8)', 
+      shadow: 'rgba(255, 0, 255, 0.4)'
+    },
+    {
+      name: 'Dead Zone',
+      primary: '#666666',
+      secondary: '#333333',
+      accent: '#ff2e2e',
+      glow: 'rgba(102, 102, 102, 0.8)',
+      shadow: 'rgba(102, 102, 102, 0.4)'
+    }
+  ];
+  
+  const randomIndex = Math.floor(Math.random() * poltergeistVariations.length);
+  currentThemeData = poltergeistVariations[randomIndex];
+  applyTheme(currentThemeData);
 }
 
 function updateThemeSwitcher() {
