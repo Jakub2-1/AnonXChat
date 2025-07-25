@@ -981,6 +981,9 @@ function handlePostRating() {
   // Clear chat messages
   document.getElementById('messages').innerHTML = '';
   
+  // Clear current partner ID after rating is done
+  currentPartnerId = null;
+  
   if (ratingAction === 'continue') {
     // Randomize theme for new chat
     randomizeTheme();
@@ -1042,6 +1045,10 @@ document.getElementById('returnBtn').onclick = function() {
 // SKIP BTN = najde nového partnera bez návratu na hlavní
 document.getElementById('skipBtn').onclick = function() {
     if (socket) socket.emit('leave_chat');
+    
+    // Store partner ID before disconnecting (to preserve it for rating modal)
+    const partnerIdForRating = currentPartnerId;
+    
     socket.disconnect();
 
     // Play chat end sound
@@ -1050,6 +1057,9 @@ document.getElementById('skipBtn').onclick = function() {
     // Set action for rating
     setRatingAction('continue');
     
+    // Restore partner ID for rating modal
+    currentPartnerId = partnerIdForRating;
+    
     // Show rating modal first
     showRatingModal();
 };
@@ -1057,6 +1067,10 @@ document.getElementById('skipBtn').onclick = function() {
 // END CHAT BTN = konec chatu, návrat na hlavní
 document.getElementById('endBtn').onclick = function() {
     if (socket) socket.emit('leave_chat');
+    
+    // Store partner ID before disconnecting (to preserve it for rating modal)
+    const partnerIdForRating = currentPartnerId;
+    
     socket.disconnect();
 
     // Play chat end sound
@@ -1064,6 +1078,9 @@ document.getElementById('endBtn').onclick = function() {
 
     // Set action for rating
     setRatingAction('return');
+    
+    // Restore partner ID for rating modal
+    currentPartnerId = partnerIdForRating;
     
     // Show rating modal first
     showRatingModal();
