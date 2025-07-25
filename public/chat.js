@@ -4,12 +4,27 @@ let mySide = 'right';
 let partnerActive = true;
 let typingTimeout;
 let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default to true
-let currentTheme = null;
+let currentTheme = localStorage.getItem('selectedTheme') || 'phantom'; // Default to phantom theme
+let currentThemeData = null;
 
 // Sound system
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-// Theme palettes
+// Theme definitions
+const themeDefinitions = {
+  phantom: {
+    name: 'Phantom',
+    icon: '👻',
+    className: 'theme-phantom'
+  },
+  glow: {
+    name: 'Glow', 
+    icon: '🌟',
+    className: 'theme-glow'
+  }
+};
+
+// Theme palettes - keeping existing system for backward compatibility
 const themes = [
   {
     name: 'Blue Dream',
@@ -101,11 +116,51 @@ function playChatEnd() {
   createSound(400, 0.2, 'sine');
 }
 
-// Theme randomization
+// Theme management
+function switchTheme() {
+  // Toggle between phantom and glow
+  currentTheme = currentTheme === 'phantom' ? 'glow' : 'phantom';
+  applyMainTheme(currentTheme);
+  localStorage.setItem('selectedTheme', currentTheme);
+}
+
+function applyMainTheme(themeName) {
+  const themeData = themeDefinitions[themeName];
+  if (!themeData) return;
+  
+  const body = document.body;
+  const themeIcon = document.getElementById('themeIcon');
+  
+  // Remove existing theme classes
+  Object.values(themeDefinitions).forEach(theme => {
+    body.classList.remove(theme.className);
+  });
+  
+  // Apply new theme
+  body.classList.add(themeData.className);
+  themeIcon.textContent = themeData.icon;
+  
+  // Still apply color variations for variety within the theme
+  if (themeName === 'phantom') {
+    randomizeTheme(); // Keep color variety for phantom
+  } else {
+    randomizeTheme(); // Keep color variety for glow
+  }
+}
+
+function updateThemeSwitcher() {
+  const themeData = themeDefinitions[currentTheme];
+  const themeIcon = document.getElementById('themeIcon');
+  if (themeData && themeIcon) {
+    themeIcon.textContent = themeData.icon;
+  }
+}
+
+// Theme randomization - enhanced to work with main themes
 function randomizeTheme() {
   const randomIndex = Math.floor(Math.random() * themes.length);
-  currentTheme = themes[randomIndex];
-  applyTheme(currentTheme);
+  currentThemeData = themes[randomIndex];
+  applyTheme(currentThemeData);
 }
 
 function applyTheme(theme) {
@@ -322,6 +377,11 @@ document.getElementById('startBtn').onclick = function() {
   startSocket();
 }
 
+// THEME SWITCHER BTN
+document.getElementById('themeSwitcher').onclick = function() {
+  switchTheme();
+}
+
 // SOUND TOGGLE BTN
 document.getElementById('soundToggle').onclick = function() {
   soundEnabled = !soundEnabled;
@@ -452,6 +512,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set up sound toggle
   updateSoundToggle();
   
-  // Set initial theme
+  // Set up theme switcher
+  updateThemeSwitcher();
+  applyMainTheme(currentTheme);
+  
+  // Set initial theme variation
   randomizeTheme();
 });
