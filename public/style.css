@@ -1331,47 +1331,103 @@ body.theme-glow .glow {
 
 /* Floating Idea Button */
 .floating-idea-button {
-copilot/fix-702fe137-6ad8-45d6-981f-35258fdbfd26
-  position: absolute;
-  top: 30px;
-  right: 440px;
-  background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 50%, #f8bbd9 100%);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   padding: 12px 16px;
-  border-radius: 1.3rem;
+  border-radius: 2rem;
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  animation: fade-in 0.6s ease-out;
-  transition: all 0.2s ease-in-out;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(248, 187, 217, 0.3);
+  animation: fade-in 0.6s ease-out, gentle-float 6s ease-in-out infinite;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
-  opacity: 0.8;
+  opacity: 0.9;
   display: flex;
   align-items: center;
   gap: 8px;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  color: #666;
+  color: #4a5568;
+  text-decoration: none;
+  position: relative;
+  overflow: visible;
 }
 
 .floating-idea-button:hover {
-  background: linear-gradient(135deg, #f8bbd9 0%, #b3e5fc 100%);
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #f8bbd9 0%, #b3e5fc 50%, #fce4ec 100%);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25), 0 8px 20px rgba(248, 187, 217, 0.4);
   opacity: 1;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Modern Custom Tooltip */
+.custom-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: linear-gradient(135deg, rgba(26, 32, 44, 0.95) 0%, rgba(45, 55, 72, 0.95) 100%);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(248, 187, 217, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1001;
+}
+
+.custom-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(26, 32, 44, 0.95);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.floating-idea-button:hover .custom-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Gentle floating animation - reduced for stability */
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
 }
 
 .idea-icon {
-  font-size: 1.2rem;
-  transition: transform 0.2s ease-in-out;
+  font-size: 1.3rem;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .idea-text {
   font-size: 0.9rem;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .floating-idea-button:hover .idea-icon,
@@ -1379,117 +1435,108 @@ copilot/fix-702fe137-6ad8-45d6-981f-35258fdbfd26
   transform: scale(1.1);
 }
 
-/* Dark theme styles for floating idea button */
-body.theme-phantom .floating-idea-button {
-  background: linear-gradient(135deg, #333333 0%, #555555 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #cccccc;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
-
-body.theme-phantom .floating-idea-button:hover {
-  background: linear-gradient(135deg, #444444 0%, #666666 100%);
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
-}
-
-/* Light theme styles for floating idea button */
-body.theme-glow .floating-idea-button {
-  background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 100%);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #4a5568;
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
-}
-
-body.theme-glow .floating-idea-button:hover {
-  background: linear-gradient(135deg, #f8bbd9 0%, #b3e5fc 100%);
-  box-shadow: 0 15px 45px rgba(59, 130, 246, 0.3);
-
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 1.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  z-index: 1000;
-  opacity: 0.8;
-  
-  /* Default theme styling */
-  background: linear-gradient(135deg, #f8bbd9 0%, #b8e6ff 100%);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.floating-idea-button:hover {
-  opacity: 1;
-  transform: scale(1.1);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-}
-
-.idea-icon {
-  display: block;
-  transition: transform 0.2s ease-in-out;
-}
-
-.floating-idea-button:hover .idea-icon {
-  transform: scale(1.1);
-}
-
 /* Theme-specific styling for floating idea button */
 body.theme-phantom .floating-idea-button {
-  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-  border: 1px solid rgba(138, 21, 56, 0.3);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4),
-              0 0 20px rgba(138, 21, 56, 0.2);
+  background: linear-gradient(135deg, rgba(74, 85, 104, 0.9) 0%, rgba(45, 55, 72, 0.9) 50%, rgba(26, 32, 44, 0.9) 100%);
+  border: 2px solid rgba(138, 21, 56, 0.4);
+  color: #e2e8f0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(138, 21, 56, 0.3);
 }
 
 body.theme-phantom .floating-idea-button:hover {
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5),
-              0 0 30px rgba(138, 21, 56, 0.4);
-  border: 1px solid rgba(138, 21, 56, 0.5);
+  background: linear-gradient(135deg, rgba(45, 55, 72, 0.95) 0%, rgba(26, 32, 44, 0.95) 50%, rgba(74, 85, 104, 0.9) 100%);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(138, 21, 56, 0.5);
+  border-color: rgba(138, 21, 56, 0.6);
+}
+
+body.theme-phantom .custom-tooltip {
+  background: linear-gradient(135deg, rgba(138, 21, 56, 0.95) 0%, rgba(76, 29, 149, 0.9) 100%);
+  border-color: rgba(138, 21, 56, 0.3);
+}
+
+body.theme-phantom .custom-tooltip::after {
+  border-top-color: rgba(138, 21, 56, 0.95);
 }
 
 body.theme-glow .floating-idea-button {
-  background: linear-gradient(135deg, #f8bbd9 0%, #b8e6ff 100%);
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2),
-              0 0 20px rgba(251, 191, 36, 0.3);
+  background: linear-gradient(135deg, #fce4ec 0%, #e1f5fe 50%, #f8bbd9 100%);
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  color: #2d3748;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2), 0 0 20px rgba(251, 191, 36, 0.3);
 }
 
 body.theme-glow .floating-idea-button:hover {
-  box-shadow: 0 12px 35px rgba(59, 130, 246, 0.3),
-              0 0 30px rgba(251, 191, 36, 0.5);
-  border: 2px solid rgba(251, 191, 36, 0.5);
+  background: linear-gradient(135deg, #f8bbd9 0%, #b3e5fc 50%, #fce4ec 100%);
+  box-shadow: 0 15px 45px rgba(59, 130, 246, 0.3), 0 0 30px rgba(251, 191, 36, 0.5);
+  border-color: rgba(251, 191, 36, 0.6);
+}
+
+body.theme-glow .custom-tooltip {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(236, 72, 153, 0.9) 100%);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+body.theme-glow .custom-tooltip::after {
+  border-top-color: rgba(59, 130, 246, 0.95);
 }
 
 /* Responsive design for floating idea button */
 @media (max-width: 700px) {
   .floating-idea-button {
-    width: 50px;
-    height: 50px;
     bottom: 20px;
     right: 20px;
-    font-size: 1.5rem;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    gap: 6px;
+  }
+  
+  .idea-icon {
+    font-size: 1.1rem;
+  }
+  
+  .idea-text {
+    font-size: 0.8rem;
+  }
+  
+  .custom-tooltip {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-idea-button {
+    bottom: 15px;
+    right: 15px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    gap: 5px;
+  }
+  
+  .idea-text {
+    display: none; /* Hide text on very small screens, keep only icon */
   }
 }
 
 @media (min-width: 1200px) {
   .floating-idea-button {
-    width: 70px;
-    height: 70px;
-    font-size: 2rem;
+    padding: 14px 18px;
+    font-size: 1.1rem;
+    gap: 10px;
+  }
+  
+  .idea-icon {
+    font-size: 1.4rem;
+  }
+  
+  .idea-text {
+    font-size: 1rem;
   }
 }
 
 /* Hide floating button when not on main page */
 .floating-idea-button.hidden {
   display: none;
-main
 }
 
 /* Rating Modal */
