@@ -668,6 +668,27 @@ function showMainPage() {
   const logo = document.querySelector('.glow');
   const startBtn = document.getElementById('startBtn');
   
+  // Clean up any existing socket connection
+  if (socket) {
+    socket.removeAllListeners();
+    socket.disconnect();
+    socket = null;
+  }
+  
+  // Reset chat state
+  partnerActive = true;
+  currentPartnerId = null;
+  currentChatStart = null;
+  
+  // Clear chat messages
+  document.getElementById('messages').innerHTML = '';
+  
+  // Clear typing indicator
+  document.getElementById('typingIndicator').style.display = 'none';
+  
+  // Clear chat input
+  document.getElementById('chatInput').value = '';
+  
   // Remove searching background effect
   document.body.classList.remove('searching-partner');
   
@@ -1070,11 +1091,16 @@ document.getElementById('endBtn').onclick = function() {
 };
 // SOCKET.IO
 function startSocket(preferFavorites = false) {
-  // Disconnect existing socket if it exists
+  // Disconnect existing socket if it exists and clean up properly
   if (socket) {
+    socket.removeAllListeners(); // Remove all event listeners to prevent memory leaks
     socket.disconnect();
     socket = null;
   }
+  
+  // Reset connection state
+  partnerActive = true;
+  currentPartnerId = null;
   
   socket = io();
   
@@ -1129,9 +1155,20 @@ function startSocket(preferFavorites = false) {
     playChatEnd();
   });
   
-  socket.on('disconnect', ()=> {
-    showNotif('Disconnected from server.', true);
-    currentPartnerId = null; // Clear partner ID on disconnect
+  socket.on('disconnect', (reason)=> {
+    // Only show disconnect message if it's an unexpected disconnect
+    // Don't show it when user intentionally ends chat or navigates away
+    if (reason !== 'io client disconnect' && reason !== 'client namespace disconnect') {
+      showNotif('Disconnected from server.', true);
+    }
+    
+    // Always clean up state on disconnect
+    currentPartnerId = null;
+    partnerActive = false;
+    currentChatStart = null;
+    
+    // Clear typing indicator
+    document.getElementById('typingIndicator').style.display = 'none';
   });
 
   // Indikace psaní
