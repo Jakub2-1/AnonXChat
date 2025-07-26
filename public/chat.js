@@ -1400,6 +1400,33 @@ function createHelloKittyEffects() {
 
 // Create animated sparkles background
 function createSparklesContainer() {
+  // Check if sparkles container already exists in HTML
+  const existingSparkles = document.getElementById('kittySparkles');
+  if (existingSparkles) {
+    sparkleContainer = existingSparkles;
+    // Add additional sparkles if container is empty
+    if (sparkleContainer.children.length === 0) {
+      // Create multiple sparkles
+      for (let i = 0; i < 20; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = `sparkle sparkle-${(i % 6) + 1}`;
+        sparkle.textContent = Math.random() > 0.5 ? '✨' : '💎';
+        
+        // Random positioning
+        sparkle.style.left = Math.random() * 100 + '%';
+        sparkle.style.top = Math.random() * 100 + '%';
+        
+        // Add drift animation randomly
+        if (Math.random() > 0.5) {
+          sparkle.classList.add('drift');
+        }
+        
+        sparkleContainer.appendChild(sparkle);
+      }
+    }
+    return;
+  }
+  
   if (sparkleContainer) {
     sparkleContainer.remove();
   }
@@ -1436,6 +1463,15 @@ function createSparklesContainer() {
 
 // Create Hello Kitty character element
 function createHelloKittyCharacter() {
+  // Check if character already exists in HTML
+  const existingCharacter = document.getElementById('helloKittyCharacter');
+  if (existingCharacter) {
+    helloKittyCharacter = existingCharacter;
+    setupKittyInteractions();
+    startKittyBlinking();
+    return;
+  }
+  
   if (helloKittyCharacter) {
     helloKittyCharacter.remove();
   }
@@ -1580,43 +1616,10 @@ function setRandomKittyPosition() {
   helloKittyCharacter.className = 'hello-kitty-character';
   
   if (isMainPage) {
-    // 20% chance for button hugging, 40% for above positions, 40% for side positions
-    const positionType = Math.random();
-    
-    if (positionType < 0.2) {
-      // Button hugging position
-      setKittyHugButton();
-      helloKittyCharacter.dataset.positionType = 'hug';
-      currentKittyPosition = 'kitty-main-hug-button';
-    } else if (positionType < 0.6) {
-      // Above positions
-      const aboveVariants = [
-        'kitty-main-above-sitting',
-        'kitty-main-above-lying', 
-        'kitty-main-above-sleepy',
-        'kitty-main-above-curious',
-        'kitty-main-above-playful'
-      ];
-      
-      const randomVariant = aboveVariants[Math.floor(Math.random() * aboveVariants.length)];
-      helloKittyCharacter.classList.add(randomVariant);
-      helloKittyCharacter.dataset.positionType = 'above';
-      currentKittyPosition = randomVariant;
-    } else {
-      // Side positions
-      const sideVariants = [
-        'kitty-main-side-peek-left',
-        'kitty-main-side-hide-right',
-        'kitty-main-side-corner-left', 
-        'kitty-main-side-corner-right',
-        'kitty-main-side-behind'
-      ];
-      
-      const randomVariant = sideVariants[Math.floor(Math.random() * sideVariants.length)];
-      helloKittyCharacter.classList.add(randomVariant);
-      helloKittyCharacter.dataset.positionType = 'side';
-      currentKittyPosition = randomVariant;
-    }
+    // Always place Hello Kitty on the Start Chat button for better visibility
+    setKittyHugButton();
+    helloKittyCharacter.dataset.positionType = 'hug';
+    currentKittyPosition = 'kitty-main-hug-button';
     
     // Show body and arms for main page positions
     const body = helloKittyCharacter.querySelector('.kitty-body');
