@@ -12,17 +12,7 @@
   <!-- Demo Header -->
   <div class="demo-header">
     <h1 class="demo-title">Phantom Theme Demo</h1>
-    <p class="demo-subtitle">Experience the mystical hacker-inspired premium theme</p>
-  </div>
-
-  <!-- Demo Controls -->
-  <div class="phantom-demo-controls">
-    <button type="button" class="phantom-boost-toggle" id="boostToggle">
-      Activate Boost 🚀
-    </button>
-    <button type="button" class="demo-reset-btn" id="resetDemo">
-      Reset Demo
-    </button>
+    <p class="demo-subtitle">Experience the horror-inspired premium theme with bench background</p>
   </div>
 
   <!-- Main Demo Content -->
@@ -36,18 +26,165 @@
       
       <div class="messages" id="demoMessages">
         <div class="message theirs">
-          <div class="message-content">Hey there! Welcome to the Phantom realm... 👻</div>
+          <div class="message-content">Welcome to the new Phantom theme! 👻</div>
           <div class="message-time">Just now</div>
         </div>
         <div class="message mine">
-          <div class="message-content">This theme is incredible! The ethereal effects are amazing.</div>
+          <div class="message-content">The bench background looks amazing in the dark!</div>
           <div class="message-time">Just now</div>
         </div>
         <div class="message theirs">
-          <div class="message-content">I know right? The fog effects and neon borders make it feel so mystical ✨</div>
+          <div class="message-content">Did you see that dark silhouette sitting on the bench? So creepy! 😱</div>
           <div class="message-time">Just now</div>
         </div>
         <div class="message mine">
+          <div class="message-content">And I love the jumpscare feature! Perfect for premium users 💀</div>
+          <div class="message-time">Just now</div>
+        </div>
+      </div>
+      
+      <!-- Typing Indicator -->
+      <div id="typingIndicator" style="display: none;">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      </div>
+      
+      <!-- Chat Input -->
+      <div class="chat-input-container">
+        <input type="text" id="demoInput" class="chat-input" placeholder="Experience the phantom horror magic..." />
+        <button type="button" class="send-btn" id="demoSend">Send</button>
+      </div>
+    </div>
+
+    <!-- Feature Showcase -->
+    <div class="demo-features">
+      <h2>Phantom Theme Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🏞️</div>
+          <div class="feature-title">Bench Background</div>
+          <div class="feature-desc">Dark bench under a lamp creates atmospheric setting</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👤</div>
+          <div class="feature-title">Dark Silhouette</div>
+          <div class="feature-desc">Mysterious figure appears randomly on the bench</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">😱</div>
+          <div class="feature-title">Jumpscare Effect</div>
+          <div class="feature-desc">Horror animation sent between premium users</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <div class="feature-title">Dark Bubbles</div>
+          <div class="feature-desc">Transparent messages with horror aesthetics</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔊</div>
+          <div class="feature-title">Horror Sounds</div>
+          <div class="feature-desc">Whisper and scream effects for jumpscares</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <div class="feature-title">Responsive</div>
+          <div class="feature-desc">Perfect on all devices with accessibility</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo Controls -->
+    <div class="demo-controls">
+      <button type="button" id="triggerSilhouette">Show Silhouette</button>
+      <button type="button" id="triggerJumpscare">Trigger Jumpscare</button>
+      <button type="button" id="addDemoMessage">Add Demo Message</button>
+      <button type="button" id="toggleTyping">Toggle Typing Indicator</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="demo-footer">
+    <a href="/" class="back-link">← Back to AnonX Chat</a>
+    <p class="demo-note">
+      This is a demonstration of the Phantom premium theme.<br>
+      In the actual app, this theme requires premium access.
+    </p>
+  </div>
+
+  <!-- Scripts -->
+  <script src="phantom-theme.js"></script>
+  <script>
+    // Enable premium access for demo
+    localStorage.setItem('anonx_premium', 'true');
+    localStorage.setItem('devKey', 'MY_SECRET_KEY');
+    
+    // Demo functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ensure phantom theme is active
+      if (window.phantomTheme && !window.phantomTheme.isActive) {
+        window.phantomTheme.activate();
+      }
+      
+      // Demo controls
+      document.getElementById('triggerSilhouette')?.addEventListener('click', () => {
+        if (window.phantomTheme) {
+          window.phantomTheme.createSilhouette();
+        }
+      });
+      
+      document.getElementById('triggerJumpscare')?.addEventListener('click', () => {
+        if (window.phantomTheme) {
+          window.phantomTheme.receiveJumpscare({
+            type: 'phantom',
+            timestamp: Date.now()
+          });
+        }
+      });
+      
+      document.getElementById('addDemoMessage')?.addEventListener('click', () => {
+        const messages = document.getElementById('demoMessages');
+        const newMessage = document.createElement('div');
+        newMessage.className = 'message theirs';
+        newMessage.innerHTML = `
+          <div class="message-content">This is a demo message in the horror theme! 👻</div>
+          <div class="message-time">Just now</div>
+        `;
+        messages.appendChild(newMessage);
+      });
+      
+      let typingVisible = false;
+      document.getElementById('toggleTyping')?.addEventListener('click', () => {
+        const indicator = document.getElementById('typingIndicator');
+        typingVisible = !typingVisible;
+        indicator.style.display = typingVisible ? 'block' : 'none';
+      });
+      
+      // Demo input functionality
+      document.getElementById('demoSend')?.addEventListener('click', () => {
+        const input = document.getElementById('demoInput');
+        if (input.value.trim()) {
+          const messages = document.getElementById('demoMessages');
+          const newMessage = document.createElement('div');
+          newMessage.className = 'message mine';
+          newMessage.innerHTML = `
+            <div class="message-content">${input.value}</div>
+            <div class="message-time">Just now</div>
+          `;
+          messages.appendChild(newMessage);
+          input.value = '';
+        }
+      });
+      
+      document.getElementById('demoInput')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          document.getElementById('demoSend').click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
           <div class="message-content">And this Montserrat font gives it such an elegant touch!</div>
           <div class="message-time">Just now</div>
         </div>

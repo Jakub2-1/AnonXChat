@@ -1,15 +1,21 @@
 /*
  * Phantom Theme JavaScript Module
  * Handles Phantom theme-specific functionality including:
- * - Dissolving text effect on theme activation
- * - Boost Phantom effect toggle
- * - Fog particle management
- * - Theme-specific interactions
+ * - Bench background with dark silhouette figure
+ * - Jumpscare functionality with Socket.IO integration
+ * - Premium user access control
+ * - Horror sound effects
  */
 
 class PhantomTheme {
   constructor() {
     this.isActive = false;
+copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
+    this.hasPremiumAccess = false;
+    this.silhouetteInterval = null;
+    this.jumpscareButton = null;
+    this.currentSilhouette = null;
+
     this.isBoostActive = false;
     this.fogParticles = [];
     this.dissolvingTextTimeout = null;
@@ -20,10 +26,34 @@ class PhantomTheme {
     this.benchShadowElements = [];
     this.jumpscareButton = null;
     this.isJumpscareActive = false;
+ main
     
     // Bind methods
     this.activate = this.activate.bind(this);
     this.deactivate = this.deactivate.bind(this);
+copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
+    this.createJumpscareButton = this.createJumpscareButton.bind(this);
+    this.sendJumpscare = this.sendJumpscare.bind(this);
+    this.receiveJumpscare = this.receiveJumpscare.bind(this);
+    this.createSilhouette = this.createSilhouette.bind(this);
+    this.startSilhouetteAnimation = this.startSilhouetteAnimation.bind(this);
+    this.stopSilhouetteAnimation = this.stopSilhouetteAnimation.bind(this);
+    this.playJumpscareSound = this.playJumpscareSound.bind(this);
+    this.checkPremiumAccess = this.checkPremiumAccess.bind(this);
+  }
+
+  /**
+   * Check if user has premium access to Phantom theme
+   */
+  checkPremiumAccess() {
+    // Check for premium access via multiple methods
+    const isPremium = localStorage.getItem('anonx_premium') === 'true';
+    const hasDevKey = localStorage.getItem('devKey') === 'MY_SECRET_KEY';
+    const hasPhantomTheme = JSON.parse(localStorage.getItem('premiumThemesUnlocked') || '[]').includes('phantom');
+    
+    this.hasPremiumAccess = isPremium || hasDevKey || hasPhantomTheme;
+    return this.hasPremiumAccess;
+
     this.toggleBoost = this.toggleBoost.bind(this);
     this.showDissolvingText = this.showDissolvingText.bind(this);
     this.createFogOverlay = this.createFogOverlay.bind(this);
@@ -41,6 +71,7 @@ class PhantomTheme {
     this.showJumpscareEffect = this.showJumpscareEffect.bind(this);
     this.hideJumpscareEffect = this.hideJumpscareEffect.bind(this);
     this.hasPhantomPremium = this.hasPhantomPremium.bind(this);
+ main
   }
 
   /**
@@ -55,15 +86,17 @@ class PhantomTheme {
     // Add theme class to body
     document.body.classList.add('theme-phantom');
     
-    // Show dissolving text effect
-    this.showDissolvingText();
+    // Check premium access
+    this.checkPremiumAccess();
     
-    // Create fog overlay
-    this.createFogOverlay();
+    // Start silhouette animation
+    this.startSilhouetteAnimation();
     
-    // Start ghost character animation
-    this.startGhostAnimation();
-    
+copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
+    // Create jumpscare button if user has premium access
+    if (this.hasPremiumAccess) {
+      this.createJumpscareButton();
+
     // Start bench shadow animation
     this.startBenchShadowAnimation();
     
@@ -75,7 +108,11 @@ class PhantomTheme {
     // Create boost controls if in demo mode
     if (this.isDemoMode()) {
       this.createBoostControls();
+ main
     }
+    
+    // Set up Socket.IO listeners for jumpscare
+    this.setupSocketListeners();
     
     // Store theme preference
     localStorage.setItem('selectedTheme', 'phantom');
@@ -95,12 +132,16 @@ class PhantomTheme {
     // Remove theme class from body
     document.body.classList.remove('theme-phantom');
     
-    // Remove boost effect
-    this.deactivateBoost();
+    // Stop silhouette animation
+    this.stopSilhouetteAnimation();
     
-    // Clean up fog overlay
-    this.removeFogOverlay();
+    // Remove jumpscare button
+    this.removeJumpscareButton();
     
+ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
+    // Remove any active jumpscare overlay
+    this.removeJumpscareOverlay();
+
     // Stop ghost animation
     this.stopGhostAnimation();
     
@@ -112,6 +153,7 @@ class PhantomTheme {
     
     // Remove boost controls
     this.removeBoostControls();
+ main
     
     // Remove jumpscare button
     this.removeJumpscareButton();
@@ -120,42 +162,15 @@ class PhantomTheme {
   }
 
   /**
-   * Show the dissolving text effect "Entering Phantom Mode…"
+   * Start silhouette animation with random intervals
    */
-  showDissolvingText() {
-    // Remove any existing dissolving text
-    this.removeDissolvingText();
-    
-    // Create dissolving text element
-    const dissolvingText = document.createElement('div');
-    dissolvingText.className = 'phantom-entering-text';
-    dissolvingText.textContent = 'Entering Phantom Mode…';
-    dissolvingText.setAttribute('aria-live', 'polite');
-    dissolvingText.setAttribute('role', 'status');
-    
-    // Add to DOM
-    document.body.appendChild(dissolvingText);
-    
-    // Remove after animation completes (3 seconds)
-    this.dissolvingTextTimeout = setTimeout(() => {
-      this.removeDissolvingText();
-    }, 3000);
-  }
+  startSilhouetteAnimation() {
+    if (this.silhouetteInterval) {
+      clearInterval(this.silhouetteInterval);
+    }
 
-  /**
-   * Remove dissolving text element
-   */
-  removeDissolvingText() {
-    if (this.dissolvingTextTimeout) {
-      clearTimeout(this.dissolvingTextTimeout);
-      this.dissolvingTextTimeout = null;
-    }
-    
-    const existingText = document.querySelector('.phantom-entering-text');
-    if (existingText) {
-      existingText.remove();
-    }
-  }
+   // Create first silhouette after a short delay
+ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
 
   /**
    * Create fog/smoke overlay with animated particles
@@ -320,256 +335,212 @@ class PhantomTheme {
     }
 
     // Create first ghost after a short delay
+main
     setTimeout(() => {
       if (this.isActive) {
-        this.createGhostCharacter();
+        this.createSilhouette();
       }
-    }, 2000);
+    }, 3000);
 
-    // Set up recurring ghost appearances
-    const scheduleNextGhost = () => {
+    // Set up recurring silhouette appearances
+    const scheduleNextSilhouette = () => {
       if (!this.isActive) return;
       
-      // Random interval between 6-15 seconds
-      const interval = 6000 + Math.random() * 9000;
+      // Random interval between 8-20 seconds
+      const interval = 8000 + Math.random() * 12000;
       
-      this.ghostInterval = setTimeout(() => {
+      this.silhouetteInterval = setTimeout(() => {
         if (this.isActive) {
-          this.createGhostCharacter();
-          scheduleNextGhost();
+          this.createSilhouette();
+          scheduleNextSilhouette();
         }
       }, interval);
     };
 
-    scheduleNextGhost();
-    console.log('Ghost character animation started');
+    scheduleNextSilhouette();
+    console.log('Silhouette animation started');
   }
 
   /**
-   * Stop ghost character animation
+   * Stop silhouette animation
    */
-  stopGhostAnimation() {
-    if (this.ghostInterval) {
-      clearTimeout(this.ghostInterval);
-      this.ghostInterval = null;
+  stopSilhouetteAnimation() {
+    if (this.silhouetteInterval) {
+      clearTimeout(this.silhouetteInterval);
+      this.silhouetteInterval = null;
     }
-    this.cleanupGhostElements();
-    console.log('Ghost character animation stopped');
+    this.removeSilhouette();
+    console.log('Silhouette animation stopped');
   }
 
   /**
-   * Create and animate a ghost character
+   * Create and animate a dark silhouette figure
    */
-  createGhostCharacter() {
-    // Clean up any existing ghost elements first
-    this.cleanupGhostElements();
+  createSilhouette() {
+    // Remove any existing silhouette first
+    this.removeSilhouette();
 
-    const ghost = document.createElement('div');
-    
-    // Random choice between emoji and SVG
-    const useEmoji = Math.random() > 0.5;
-    
-    if (useEmoji) {
-      ghost.className = 'phantom-ghost-character';
-      ghost.textContent = '👻';
-    } else {
-      ghost.className = 'phantom-ghost-svg';
-      ghost.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 100%; height: 100%;">
-          <path d="M12 2C8.14 2 5 5.14 5 9v8l2-2 2 2 3-3 3 3 2-2 2 2V9c0-3.86-3.14-7-7-7zm-1 12.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zm2 0c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5z"/>
-        </svg>
-      `;
-    }
-    
-    // Set random horizontal position (10% to 90% of screen width)
-    const randomX = 10 + Math.random() * 80;
-    
-    // Set vertical position (30% to 70% of screen height)
-    const randomY = 30 + Math.random() * 40;
-    
-    ghost.style.left = `${randomX}%`;
-    ghost.style.top = `${randomY}%`;
-    ghost.style.color = Math.random() > 0.5 ? 'var(--phantom-purple)' : 'var(--phantom-turquoise)';
+    const silhouette = document.createElement('div');
+    silhouette.className = 'phantom-silhouette';
     
     // Add to DOM and track
-    document.body.appendChild(ghost);
-    this.ghostElements.push(ghost);
-    
-    // Trigger animation
-    setTimeout(() => {
-      ghost.classList.add('appearing');
-    }, 100);
+    document.body.appendChild(silhouette);
+    this.currentSilhouette = silhouette;
     
     // Remove after animation completes (4 seconds)
     setTimeout(() => {
-      this.removeGhostElement(ghost);
-    }, 4500);
+      this.removeSilhouette();
+    }, 4000);
     
-    console.log('Ghost character created at position', randomX + '%', randomY + '%');
+    console.log('Dark silhouette created');
   }
 
   /**
-   * Remove a specific ghost element
+   * Remove the current silhouette element
    */
-  removeGhostElement(ghost) {
-    if (ghost && ghost.parentNode) {
-      ghost.parentNode.removeChild(ghost);
+  removeSilhouette() {
+    if (this.currentSilhouette && this.currentSilhouette.parentNode) {
+      this.currentSilhouette.parentNode.removeChild(this.currentSilhouette);
+      this.currentSilhouette = null;
     }
-    this.ghostElements = this.ghostElements.filter(el => el !== ghost);
   }
 
   /**
-   * Clean up all ghost elements
+   * Create jumpscare button for premium users
    */
-  cleanupGhostElements() {
-    this.ghostElements.forEach(ghost => {
-      if (ghost && ghost.parentNode) {
-        ghost.parentNode.removeChild(ghost);
-      }
+  createJumpscareButton() {
+    // Remove existing button
+    this.removeJumpscareButton();
+    
+    // Create jumpscare button
+    this.jumpscareButton = document.createElement('button');
+    this.jumpscareButton.className = 'phantom-jumpscare-button';
+    this.jumpscareButton.textContent = '👻 Jumpscare';
+    this.jumpscareButton.setAttribute('type', 'button');
+    this.jumpscareButton.setAttribute('aria-label', 'Send jumpscare to partner');
+    this.jumpscareButton.addEventListener('click', this.sendJumpscare);
+    
+    // Show button
+    this.jumpscareButton.style.display = 'block';
+    
+    // Add to DOM
+    document.body.appendChild(this.jumpscareButton);
+    
+    console.log('Jumpscare button created for premium user');
+  }
+
+  /**
+   * Remove jumpscare button
+   */
+  removeJumpscareButton() {
+    if (this.jumpscareButton) {
+      this.jumpscareButton.remove();
+      this.jumpscareButton = null;
+    }
+  }
+
+  /**
+   * Send jumpscare to partner via Socket.IO
+   */
+  sendJumpscare() {
+    if (!this.hasPremiumAccess) {
+      console.log('Jumpscare blocked: User does not have premium access');
+      return;
+    }
+
+    if (!window.socket) {
+      console.log('Jumpscare blocked: No socket connection');
+      return;
+    }
+
+    // Emit jumpscare event to partner
+    window.socket.emit('jumpscare', {
+      type: 'phantom',
+      timestamp: Date.now()
     });
-    this.ghostElements = [];
-  }
 
-  /**
-   * Toggle Boost Phantom effect
-   */
-  toggleBoost() {
-    if (this.isBoostActive) {
-      this.deactivateBoost();
-    } else {
-      this.activateBoost();
+    // Disable button temporarily to prevent spam
+    if (this.jumpscareButton) {
+      this.jumpscareButton.disabled = true;
+      this.jumpscareButton.textContent = '👻 Sent!';
+      
+      setTimeout(() => {
+        if (this.jumpscareButton) {
+          this.jumpscareButton.disabled = false;
+          this.jumpscareButton.textContent = '👻 Jumpscare';
+        }
+      }, 5000);
     }
+
+    console.log('Jumpscare sent to partner');
   }
 
   /**
-   * Activate Boost Phantom effect
+   * Receive and display jumpscare animation
    */
-  activateBoost() {
-    if (!this.isActive) return;
+  receiveJumpscare(data) {
+    console.log('Jumpscare received:', data);
     
-    this.isBoostActive = true;
+    // Create jumpscare overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'phantom-jumpscare-overlay';
     
-    // Add boost class to main container
-    const mainContainer = document.querySelector('.centered') || 
-                         document.querySelector('.chat-container') || 
-                         document.body;
+    // Create horror figure
+    const figure = document.createElement('div');
+    figure.className = 'phantom-jumpscare-figure';
     
-    mainContainer.classList.add('phantom-boost-active');
+    overlay.appendChild(figure);
+    document.body.appendChild(overlay);
     
-    // Update boost button if it exists
-    if (this.boostToggleButton) {
-      this.boostToggleButton.classList.add('active');
-      this.boostToggleButton.textContent = 'Boost Active ⚡';
-    }
+    // Play sound effect
+    this.playJumpscareSound();
     
-    // Announce to screen readers
-    this.announceToScreenReader('Phantom boost activated');
-    
-    console.log('Phantom boost effect activated');
-  }
-
-  /**
-   * Deactivate Boost Phantom effect
-   */
-  deactivateBoost() {
-    this.isBoostActive = false;
-    
-    // Remove boost class from all elements
-    const boostedElements = document.querySelectorAll('.phantom-boost-active');
-    boostedElements.forEach(element => {
-      element.classList.remove('phantom-boost-active');
-    });
-    
-    // Update boost button if it exists
-    if (this.boostToggleButton) {
-      this.boostToggleButton.classList.remove('active');
-      this.boostToggleButton.textContent = 'Activate Boost 🚀';
-    }
-    
-    // Announce to screen readers
-    this.announceToScreenReader('Phantom boost deactivated');
-    
-    console.log('Phantom boost effect deactivated');
-  }
-
-  /**
-   * Create boost controls for demo mode
-   */
-  createBoostControls() {
-    // Remove existing controls
-    this.removeBoostControls();
-    
-    // Create controls container
-    const controlsContainer = document.createElement('div');
-    controlsContainer.className = 'phantom-demo-controls';
-    
-    // Create boost toggle button
-    this.boostToggleButton = document.createElement('button');
-    this.boostToggleButton.className = 'phantom-boost-toggle';
-    this.boostToggleButton.textContent = 'Activate Boost 🚀';
-    this.boostToggleButton.setAttribute('type', 'button');
-    this.boostToggleButton.setAttribute('aria-label', 'Toggle Phantom boost effect');
-    this.boostToggleButton.addEventListener('click', this.toggleBoost);
-    
-    // Add button to controls
-    controlsContainer.appendChild(this.boostToggleButton);
-    
-    // Add controls to DOM
-    document.body.appendChild(controlsContainer);
-    
-    console.log('Boost controls created for demo mode');
-  }
-
-  /**
-   * Remove boost controls
-   */
-  removeBoostControls() {
-    const existingControls = document.querySelector('.phantom-demo-controls');
-    if (existingControls) {
-      existingControls.remove();
-    }
-    this.boostToggleButton = null;
-  }
-
-  /**
-   * Check if we're in demo mode
-   */
-  isDemoMode() {
-    // Check if we're on a demo page or if demo mode is enabled
-    return window.location.pathname.includes('phantom-demo') || 
-           window.location.search.includes('demo=true') ||
-           localStorage.getItem('phantom_demo_mode') === 'true';
-  }
-
-  /**
-   * Announce text to screen readers
-   */
-  announceToScreenReader(message) {
-    const announcement = document.createElement('div');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.setAttribute('aria-atomic', 'true');
-    announcement.className = 'sr-only'; // Screen reader only
-    announcement.style.cssText = `
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      padding: 0 !important;
-      margin: -1px !important;
-      overflow: hidden !important;
-      clip: rect(0, 0, 0, 0) !important;
-      white-space: nowrap !important;
-      border: 0 !important;
-    `;
-    announcement.textContent = message;
-    
-    document.body.appendChild(announcement);
-    
-    // Remove after announcement
+    // Remove overlay after 2 seconds
     setTimeout(() => {
-      if (announcement.parentNode) {
-        announcement.parentNode.removeChild(announcement);
-      }
-    }, 1000);
+      this.removeJumpscareOverlay();
+    }, 2000);
+    
+    console.log('Jumpscare animation displayed');
+  }
+
+  /**
+   * Remove jumpscare overlay
+   */
+  removeJumpscareOverlay() {
+    const overlay = document.querySelector('.phantom-jumpscare-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+  }
+
+  /**
+   * Play jumpscare sound effect
+   */
+  playJumpscareSound() {
+    try {
+      // Randomly choose between whisper and scream
+      const soundFile = Math.random() > 0.5 ? 'sounds/whisper.mp3' : 'sounds/scream.mp3';
+      
+      const audio = new Audio(soundFile);
+      audio.volume = 0.7;
+      audio.play().catch(error => {
+        console.log('Could not play jumpscare sound:', error);
+      });
+    } catch (error) {
+      console.log('Audio not available:', error);
+    }
+  }
+
+  /**
+   * Set up Socket.IO listeners for jumpscare events
+   */
+  setupSocketListeners() {
+    if (!window.socket) return;
+    
+    // Listen for incoming jumpscare events
+    window.socket.on('jumpscare', (data) => {
+      this.receiveJumpscare(data);
+    });
   }
 
   /**
@@ -772,41 +743,10 @@ class PhantomTheme {
   }
 
   /**
-   * Enhance typing indicator for phantom theme
-   */
-  static enhanceTypingIndicator() {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && 
-            mutation.attributeName === 'style' && 
-            mutation.target.id === 'typingIndicator') {
-          
-          const indicator = mutation.target;
-          const isVisible = indicator.style.display !== 'none';
-          
-          if (isVisible && document.body.classList.contains('theme-phantom')) {
-            // Ensure phantom styling is applied
-            indicator.classList.add('phantom-enhanced');
-          }
-        }
-      });
-    });
-    
-    const typingIndicator = document.getElementById('typingIndicator');
-    if (typingIndicator) {
-      observer.observe(typingIndicator, { 
-        attributes: true, 
-        attributeFilter: ['style'] 
-      });
-    }
-  }
-
-  /**
    * Initialize phantom theme system
    */
   static init() {
     PhantomTheme.integratewithThemeSystem();
-    PhantomTheme.enhanceTypingIndicator();
     
     console.log('Phantom Theme system initialized');
   }
