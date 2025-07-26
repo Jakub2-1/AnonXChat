@@ -125,19 +125,19 @@
 /* Digital Void Theme (Premium - Matrix Dark) */
 .theme-digitalvoid {
   --theme-bg-primary: #000000;
-  --theme-bg-secondary: #001100;
-  --theme-bg-accent: #002200;
-  --theme-text-primary: #00ff00;
+  --theme-bg-secondary: #000000;
+  --theme-bg-accent: #000000;
+  --theme-text-primary: #00ff41;
   --theme-text-secondary: #008800;
-  --theme-bubble-dark: rgba(0, 255, 0, 0.1);
-  --theme-bubble-accent: #00ff00;
-  --theme-glow-matrix: rgba(0, 255, 0, 0.8);
-  --theme-shadow-matrix: rgba(0, 255, 0, 0.4);
-  --theme-primary: #00ff00;
-  --theme-secondary: #00cc00;
-  --theme-accent: #00aa00;
-  --theme-glow: rgba(0, 255, 0, 0.8);
-  --theme-shadow: rgba(0, 255, 0, 0.4);
+  --theme-bubble-dark: rgba(0, 255, 65, 0.1);
+  --theme-bubble-accent: #00ff41;
+  --theme-glow-matrix: rgba(0, 255, 65, 0.8);
+  --theme-shadow-matrix: rgba(0, 255, 65, 0.4);
+  --theme-primary: #00ff41;
+  --theme-secondary: #00cc33;
+  --theme-accent: #00aa22;
+  --theme-glow: rgba(0, 255, 65, 0.8);
+  --theme-shadow: rgba(0, 255, 65, 0.4);
   --theme-font-family: 'Share Tech Mono', 'Courier New', monospace;
 }
 
@@ -1764,7 +1764,7 @@ body.theme-glow .glow {
   50% { opacity: 0.3; filter: blur(1px); }
 }
 
-/* Digital Void Effects */
+/* Digital Void Matrix Effects */
 .digital-void-overlay {
   position: fixed;
   top: 0;
@@ -1772,18 +1772,49 @@ body.theme-glow .glow {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  opacity: 0.05;
   z-index: -1;
-  background-image: 
-    linear-gradient(90deg, transparent 50%, rgba(0, 255, 0, 0.03) 50%),
-    linear-gradient(rgba(0, 255, 0, 0.03) 50%, transparent 50%);
-  background-size: 20px 20px;
-  animation: matrix-scroll 0.5s linear infinite;
+  overflow: hidden;
 }
 
-@keyframes matrix-scroll {
-  0% { background-position: 0 0; }
-  100% { background-position: 20px 20px; }
+.matrix-rain {
+  position: absolute;
+  top: -100px;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 16px;
+  color: #00ff41;
+  text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41;
+  opacity: 0.8;
+  animation: matrix-fall linear infinite;
+  user-select: none;
+}
+
+.matrix-rain.bright {
+  color: #ffffff;
+  text-shadow: 0 0 8px #00ff41, 0 0 15px #00ff41, 0 0 20px #00ff41;
+  opacity: 1;
+}
+
+.matrix-rain.dim {
+  color: #00aa22;
+  text-shadow: 0 0 3px #00ff41;
+  opacity: 0.4;
+}
+
+@keyframes matrix-fall {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(100vh + 100px));
+    opacity: 0;
+  }
 }
 @media (max-width: 700px) {
   .chat-container {max-width:98vw; border-radius:1.2rem; padding:10px 2px 8px 2px;}
