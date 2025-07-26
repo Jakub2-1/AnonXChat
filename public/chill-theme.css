@@ -243,24 +243,24 @@ body:not(.theme-chill) .chill-ambient-sound-container {
   display: none !important;
 }
 
-/* Main ambient sound button */
+/* Main ambient sound button - shrunk to be less prominent */
 .ambient-sound-button {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 15px;
-  min-width: 140px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 8px 12px;
+  min-width: 80px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.1);
   text-align: center;
 }
 
 .ambient-sound-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px 0 rgba(31, 38, 135, 0.15);
 }
 
 /* Scale animation when clicked */
@@ -270,14 +270,14 @@ body:not(.theme-chill) .chill-ambient-sound-container {
 }
 
 .sound-button-icon {
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 20px;
+  margin-bottom: 4px;
   animation: soundPulse 2s ease-in-out infinite;
 }
 
 .sound-button-label {
   color: white;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 500;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }

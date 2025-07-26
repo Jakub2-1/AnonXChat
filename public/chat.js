@@ -1630,11 +1630,11 @@ let chillBackgroundSound = null;
 let chillSoundButton = null;
 let currentChillSound = parseInt(localStorage.getItem('chill_sound_selection') || '0');
 
-// Chill sound files
+// Chill sound files with descriptive names
 const chillSounds = [
-  { name: 'Ambient', file: 'chill-1.mp3' },
-  { name: 'Nature', file: 'chill-2.mp3' },
-  { name: 'Relaxing', file: 'chill-3.mp3' }
+  { name: 'Rain', file: 'chill-1.mp3' },
+  { name: 'Ocean Waves', file: 'chill-2.mp3' },
+  { name: 'Lo-fi Beats', file: 'chill-3.mp3' }
 ];
 
 // Create chill theme effects
@@ -1883,7 +1883,7 @@ function createChillSoundButton() {
   chillSoundButton.innerHTML = `
     <div class="ambient-sound-button" id="ambientSoundButton">
       <div class="sound-button-icon">🔊</div>
-      <div class="sound-button-label">ambient sound</div>
+      <div class="sound-button-label">sounds</div>
     </div>
     <div class="ambient-sound-player" id="ambientSoundPlayer" style="display: none;">
       <div class="player-controls">
