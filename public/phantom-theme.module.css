@@ -115,6 +115,90 @@ body.theme-phantom::before {
   overflow: hidden;
 }
 
+/* ===== GHOST CHARACTER ANIMATION ===== */
+@keyframes phantomGhostAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+    filter: blur(8px);
+  }
+  15% {
+    opacity: 0.4;
+    transform: translateY(10px) scale(0.9);
+    filter: blur(4px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(0px) scale(1);
+    filter: blur(1px);
+  }
+  85% {
+    opacity: 0.6;
+    transform: translateY(-5px) scale(1.05);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+    filter: blur(6px);
+  }
+}
+
+@keyframes phantomGhostFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(-2deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-10px) rotate(-1deg);
+  }
+}
+
+.phantom-ghost-character {
+  position: fixed;
+  font-size: 3rem;
+  color: var(--phantom-text-primary);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  text-shadow: 
+    0 0 15px var(--phantom-glow-purple),
+    0 0 30px var(--phantom-shadow-purple),
+    0 0 45px rgba(147, 112, 219, 0.4);
+  filter: drop-shadow(0 0 10px var(--phantom-glow-turquoise));
+  animation: phantomGhostFloat 4s ease-in-out infinite;
+}
+
+.phantom-ghost-character.appearing {
+  animation: 
+    phantomGhostAppear 4s ease-in-out forwards,
+    phantomGhostFloat 4s ease-in-out infinite;
+}
+
+.phantom-ghost-svg {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  filter: 
+    drop-shadow(0 0 15px var(--phantom-glow-purple))
+    drop-shadow(0 0 25px var(--phantom-shadow-purple));
+  animation: phantomGhostFloat 4s ease-in-out infinite;
+}
+
+.phantom-ghost-svg.appearing {
+  animation: 
+    phantomGhostAppear 4s ease-in-out forwards,
+    phantomGhostFloat 4s ease-in-out infinite;
+}
+
 .phantom-fog-particle {
   position: absolute;
   width: 200px;
@@ -441,6 +525,15 @@ body.theme-phantom::before {
     height: 150px;
   }
   
+  .phantom-ghost-character {
+    font-size: 2.5rem;
+  }
+  
+  .phantom-ghost-svg {
+    width: 50px;
+    height: 50px;
+  }
+  
   .theme-phantom .message {
     max-width: 85%;
     padding: 10px 14px;
@@ -462,6 +555,15 @@ body.theme-phantom::before {
     height: 100px;
   }
   
+  .phantom-ghost-character {
+    font-size: 2rem;
+  }
+  
+  .phantom-ghost-svg {
+    width: 40px;
+    height: 40px;
+  }
+  
   .theme-phantom .message {
     max-width: 90%;
     padding: 8px 12px;
@@ -474,7 +576,9 @@ body.theme-phantom::before {
   .phantom-entering-text,
   .phantom-boost-active,
   .theme-phantom #typingIndicator,
-  .theme-phantom .typing-dot {
+  .theme-phantom .typing-dot,
+  .phantom-ghost-character,
+  .phantom-ghost-svg {
     animation: none;
   }
   
