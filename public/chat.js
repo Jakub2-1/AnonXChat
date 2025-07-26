@@ -17,6 +17,10 @@ let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default 
 let currentTheme = localStorage.getItem('selectedTheme') || 'glow'; // Default to glow theme (free)
 const devAccessKey = localStorage.getItem('devKey');
 let hasPremiumAccess = localStorage.getItem('anonx_premium') === 'true' || devAccessKey === 'MY_SECRET_KEY'; // Premium access flag
+
+// Individual premium theme unlocks - new system
+let premiumThemesUnlocked = JSON.parse(localStorage.getItem('premiumThemesUnlocked') || '[]');
+
 let currentThemeData = null;
 let currentPartnerId = null; // Store current partner ID for favorites
 
@@ -264,7 +268,7 @@ const themeDefinitions = {
     name: 'Pixel Quest',
     icon: '🎮',
     className: 'theme-pixelquest',
-    category: 'free',
+    category: 'premium',
     description: 'Retro 8-bit Gameboy style adventure'
   },
   
@@ -795,7 +799,39 @@ function canUseTheme(themeName) {
   const theme = themeDefinitions[themeName];
   if (!theme) return false;
   
-  return theme.category === 'free' || hasPremiumAccess;
+  // Free themes are always available
+  if (theme.category === 'free') return true;
+  
+  // Premium themes: check individual unlock OR legacy premium access OR dev access
+  if (theme.category === 'premium') {
+    return premiumThemesUnlocked.includes(themeName) || 
+           hasPremiumAccess || 
+           devAccessKey === 'MY_SECRET_KEY';
+  }
+  
+  return false;
+}
+
+// Function to unlock a specific premium theme
+function unlockPremiumTheme(themeName) {
+  const theme = themeDefinitions[themeName];
+  if (!theme || theme.category !== 'premium') return false;
+  
+  if (!premiumThemesUnlocked.includes(themeName)) {
+    premiumThemesUnlocked.push(themeName);
+    localStorage.setItem('premiumThemesUnlocked', JSON.stringify(premiumThemesUnlocked));
+    
+    // Show unlock notification
+    showNotif(`🎉 ${theme.name} theme unlocked!`, false);
+    return true;
+  }
+  
+  return false; // Already unlocked
+}
+
+// Function to check if a specific premium theme is unlocked
+function isThemeUnlocked(themeName) {
+  return canUseTheme(themeName);
 }
 
 function switchTheme() {
@@ -2762,6 +2798,19 @@ function togglePremiumAccess() {
   // Show notification
   showNotif(hasPremiumAccess ? '💎 Premium access activated!' : '🔒 Premium access deactivated', false);
 }
+
+// Helper function for testing individual theme unlocks (dev/testing only)
+function unlockThemeForTesting(themeName) {
+  if (unlockPremiumTheme(themeName)) {
+    console.log(`${themeName} theme unlocked for testing`);
+    // Refresh theme selector if it's open
+    if (document.getElementById('themeSelectorModal').style.display === 'flex') {
+      populateThemeSelector();
+    }
+  } else {
+    console.log(`${themeName} theme is already unlocked or doesn't exist`);
+  }
+}
 function randomizePoltergeistTheme() {
   const poltergeistVariations = [
     {
@@ -3346,16 +3395,17 @@ function populateThemeSelector() {
   // Populate premium themes
   Object.entries(themeDefinitions).forEach(([key, theme]) => {
     if (theme.category === 'premium') {
-      const themeItem = createThemeItem(key, theme, hasPremiumAccess);
+      const themeItem = createThemeItem(key, theme, isThemeUnlocked(key));
       premiumGrid.appendChild(themeItem);
     }
   });
   
-  // Show/hide premium hint and update text
+  // Show/hide premium hint - keep it since some users might want to unlock all at once
+  // But update text to be more generic about premium features
   premiumHint.style.display = hasPremiumAccess ? 'none' : 'flex';
   const unlockText = document.getElementById('unlockText');
   if (unlockText) {
-    unlockText.textContent = currentLanguage === 'cs' ? 'Odemkni všechny motivy' : 'Unlock all themes';
+    unlockText.textContent = currentLanguage === 'cs' ? 'Premium funkce budou dostupné v budoucnosti' : 'Premium features coming soon';
   }
 }
 
@@ -3363,11 +3413,17 @@ function createThemeItem(themeKey, theme, canUse) {
   const item = document.createElement('div');
   item.className = `theme-item ${currentTheme === themeKey ? 'active' : ''} ${!canUse ? 'locked' : ''}`;
   
+  // Determine unlock text based on theme category and unlock status
+  let unlockText = '';
+  if (!canUse && theme.category === 'premium') {
+    unlockText = currentLanguage === 'cs' ? 'Odemknout tento motiv' : 'Unlock this theme';
+  }
+  
   item.innerHTML = `
     <span class="theme-icon">${theme.icon}</span>
     <div class="theme-name">${theme.name}</div>
     <div class="theme-description">${theme.description}</div>
-    ${!canUse ? '<div class="theme-lock-overlay"><span class="theme-lock-icon">🔒</span></div>' : ''}
+    ${!canUse ? `<div class="theme-lock-overlay"><span class="theme-lock-icon">🔒</span></div>` : ''}
   `;
   
   if (canUse) {
@@ -3375,7 +3431,7 @@ function createThemeItem(themeKey, theme, canUse) {
       selectTheme(themeKey);
     };
   } else {
-    item.title = currentLanguage === 'cs' ? 'Odemkni všechny motivy' : 'Unlock all themes';
+    item.title = unlockText;
     item.onclick = () => {
       selectTheme(themeKey); // This will show the premium notification
     };
@@ -3407,13 +3463,13 @@ function selectTheme(themeKey) {
       hideThemeSelector();
     }, 500);
   } else {
-    // Show premium message for locked themes
+    // Show premium message for locked themes with individual unlock text
     const theme = themeDefinitions[themeKey];
-    if (theme && theme.category === 'premium' && !hasPremiumAccess) {
-      // Create tooltip/notification about premium access
-      showNotif(currentLanguage === 'cs' ? 
-        '🔒 Premium motiv! Tato funkce bude dostupná v budoucí verzi.' : 
-        '🔒 Premium theme! This feature will be available in future version.', false);
+    if (theme && theme.category === 'premium' && !isThemeUnlocked(themeKey)) {
+      const unlockMessage = currentLanguage === 'cs' ? 
+        `🔒 ${theme.name} motiv! Tato funkce bude dostupná v budoucí verzi.` : 
+        `🔒 ${theme.name} theme! This feature will be available in future version.`;
+      showNotif(unlockMessage, false);
     }
   }
 }
