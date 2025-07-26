@@ -7,7 +7,7 @@
   --theme-shadow: rgba(102, 126, 234, 0.4);
 }
 
-/* Goth Theme (formerly Phantom - Deep Gothic) */
+/* Goth Theme (Deep Gothic) */
 .theme-goth {
   --theme-bg-primary: #0a0a0a;
   --theme-bg-secondary: #1a0f1a;
@@ -26,24 +26,6 @@
   --theme-font-family: 'Cinzel', 'Times New Roman', serif;
 }
 
-/* Phantom Theme (Premium - Ethereal Ghost) */
-.theme-phantom {
-  --theme-bg-primary: #0f0f1a;
-  --theme-bg-secondary: #1a1a2e;
-  --theme-bg-accent: #16213e;
-  --theme-text-primary: #e6e6fa;
-  --theme-text-secondary: #b0b0d0;
-  --theme-bubble-dark: rgba(230, 230, 250, 0.1);
-  --theme-bubble-accent: #9370db;
-  --theme-glow-ethereal: rgba(147, 112, 219, 0.8);
-  --theme-shadow-ethereal: rgba(147, 112, 219, 0.4);
-  --theme-primary: #9370db;
-  --theme-secondary: #6a5acd;
-  --theme-accent: #dda0dd;
-  --theme-glow: rgba(147, 112, 219, 0.8);
-  --theme-shadow: rgba(147, 112, 219, 0.4);
-  --theme-font-family: 'Inter', 'Arial', sans-serif;
-}
 
 /* Hello Kitty Theme (Premium - Kawaii Pink) */
 .theme-hellokitty {
@@ -197,11 +179,7 @@ body.theme-goth {
   font-family: var(--theme-font-family);
 }
 
-body.theme-phantom {
-  background: linear-gradient(135deg, var(--theme-bg-primary) 0%, var(--theme-bg-secondary) 50%, var(--theme-bg-accent) 100%);
-  color: var(--theme-text-primary);
-  font-family: var(--theme-font-family);
-}
+
 
 body.theme-glow {
   background: linear-gradient(135deg, var(--theme-bg-primary) 0%, var(--theme-bg-secondary) 50%, var(--theme-bg-accent) 100%);
@@ -724,7 +702,7 @@ body.theme-goth .glow {
   animation: glow-pulse-goth 4s ease-in-out infinite alternate;
 }
 
-/* Enhanced glow animation for phantom theme */
+/* Enhanced glow animation for goth theme */
 @keyframes glow-pulse-goth {
   0% {
     text-shadow: 0 0 20px var(--theme-glow-neon), 
@@ -2392,17 +2370,7 @@ body.theme-goth .custom-tooltip::after {
 }
 
 /* Theme-specific styles for bug feedback button */
-body.theme-phantom .bug-feedback-button {
-  background: rgba(20, 10, 20, 0.8);
-  border-color: rgba(138, 21, 56, 0.5);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(138, 21, 56, 0.3);
- main
-}
 
-body.theme-phantom .bug-feedback-button:hover {
-  background: rgba(20, 10, 20, 0.9);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(138, 21, 56, 0.5);
-}
 
 body.theme-glow .bug-feedback-button {
   background: rgba(255, 255, 255, 0.2);
@@ -2616,10 +2584,7 @@ body.theme-poltergeist .bug-feedback-button:hover {
 }
 
 /* Theme preview colors */
-.phantom-preview {
-  color: #8b1538;
-  text-shadow: 0 0 10px rgba(139, 21, 56, 0.8);
-}
+
 
 .glow-preview {
   color: #3b82f6;

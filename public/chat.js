@@ -301,13 +301,7 @@ const themeDefinitions = {
     category: 'premium',
     description: 'Wild multicolor madness'
   },
-  phantom: {
-    name: 'Phantom',
-    icon: '👻',
-    className: 'theme-phantom',
-    category: 'premium',
-    description: 'Ethereal ghostly presence'
-  },
+
   retroneon: {
     name: 'Retro Neon',
     icon: '🌈',
@@ -973,24 +967,14 @@ function applyMainTheme(themeName) {
     createHelloKittyEffects();
   } else if (themeName === 'chill') {
     createChillEffects();
-  } else if (themeName === 'phantom') {
-    // Activate Phantom theme via the PhantomTheme class
-    if (window.phantomTheme) {
-      window.phantomTheme.activate();
-    }
   } else if (themeName === 'chaos') {
     createChaosEffects();
   } else if (themeName === 'pixelquest') {
     createPixelQuestEffects();
-  } else {
-    // Deactivate Phantom theme if switching away from it
-    if (window.phantomTheme && window.phantomTheme.isActive) {
-      window.phantomTheme.deactivate();
-    }
   }
   
   // Apply color variations for themes that support them
-  if (themeName === 'goth' || themeName === 'phantom') {
+  if (themeName === 'goth') {
     randomizeTheme(); 
   } else if (themeName === 'poltergeist') {
     randomizePoltergeistTheme();
@@ -4131,15 +4115,7 @@ function startSocket(preferFavorites = false) {
     playChatEnd();
   });
   
-  // Phantom theme jumpscare event
-  socket.on('phantom-jumpscare', (data) => {
-    console.log('Received jumpscare from partner:', data.from);
-    
-    // Only show jumpscare if Phantom theme is active
-    if (window.phantomTheme && window.phantomTheme.isActive) {
-      window.phantomTheme.showJumpscareEffect();
-    }
-  });
+
   
   socket.on('disconnect', (reason)=> {
     console.log('Socket disconnected:', reason, 'Page visible:', isPageVisible);

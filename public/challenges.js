@@ -89,16 +89,7 @@ class ChallengesSystem {
       },
 
       // Theme Challenges
-      {
-        id: 'phantom_user',
-        name: 'Fantom uživatel',
-        description: 'Dokončit 5 chatů v Phantom módu',
-        type: 'theme_usage',
-        target: 5,
-        theme: 'phantom',
-        reward: { type: 'badge', name: 'Fantom', emoji: '👻' },
-        points: 35
-      },
+
       {
         id: 'glow_enthusiast',
         name: 'Glow nadšenec',
@@ -198,7 +189,7 @@ class ChallengesSystem {
       {
         id: 'theme_explorer',
         name: 'Průzkumník témat',
-        description: 'Vyzkoušet oba témata (Phantom + Glow)',
+        description: 'Vyzkoušet různá témata (Glow + Goth)',
         type: 'themes_used',
         target: 2,
         reward: { type: 'badge', name: 'Průzkumník', emoji: '🗺️' },
@@ -314,7 +305,7 @@ class ChallengesSystem {
         // Check theme usage
         if (data.theme) {
           const themeUsage = this.getThemeUsage(data.theme);
-          this.checkChallenge(data.theme === 'phantom' ? 'phantom_user' : 'glow_enthusiast', themeUsage);
+          this.checkChallenge('glow_enthusiast', themeUsage);
         }
         
         // Check time period
