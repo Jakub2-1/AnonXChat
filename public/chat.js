@@ -278,10 +278,10 @@ const themeDefinitions = {
   },
   chill: {
     name: 'Chill',
-    icon: '🌊',
+    icon: '🌸',
     className: 'theme-chill',
-    category: 'premium',
-    description: 'Relaxing ocean blues'
+    category: 'free',
+    description: 'Relaxing gradient with floating elements'
   },
   chaos: {
     name: 'Chaos',
@@ -925,6 +925,8 @@ function applyMainTheme(themeName) {
     createDigitalVoidEffects();
   } else if (themeName === 'hellokitty') {
     createHelloKittyEffects();
+  } else if (themeName === 'chill') {
+    createChillEffects();
   }
   
   // Apply color variations for themes that support them
@@ -978,6 +980,9 @@ function removeThemeOverlays() {
   
   // Remove Hello Kitty effects when switching themes
   removeHelloKittyEffects();
+  
+  // Remove Chill effects when switching themes
+  removeChillEffects();
 }
 
 // Create retro neon effects
@@ -1318,6 +1323,372 @@ function removeHelloKittyEffects() {
 }
 
 // ===== END HELLO KITTY FUNCTIONS =====
+
+// ===== CHILL THEME FUNCTIONS =====
+
+// Global variables for Chill theme
+let chillAssistant = null;
+let chillFloatingElements = null;
+let chillAnimationIntervals = [];
+let chillAudioContext = null;
+let chillBackgroundSound = null;
+let chillSoundEnabled = localStorage.getItem('chill_sound') !== 'false';
+
+// Create chill theme effects
+function createChillEffects() {
+  initializeChillAssistant();
+  initializeFloatingElements();
+  setupChillInteractions();
+  createChillSoundSystem();
+}
+
+// Initialize the chill assistant (zen stone, teapot, or cloud)
+function initializeChillAssistant() {
+  chillAssistant = document.getElementById('chillAssistant');
+  if (!chillAssistant) return;
+  
+  // Set random assistant character
+  const assistants = ['☁️', '🫖', '🪨'];
+  const randomAssistant = assistants[Math.floor(Math.random() * assistants.length)];
+  chillAssistant.textContent = randomAssistant;
+  
+  // Setup winking animation (every 8-15 seconds)
+  const winkInterval = setInterval(() => {
+    if (currentTheme === 'chill') {
+      chillAssistant.classList.add('winking');
+      setTimeout(() => {
+        chillAssistant.classList.remove('winking');
+      }, 500);
+      
+      // Show occasional speech bubble
+      if (Math.random() < 0.3) {
+        showAssistantSpeech();
+      }
+    } else {
+      clearInterval(winkInterval);
+    }
+  }, Math.random() * 7000 + 8000);
+  
+  chillAnimationIntervals.push(winkInterval);
+  
+  // Click interaction
+  chillAssistant.addEventListener('click', handleAssistantClick);
+}
+
+// Initialize floating elements (leaves, bubbles, clouds)
+function initializeFloatingElements() {
+  chillFloatingElements = document.getElementById('chillFloatingElements');
+  if (!chillFloatingElements) return;
+  
+  // Create falling leaves
+  const leafInterval = setInterval(() => {
+    if (currentTheme === 'chill') {
+      createFallingLeaf();
+    } else {
+      clearInterval(leafInterval);
+    }
+  }, 3000);
+  
+  // Create floating bubbles
+  const bubbleInterval = setInterval(() => {
+    if (currentTheme === 'chill') {
+      createFloatingBubble();
+    } else {
+      clearInterval(bubbleInterval);
+    }
+  }, 2000);
+  
+  // Create small clouds
+  const cloudInterval = setInterval(() => {
+    if (currentTheme === 'chill') {
+      createSmallCloud();
+    } else {
+      clearInterval(cloudInterval);
+    }
+  }, 8000);
+  
+  chillAnimationIntervals.push(leafInterval, bubbleInterval, cloudInterval);
+}
+
+// Create individual floating elements
+function createFallingLeaf() {
+  const leaf = document.createElement('div');
+  leaf.className = 'falling-leaf';
+  leaf.textContent = ['🍃', '🍂', '🌿'][Math.floor(Math.random() * 3)];
+  leaf.style.left = Math.random() * 100 + '%';
+  leaf.style.animationDelay = Math.random() * 2 + 's';
+  leaf.style.animationDuration = (Math.random() * 4 + 8) + 's';
+  
+  chillFloatingElements.appendChild(leaf);
+  
+  // Remove after animation
+  setTimeout(() => {
+    if (leaf.parentNode) {
+      leaf.parentNode.removeChild(leaf);
+    }
+  }, 14000);
+}
+
+function createFloatingBubble() {
+  const bubble = document.createElement('div');
+  bubble.className = 'floating-bubble';
+  bubble.style.left = Math.random() * 100 + '%';
+  bubble.style.width = bubble.style.height = (Math.random() * 15 + 10) + 'px';
+  bubble.style.animationDelay = Math.random() * 2 + 's';
+  bubble.style.animationDuration = (Math.random() * 3 + 6) + 's';
+  
+  chillFloatingElements.appendChild(bubble);
+  
+  // Remove after animation
+  setTimeout(() => {
+    if (bubble.parentNode) {
+      bubble.parentNode.removeChild(bubble);
+    }
+  }, 10000);
+}
+
+function createSmallCloud() {
+  const cloud = document.createElement('div');
+  cloud.className = 'small-cloud';
+  cloud.textContent = ['☁️', '🌤️', '⛅'][Math.floor(Math.random() * 3)];
+  cloud.style.top = Math.random() * 60 + 10 + '%';
+  cloud.style.animationDuration = (Math.random() * 10 + 15) + 's';
+  
+  chillFloatingElements.appendChild(cloud);
+  
+  // Remove after animation
+  setTimeout(() => {
+    if (cloud.parentNode) {
+      cloud.parentNode.removeChild(cloud);
+    }
+  }, 25000);
+}
+
+// Setup interactive features
+function setupChillInteractions() {
+  // Setup message bubble click interactions
+  setupChillMessageClicks();
+}
+
+// Handle message bubble clicks for pulse and emoji reactions
+function setupChillMessageClicks() {
+  // Remove existing listeners
+  if (window.chillBubbleListener) {
+    document.removeEventListener('click', window.chillBubbleListener);
+  }
+  
+  window.chillBubbleListener = function(event) {
+    if (currentTheme !== 'chill') return;
+    
+    const message = event.target.closest('.message');
+    if (!message) return;
+    
+    // Add pulse animation
+    message.classList.add('pulse-animation');
+    setTimeout(() => {
+      message.classList.remove('pulse-animation');
+    }, 600);
+    
+    // Create emoji reaction
+    createChillEmojiReaction(message, event.clientX, event.clientY);
+  };
+  
+  document.addEventListener('click', window.chillBubbleListener);
+}
+
+// Create emoji reaction on message click
+function createChillEmojiReaction(messageElement, x, y) {
+  const emojis = ['💖', '✨', '🌸', '💫', '🦋', '🌺'];
+  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+  
+  const emojiElement = document.createElement('div');
+  emojiElement.className = 'chill-emoji-reaction';
+  emojiElement.textContent = randomEmoji;
+  
+  messageElement.style.position = 'relative';
+  messageElement.appendChild(emojiElement);
+  
+  emojiElement.classList.add('show');
+  
+  // Remove after animation
+  setTimeout(() => {
+    if (emojiElement.parentNode) {
+      emojiElement.parentNode.removeChild(emojiElement);
+    }
+  }, 1500);
+}
+
+// Assistant interactions
+function handleAssistantClick() {
+  if (currentTheme !== 'chill') return;
+  
+  // Trigger wink
+  chillAssistant.classList.add('winking');
+  setTimeout(() => {
+    chillAssistant.classList.remove('winking');
+  }, 500);
+  
+  // Show speech bubble
+  showAssistantSpeech();
+}
+
+function showAssistantSpeech() {
+  const messages = [
+    'Stay chill! 🌸',
+    'Take a deep breath 🫧',
+    'You\'re doing great! ✨',
+    'Relax and enjoy 🦋',
+    'Breathe in calm 🌿'
+  ];
+  
+  const existingSpeech = document.querySelector('.assistant-speech');
+  if (existingSpeech) {
+    existingSpeech.remove();
+  }
+  
+  const speech = document.createElement('div');
+  speech.className = 'assistant-speech';
+  speech.textContent = messages[Math.floor(Math.random() * messages.length)];
+  
+  chillAssistant.appendChild(speech);
+  
+  setTimeout(() => {
+    speech.classList.add('show');
+  }, 10);
+  
+  // Hide after 3 seconds
+  setTimeout(() => {
+    speech.classList.remove('show');
+    setTimeout(() => {
+      if (speech.parentNode) {
+        speech.parentNode.removeChild(speech);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Sound system using Web Audio API
+function createChillSoundSystem() {
+  if (!chillSoundEnabled) return;
+  
+  try {
+    // Create audio context
+    chillAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Create lo-fi background sound (simple oscillators)
+    createChillBackgroundSound();
+    
+    // Add sound toggle to the assistant
+    chillAssistant.title = 'Click to toggle chill sounds';
+    
+    // Double-click to toggle sound
+    chillAssistant.addEventListener('dblclick', toggleChillSound);
+    
+  } catch (error) {
+    console.log('Web Audio API not supported or failed to initialize');
+  }
+}
+
+function createChillBackgroundSound() {
+  if (!chillAudioContext) return;
+  
+  // Create gentle lo-fi loop using oscillators
+  const gainNode = chillAudioContext.createGain();
+  gainNode.gain.setValueAtTime(0.1, chillAudioContext.currentTime);
+  gainNode.connect(chillAudioContext.destination);
+  
+  // Create multiple oscillators for ambient sound
+  const osc1 = chillAudioContext.createOscillator();
+  const osc2 = chillAudioContext.createOscillator();
+  
+  osc1.type = 'sine';
+  osc2.type = 'triangle';
+  
+  osc1.frequency.setValueAtTime(220, chillAudioContext.currentTime);
+  osc2.frequency.setValueAtTime(330, chillAudioContext.currentTime);
+  
+  // Add filter for lo-fi effect
+  const filter = chillAudioContext.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(800, chillAudioContext.currentTime);
+  
+  osc1.connect(filter);
+  osc2.connect(filter);
+  filter.connect(gainNode);
+  
+  // Start oscillators
+  osc1.start();
+  osc2.start();
+  
+  chillBackgroundSound = { osc1, osc2, gainNode };
+}
+
+function toggleChillSound() {
+  chillSoundEnabled = !chillSoundEnabled;
+  localStorage.setItem('chill_sound', chillSoundEnabled.toString());
+  
+  if (chillSoundEnabled && !chillBackgroundSound) {
+    createChillBackgroundSound();
+  } else if (!chillSoundEnabled && chillBackgroundSound) {
+    stopChillBackgroundSound();
+  }
+  
+  showAssistantSpeech();
+}
+
+function stopChillBackgroundSound() {
+  if (chillBackgroundSound) {
+    try {
+      chillBackgroundSound.osc1.stop();
+      chillBackgroundSound.osc2.stop();
+    } catch (error) {
+      // Oscillators might already be stopped
+    }
+    chillBackgroundSound = null;
+  }
+}
+
+// Remove chill effects when theme changes
+function removeChillEffects() {
+  // Clear all animation intervals
+  chillAnimationIntervals.forEach(interval => clearInterval(interval));
+  chillAnimationIntervals = [];
+  
+  // Remove floating elements
+  if (chillFloatingElements) {
+    chillFloatingElements.innerHTML = '';
+  }
+  
+  // Stop background sound
+  stopChillBackgroundSound();
+  
+  // Close audio context
+  if (chillAudioContext) {
+    chillAudioContext.close();
+    chillAudioContext = null;
+  }
+  
+  // Remove event listeners
+  if (window.chillBubbleListener) {
+    document.removeEventListener('click', window.chillBubbleListener);
+    window.chillBubbleListener = null;
+  }
+  
+  // Remove assistant speech bubbles
+  const existingSpeech = document.querySelector('.assistant-speech');
+  if (existingSpeech) {
+    existingSpeech.remove();
+  }
+  
+  // Reset assistant
+  if (chillAssistant) {
+    chillAssistant.removeEventListener('click', handleAssistantClick);
+    chillAssistant.removeEventListener('dblclick', toggleChillSound);
+    chillAssistant.title = '';
+  }
+}
+
+// ===== END CHILL THEME FUNCTIONS =====
 
 // Chaos theme color variations
 function randomizeChaosTheme() {
