@@ -24,7 +24,7 @@
   }
 }
 
-/* Sparkle container - hidden for clean background */
+/* Sparkle container - glitter effect for Hello Kitty theme */
 .kitty-sparkles {
   position: fixed;
   top: 0;
@@ -35,12 +35,12 @@
   z-index: 1;
   opacity: 0;
   transition: opacity 0.5s ease;
-  display: none !important; /* Force hide sparkles */
+  display: none; /* Hide by default */
 }
 
 body.theme-hellokitty .kitty-sparkles {
-  opacity: 0 !important; /* Keep sparkles hidden in Hello Kitty theme */
-  display: none !important; /* Force hide sparkles */
+  opacity: 1 !important; /* Show sparkles in Hello Kitty theme */
+  display: block !important; /* Enable sparkles */
 }
 
 /* Individual sparkle elements */
@@ -72,13 +72,13 @@ body.theme-hellokitty .kitty-sparkles {
   transition: all 0.3s ease;
   opacity: 0;
   pointer-events: none;
-  display: none !important; /* Force hide Hello Kitty character */
+  display: none; /* Hide by default */
 }
 
-/* Hide Hello Kitty character in theme */
+/* Show Hello Kitty character in Hello Kitty theme */
 body.theme-hellokitty .hello-kitty-character {
-  opacity: 0 !important; /* Keep character hidden */
-  display: none !important; /* Force hide character */
+  opacity: 1 !important; /* Show character */
+  display: block !important; /* Enable character */
 }
 
 /* ===== MAIN PAGE POSITIONING VARIANTS ===== */
@@ -89,7 +89,7 @@ body.theme-hellokitty .hello-kitty-character {
   transform: translate(-50%, 50%);
   width: 120px;
   height: 100px;
-  animation: kitty-button-hug 4s infinite ease-in-out;
+  animation: kitty-button-hug 4s infinite ease-in-out, kitty-auto-wave 6s infinite ease-in-out 2s;
   z-index: 10;
 }
 
@@ -489,6 +489,25 @@ body.theme-hellokitty .hello-kitty-character {
   20%, 40% {
     transform: rotate(-10deg);
   }
+}
+
+/* Hand waving animation for Hello Kitty */
+@keyframes kitty-hand-wave {
+  0%, 90%, 100% {
+    transform: rotate(0deg);
+  }
+  15%, 35% {
+    transform: rotate(25deg);
+  }
+  25%, 45% {
+    transform: rotate(-15deg);
+  }
+}
+
+/* Apply hand waving to the wave arm */
+.hello-kitty-character .kitty-wave-arm {
+  animation: kitty-hand-wave 4s infinite ease-in-out;
+  transform-origin: 132px 155px;
 }
 
 /* ===== INTERACTIVE ANIMATION CLASSES ===== */
