@@ -409,6 +409,20 @@ io.on("connection", (socket) => {
       socket.to(socket.room).emit("typing");
     }
   });
+
+  // Jumpscare feature for Phantom theme
+  socket.on("jumpscare", (data) => {
+    if (socket.partner && socket.room) {
+      // Forward jumpscare to partner
+      socket.to(socket.room).emit("jumpscare", {
+        type: data.type || 'phantom',
+        timestamp: data.timestamp || Date.now(),
+        from: socket.userId || 'anonymous'
+      });
+      
+      console.log(`Jumpscare sent from ${socket.userId || 'anonymous'} to partner`);
+    }
+  });
 // Oznámení od uživatele že opouští chat (např. přes skip nebo end chat)
 socket.on("leave_chat", () => {
     if (socket.room) {
