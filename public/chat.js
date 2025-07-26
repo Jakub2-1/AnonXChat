@@ -1,3 +1,13 @@
+/*
+ * Developer Mode: Premium Theme Unlock
+ * 
+ * For development and testing purposes, you can unlock all premium themes locally by running:
+ * localStorage.setItem('devKey', 'MY_SECRET_KEY')
+ * 
+ * This works only locally in your browser and is intended for development/testing.
+ * Refresh the page after setting the key to see premium themes unlocked.
+ */
+
 // proměnné
 let socket;
 let mySide = 'right';
@@ -5,7 +15,8 @@ let partnerActive = true;
 let typingTimeout;
 let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default to true
 let currentTheme = localStorage.getItem('selectedTheme') || 'glow'; // Default to glow theme (free)
-let hasPremiumAccess = localStorage.getItem('anonx_premium') === 'true'; // Premium access flag
+const devAccessKey = localStorage.getItem('devKey');
+let hasPremiumAccess = localStorage.getItem('anonx_premium') === 'true' || devAccessKey === 'MY_SECRET_KEY'; // Premium access flag
 let currentThemeData = null;
 let currentPartnerId = null; // Store current partner ID for favorites
 
