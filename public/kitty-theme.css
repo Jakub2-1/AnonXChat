@@ -78,6 +78,17 @@ body.theme-hellokitty .hello-kitty-character {
 }
 
 /* ===== MAIN PAGE POSITIONING VARIANTS ===== */
+/* Button hugging positions - Hello Kitty embraces the button */
+.kitty-main-hug-button {
+  bottom: 42%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  width: 120px;
+  height: 100px;
+  animation: kitty-button-hug 4s infinite ease-in-out;
+  z-index: 10;
+}
+
 /* Above button positions (5 variants) */
 .kitty-main-above-sitting {
   bottom: 65%;
@@ -194,6 +205,85 @@ body.theme-hellokitty .hello-kitty-character {
 }
 
 /* ===== HELLO KITTY ANIMATIONS ===== */
+/* Button hugging animation */
+@keyframes kitty-button-hug {
+  0%, 100% {
+    transform: translate(-50%, 50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, 45%) scale(1.05);
+  }
+}
+
+/* Blinking animation */
+@keyframes kitty-blink {
+  0%, 90%, 100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* Blushing animation */
+@keyframes kitty-blush {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Eye covering animation */
+@keyframes kitty-cover-eyes {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* Mouth smiling animation */
+@keyframes kitty-smile {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Bow wiggle animation */
+@keyframes kitty-bow-wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+
+/* Whisker twitch animation */
+@keyframes whisker-twitch {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
 /* Basic movement animations */
 @keyframes kitty-wave {
   0%, 100% {
@@ -397,6 +487,54 @@ body.theme-hellokitty .hello-kitty-character {
   }
 }
 
+/* ===== INTERACTIVE ANIMATION CLASSES ===== */
+/* Blinking state */
+.kitty-blinking .kitty-eye-left,
+.kitty-blinking .kitty-eye-right {
+  animation: kitty-blink 3s infinite;
+}
+
+/* Blushing state */
+.kitty-blushing .blush-left,
+.kitty-blushing .blush-right {
+  animation: kitty-blush 2s ease-in-out;
+}
+
+/* Eye covering state */
+.kitty-covering-eyes .kitty-hand-left,
+.kitty-covering-eyes .kitty-hand-right {
+  display: block !important;
+  animation: kitty-cover-eyes 2s ease-in-out;
+}
+
+/* Smiling state */
+.kitty-smiling .kitty-mouth {
+  display: block !important;
+  animation: kitty-smile 2s ease-in-out;
+}
+
+/* Happy state - bow wiggle */
+.kitty-happy .kitty-bow {
+  animation: kitty-bow-wiggle 1s ease-in-out;
+}
+
+/* Excited state - whisker twitch */
+.kitty-excited .whisker-left-top,
+.kitty-excited .whisker-right-top {
+  animation: whisker-twitch 0.5s ease-in-out 3;
+}
+
+/* Hover interactions */
+.hello-kitty-character:hover .kitty-bow {
+  animation: kitty-bow-wiggle 0.8s ease-in-out infinite;
+}
+
+.hello-kitty-character:hover .blush-left,
+.hello-kitty-character:hover .blush-right {
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
 /* Message reaction animations */
 .kitty-wink {
   animation: kitty-wink 0.8s ease-in-out;
@@ -535,19 +673,33 @@ body.theme-hellokitty {
     height: 60px;
   }
   
-  .kitty-main-hug {
-    width: 80px;
+  .kitty-main-hug-button {
+    width: 100px;
     height: 80px;
+    bottom: 40%;
   }
   
-  .kitty-main-lay {
-    width: 100px;
+  .kitty-main-above-sitting,
+  .kitty-main-above-lying,
+  .kitty-main-above-sleepy,
+  .kitty-main-above-curious,
+  .kitty-main-above-playful {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .kitty-main-side-peek-left,
+  .kitty-main-side-hide-right,
+  .kitty-main-side-corner-left,
+  .kitty-main-side-corner-right,
+  .kitty-main-side-behind {
+    width: 50px;
     height: 50px;
   }
   
   .kitty-assistant {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     bottom: 15px;
     right: 15px;
   }
@@ -556,5 +708,58 @@ body.theme-hellokitty {
     width: 35px;
     height: 35px;
     font-size: 16px;
+    top: 15px;
+    left: 15px;
+  }
+  
+  /* Adjust sparkles for mobile */
+  .sparkle {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hello-kitty-character {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .kitty-main-hug-button {
+    width: 80px;
+    height: 65px;
+    bottom: 38%;
+  }
+  
+  .kitty-main-above-sitting,
+  .kitty-main-above-lying,
+  .kitty-main-above-sleepy,
+  .kitty-main-above-curious,
+  .kitty-main-above-playful {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .kitty-main-side-peek-left,
+  .kitty-main-side-hide-right,
+  .kitty-main-side-corner-left,
+  .kitty-main-side-corner-right,
+  .kitty-main-side-behind {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .kitty-assistant {
+    width: 40px;
+    height: 40px;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .sparkle-toggle {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    top: 10px;
+    left: 10px;
   }
 }

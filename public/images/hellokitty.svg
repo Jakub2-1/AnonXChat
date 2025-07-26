@@ -1,48 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-  <!-- Hello Kitty SVG - Cute simple design -->
+  <!-- Enhanced Hello Kitty SVG - More authentic design -->
   
-  <!-- Head -->
-  <ellipse cx="100" cy="110" rx="65" ry="55" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
+  <!-- Head with more authentic shape -->
+  <ellipse cx="100" cy="110" rx="68" ry="58" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5"/>
   
-  <!-- Left ear -->
-  <ellipse cx="65" cy="75" rx="20" ry="25" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
+  <!-- Left ear with proper proportions -->
+  <ellipse cx="62" cy="72" rx="22" ry="28" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5"/>
   
-  <!-- Right ear -->
-  <ellipse cx="135" cy="75" rx="20" ry="25" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
+  <!-- Right ear with proper proportions -->
+  <ellipse cx="138" cy="72" rx="22" ry="28" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5"/>
   
   <!-- Left ear inner -->
-  <ellipse cx="65" cy="80" rx="10" ry="12" fill="#ffb6c1"/>
+  <ellipse cx="62" cy="78" rx="12" ry="15" fill="#ffb6c1"/>
   
   <!-- Right ear inner -->
-  <ellipse cx="135" cy="80" rx="10" ry="12" fill="#ffb6c1"/>
+  <ellipse cx="138" cy="78" rx="12" ry="15" fill="#ffb6c1"/>
   
-  <!-- Eyes -->
-  <circle cx="85" cy="105" r="4" fill="#000000"/>
-  <circle cx="115" cy="105" r="4" fill="#000000"/>
+  <!-- Eyes with authentic oval shape -->
+  <ellipse cx="85" cy="105" rx="6" ry="8" fill="#000000" class="kitty-eye-left"/>
+  <ellipse cx="115" cy="105" rx="6" ry="8" fill="#000000" class="kitty-eye-right"/>
   
-  <!-- Eye highlights -->
-  <circle cx="86" cy="103" r="1.5" fill="#ffffff"/>
-  <circle cx="116" cy="103" r="1.5" fill="#ffffff"/>
+  <!-- Eye highlights for sparkle -->
+  <ellipse cx="87" cy="102" rx="2" ry="3" fill="#ffffff" class="eye-highlight-left"/>
+  <ellipse cx="117" cy="102" rx="2" ry="3" fill="#ffffff" class="eye-highlight-right"/>
   
-  <!-- Nose -->
-  <ellipse cx="100" cy="115" rx="2" ry="1.5" fill="#ff69b4"/>
+  <!-- Nose with authentic yellow color -->
+  <ellipse cx="100" cy="118" rx="3" ry="2" fill="#ffeb3b" stroke="#ff8f00" stroke-width="0.5"/>
   
-  <!-- Bow -->
-  <path d="M 120 70 Q 130 60 140 70 Q 130 80 120 70 Q 110 60 120 70" fill="#ff1493"/>
-  <ellipse cx="130" cy="70" rx="3" ry="5" fill="#ff69b4"/>
+  <!-- Iconic bow - more detailed and authentic -->
+  <g class="kitty-bow">
+    <!-- Left bow part -->
+    <path d="M 115 65 Q 125 50 135 65 Q 125 75 115 65" fill="#ff1493" stroke="#c2185b" stroke-width="1"/>
+    <!-- Right bow part -->
+    <path d="M 135 65 Q 145 50 155 65 Q 145 75 135 65" fill="#ff1493" stroke="#c2185b" stroke-width="1"/>
+    <!-- Center knot -->
+    <ellipse cx="135" cy="65" rx="5" ry="8" fill="#e91e63" stroke="#c2185b" stroke-width="1"/>
+    <!-- Bow highlights -->
+    <ellipse cx="125" cy="60" rx="2" ry="3" fill="#ff69b4" opacity="0.7"/>
+    <ellipse cx="145" cy="60" rx="2" ry="3" fill="#ff69b4" opacity="0.7"/>
+  </g>
   
-  <!-- Whiskers -->
-  <line x1="60" y1="110" x2="40" y2="108" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="60" y1="120" x2="40" y2="122" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Whiskers with proper spacing -->
+  <line x1="55" y1="105" x2="30" y2="103" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-left-top"/>
+  <line x1="55" y1="115" x2="30" y2="115" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-left-middle"/>
+  <line x1="55" y1="125" x2="30" y2="127" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-left-bottom"/>
   
-  <line x1="140" y1="110" x2="160" y2="108" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="140" y1="120" x2="160" y2="122" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="145" y1="105" x2="170" y2="103" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-right-top"/>
+  <line x1="145" y1="115" x2="170" y2="115" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-right-middle"/>
+  <line x1="145" y1="125" x2="170" y2="127" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-right-bottom"/>
   
-  <!-- Body (optional - can be shown/hidden based on position) -->
-  <ellipse cx="100" cy="170" rx="40" ry="30" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-body"/>
+  <!-- Body for when positioned -->
+  <ellipse cx="100" cy="170" rx="42" ry="32" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-body" style="display:none;"/>
   
-  <!-- Arms -->
-  <ellipse cx="70" cy="155" rx="15" ry="20" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-arm-left"/>
-  <ellipse cx="130" cy="155" rx="15" ry="20" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-arm-right"/>
+  <!-- Arms for interactions -->
+  <ellipse cx="68" cy="155" rx="18" ry="22" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-arm-left" style="display:none;"/>
+  <ellipse cx="132" cy="155" rx="18" ry="22" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-arm-right" style="display:none;"/>
+  
+  <!-- Hands for covering eyes interaction -->
+  <circle cx="85" cy="105" r="12" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-hand-left" style="display:none;"/>
+  <circle cx="115" cy="105" r="12" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-hand-right" style="display:none;"/>
+  
+  <!-- Blush spots for shy animation -->
+  <ellipse cx="70" cy="115" rx="8" ry="6" fill="#ff69b4" opacity="0" class="blush-left"/>
+  <ellipse cx="130" cy="115" rx="8" ry="6" fill="#ff69b4" opacity="0" class="blush-right"/>
+  
+  <!-- Mouth for smiling animations -->
+  <path d="M 92 130 Q 100 138 108 130" stroke="#ff69b4" stroke-width="2" fill="none" stroke-linecap="round" class="kitty-mouth" style="display:none;"/>
 </svg>
