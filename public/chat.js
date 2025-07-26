@@ -1630,11 +1630,11 @@ let chillBackgroundSound = null;
 let chillSoundButton = null;
 let currentChillSound = parseInt(localStorage.getItem('chill_sound_selection') || '0');
 
-// Chill sound files with descriptive names
+// Enhanced relaxing sound files with icons for individual selection
 const chillSounds = [
-  { name: 'Rain', file: 'chill-1.mp3' },
-  { name: 'Ocean Waves', file: 'chill-2.mp3' },
-  { name: 'Lo-fi Beats', file: 'chill-3.mp3' }
+  { name: 'Ocean Waves', file: 'oceanWave1.mp3', icon: '🌊' },
+  { name: 'Forest Birds', file: 'forestBirds.mp3', icon: '🌿' },
+  { name: 'Alternative Ocean', file: 'oceanWave2.mp3', icon: '🎧' }
 ];
 
 // Create chill theme effects
@@ -1887,14 +1887,18 @@ function createChillSoundButton() {
     </div>
     <div class="ambient-sound-player" id="ambientSoundPlayer" style="display: none;">
       <div class="player-controls">
-        <button class="player-btn play-pause-btn" id="playPauseBtn" title="Play/Pause">▶️</button>
+        <button class="player-btn play-pause-btn" id="playPauseBtn" title="Play/Pause">⏸️</button>
         <button class="player-btn volume-btn" id="volumeBtn" title="Volume">🔊</button>
         <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30">
       </div>
       <div class="sound-selection">
-        <button class="sound-select-btn" id="soundPrevBtn">‹</button>
-        <span class="current-sound-name" id="currentSoundName">${chillSounds[currentChillSound].name}</span>
-        <button class="sound-select-btn" id="soundNextBtn">›</button>
+        ${chillSounds.map((sound, index) => `
+          <button class="sound-icon-btn ${index === currentChillSound ? 'active' : ''}" 
+                  data-sound-index="${index}" 
+                  title="${sound.name}">
+            ${sound.icon}
+          </button>
+        `).join('')}
       </div>
     </div>
   `;
@@ -1905,8 +1909,7 @@ function createChillSoundButton() {
   const playPauseBtn = chillSoundButton.querySelector('#playPauseBtn');
   const volumeBtn = chillSoundButton.querySelector('#volumeBtn');
   const volumeSlider = chillSoundButton.querySelector('#volumeSlider');
-  const soundPrevBtn = chillSoundButton.querySelector('#soundPrevBtn');
-  const soundNextBtn = chillSoundButton.querySelector('#soundNextBtn');
+  const soundIconButtons = chillSoundButton.querySelectorAll('.sound-icon-btn');
 
   // Main button click - toggle player visibility with scale animation
   ambientButton.addEventListener('click', () => {
@@ -1950,42 +1953,41 @@ function createChillSoundButton() {
     }
   });
 
-  // Sound selection
-  soundPrevBtn.addEventListener('click', () => cyclePreviousChillSound());
-  soundNextBtn.addEventListener('click', () => cycleNextChillSound());
+  // Sound icon button clicks
+  soundIconButtons.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      // Update current sound selection
+      currentChillSound = index;
+      
+      // Update active button styling
+      soundIconButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Save preference and play the selected sound
+      saveChillSoundPreferences();
+      playCurrentChillSound();
+      
+      // Update play/pause button to show pause (since we're now playing)
+      playPauseBtn.textContent = '⏸️';
+      playPauseBtn.title = 'Pause';
+    });
+  });
 
   document.body.appendChild(chillSoundButton);
 }
 
-// Cycle to previous chill sound
-function cyclePreviousChillSound() {
-  currentChillSound = (currentChillSound - 1 + chillSounds.length) % chillSounds.length;
-  updateChillSoundDisplay();
-  saveChillSoundPreferences();
-  if (chillBackgroundSound) {
-    // If currently playing, switch to new sound
-    playCurrentChillSound();
-  }
-}
-
-// Cycle to next chill sound
-function cycleNextChillSound() {
-  currentChillSound = (currentChillSound + 1) % chillSounds.length;
-  updateChillSoundDisplay();
-  saveChillSoundPreferences();
-  if (chillBackgroundSound) {
-    // If currently playing, switch to new sound
-    playCurrentChillSound();
-  }
-}
-
-// Update sound display
+// Update sound display for icon buttons
 function updateChillSoundDisplay() {
-  if (!chillSoundButton) return;
-  
-  const currentSoundName = chillSoundButton.querySelector('#currentSoundName');
-  if (currentSoundName) {
-    currentSoundName.textContent = chillSounds[currentChillSound].name;
+  const soundIconButtons = document.querySelectorAll('.sound-icon-btn');
+  if (soundIconButtons.length > 0) {
+    // Update active state for all buttons
+    soundIconButtons.forEach((btn, index) => {
+      if (index === currentChillSound) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
   }
 }
 
@@ -2039,8 +2041,7 @@ function playCurrentChillSound() {
 
 // Sound system using Web Audio API
 function createChillSoundSystem() {
-  // Initialize audio context but don't auto-start playing
-  // Music only starts when user clicks the ambient sound button
+  // Initialize audio context
   if (!chillAudioContext) {
     try {
       chillAudioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -2048,6 +2049,25 @@ function createChillSoundSystem() {
       console.log('Web Audio API not available:', error);
     }
   }
+  
+  // Auto-play functionality: play the last selected sound on page load
+  // Default to oceanWave1.mp3 (index 0) if none saved
+  setTimeout(() => {
+    // Give time for UI to be created first
+    if (chillSoundButton) {
+      playCurrentChillSound();
+      
+      // Update play/pause button to show pause state
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      if (playPauseBtn) {
+        playPauseBtn.textContent = '⏸️';
+        playPauseBtn.title = 'Pause';
+      }
+      
+      // Update button active states
+      updateChillSoundDisplay();
+    }
+  }, 1000); // 1 second delay to ensure everything is loaded
 }
 
 function createChillBackgroundSound() {
