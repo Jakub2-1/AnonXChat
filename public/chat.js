@@ -1056,6 +1056,22 @@ function createRetroNeonEffects() {
   retroOverlay.className = 'retro-neon-overlay';
   retroOverlay.id = 'retroNeonOverlay';
   body.appendChild(retroOverlay);
+  
+  // Add random neon blinking effects
+  setInterval(() => {
+    if (currentTheme === 'retroneon') {
+      // Random blink effect for neon elements
+      const neonElements = document.querySelectorAll('.theme-retroneon .msg-bubble, .theme-retroneon .send-btn, .theme-retroneon .chat-input');
+      neonElements.forEach(element => {
+        if (Math.random() < 0.1) { // 10% chance to blink
+          element.style.animation = 'neon-quick-blink 0.3s ease-in-out';
+          setTimeout(() => {
+            element.style.animation = '';
+          }, 300);
+        }
+      });
+    }
+  }, 2000); // Check every 2 seconds
 }
 
 // Create digital void effects  
