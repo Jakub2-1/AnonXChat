@@ -1,0 +1,665 @@
+/* ===== CHAOS THEME - WILD MULTICOLOR MADNESS ===== */
+
+/* Chaos theme variables */
+.theme-chaos {
+  --chaos-primary: #ff0080;
+  --chaos-secondary: #00ff80;
+  --chaos-accent: #8000ff;
+  --chaos-yellow: #ffff00;
+  --chaos-cyan: #00ffff;
+  --chaos-orange: #ff8000;
+  --chaos-glow: rgba(255, 0, 128, 0.8);
+  --chaos-shadow: rgba(255, 0, 128, 0.4);
+}
+
+/* Main body chaos effects */
+body.theme-chaos {
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  animation: chaos-body-glitch 0.1s infinite;
+  overflow-x: hidden;
+}
+
+/* Chaos background with rapidly changing neon colors */
+body.theme-chaos::before {
+  background: linear-gradient(45deg, 
+    var(--chaos-primary) 0%, 
+    var(--chaos-secondary) 25%, 
+    var(--chaos-accent) 50%, 
+    var(--chaos-yellow) 75%, 
+    var(--chaos-cyan) 100%);
+  background-size: 800% 800%;
+  animation: chaos-background-shift 3s ease infinite, chaos-glitch-bg 0.1s infinite;
+  filter: brightness(1.2) contrast(1.1) saturate(1.3);
+}
+
+body.theme-chaos::after {
+  background: radial-gradient(circle at 20% 80%, var(--chaos-glow) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(0, 255, 128, 0.6) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(128, 0, 255, 0.5) 0%, transparent 50%),
+              radial-gradient(circle at 60% 60%, rgba(255, 255, 0, 0.4) 0%, transparent 30%);
+  animation: chaos-overlay 2s ease infinite, chaos-pulse 1.5s ease infinite alternate;
+}
+
+/* Boost Chaos mode - more intense effects */
+body.theme-chaos.boost-chaos {
+  animation: chaos-body-glitch 0.05s infinite, chaos-screen-shake 0.3s infinite;
+}
+
+body.theme-chaos.boost-chaos::before {
+  animation: chaos-background-shift 1s ease infinite, chaos-glitch-bg 0.05s infinite, chaos-color-explosion 2s ease infinite;
+  filter: brightness(1.5) contrast(1.3) saturate(1.6);
+}
+
+body.theme-chaos.boost-chaos::after {
+  animation: chaos-overlay 1s ease infinite, chaos-pulse 0.5s ease infinite alternate, chaos-strobe 0.2s ease infinite;
+}
+
+/* Chaos animations */
+@keyframes chaos-background-shift {
+  0%, 100% { background-position: 0% 50%; transform: scale(1) rotate(0deg); }
+  25% { background-position: 100% 25%; transform: scale(1.02) rotate(0.5deg); }
+  50% { background-position: 50% 100%; transform: scale(0.98) rotate(-0.3deg); }
+  75% { background-position: 25% 75%; transform: scale(1.01) rotate(0.2deg); }
+}
+
+@keyframes chaos-body-glitch {
+  0%, 95% { transform: translate(0); filter: hue-rotate(0deg); }
+  96% { transform: translate(2px, 1px); filter: hue-rotate(90deg); }
+  97% { transform: translate(-1px, -2px); filter: hue-rotate(180deg); }
+  98% { transform: translate(1px, 2px); filter: hue-rotate(270deg); }
+  99% { transform: translate(-2px, -1px); filter: hue-rotate(360deg); }
+}
+
+@keyframes chaos-glitch-bg {
+  0%, 98% { opacity: 1; }
+  99% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+@keyframes chaos-overlay {
+  0%, 100% { opacity: 0.6; transform: scale(1) rotate(0deg); }
+  33% { opacity: 0.9; transform: scale(1.05) rotate(1deg); }
+  66% { opacity: 0.4; transform: scale(0.95) rotate(-1deg); }
+}
+
+@keyframes chaos-pulse {
+  0% { filter: brightness(1) saturate(1); }
+  100% { filter: brightness(1.3) saturate(1.5); }
+}
+
+@keyframes chaos-screen-shake {
+  0%, 90% { transform: translate(0); }
+  10% { transform: translate(1px, 1px); }
+  20% { transform: translate(-1px, -1px); }
+  30% { transform: translate(1px, -1px); }
+  40% { transform: translate(-1px, 1px); }
+  50% { transform: translate(2px, 1px); }
+  60% { transform: translate(-2px, -1px); }
+  70% { transform: translate(1px, 2px); }
+  80% { transform: translate(-1px, -2px); }
+}
+
+@keyframes chaos-color-explosion {
+  0% { filter: hue-rotate(0deg) brightness(1.2) saturate(1.3); }
+  25% { filter: hue-rotate(90deg) brightness(1.4) saturate(1.6); }
+  50% { filter: hue-rotate(180deg) brightness(1.1) saturate(1.4); }
+  75% { filter: hue-rotate(270deg) brightness(1.5) saturate(1.7); }
+  100% { filter: hue-rotate(360deg) brightness(1.2) saturate(1.3); }
+}
+
+@keyframes chaos-strobe {
+  0%, 90% { opacity: 1; }
+  95% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* Chaos glitch overlay */
+.chaos-glitch-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 0, 128, 0.1) 2px,
+    rgba(255, 0, 128, 0.1) 4px
+  );
+  animation: chaos-scan-lines 0.5s linear infinite;
+  opacity: 0.3;
+}
+
+body.theme-chaos.boost-chaos .chaos-glitch-overlay {
+  animation: chaos-scan-lines 0.2s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes chaos-scan-lines {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Title chaos effects */
+body.theme-chaos .glow {
+  color: var(--theme-text-primary);
+  text-shadow: 0 0 20px var(--chaos-primary), 
+               0 0 40px var(--chaos-secondary),
+               0 0 60px var(--chaos-accent),
+               0 0 80px var(--chaos-yellow);
+  animation: chaos-title-glitch 0.3s infinite, chaos-title-shake 2s ease infinite;
+  font-family: var(--theme-font-family);
+}
+
+body.theme-chaos.boost-chaos .glow {
+  animation: chaos-title-glitch 0.1s infinite, chaos-title-shake 0.5s ease infinite, chaos-title-colors 1s ease infinite;
+}
+
+@keyframes chaos-title-glitch {
+  0%, 95% { transform: scale(1); }
+  96% { transform: scale(1.02) skew(1deg); }
+  97% { transform: scale(0.98) skew(-1deg); }
+  98% { transform: scale(1.01) skew(0.5deg); }
+  99% { transform: scale(0.99) skew(-0.5deg); }
+}
+
+@keyframes chaos-title-shake {
+  0%, 90% { transform: translate(0); }
+  92% { transform: translate(1px, 0); }
+  94% { transform: translate(-1px, 0); }
+  96% { transform: translate(0, 1px); }
+  98% { transform: translate(0, -1px); }
+}
+
+@keyframes chaos-title-colors {
+  0% { 
+    color: var(--chaos-primary);
+    text-shadow: 0 0 20px var(--chaos-primary), 0 0 40px var(--chaos-secondary);
+  }
+  25% { 
+    color: var(--chaos-secondary);
+    text-shadow: 0 0 20px var(--chaos-secondary), 0 0 40px var(--chaos-accent);
+  }
+  50% { 
+    color: var(--chaos-accent);
+    text-shadow: 0 0 20px var(--chaos-accent), 0 0 40px var(--chaos-yellow);
+  }
+  75% { 
+    color: var(--chaos-yellow);
+    text-shadow: 0 0 20px var(--chaos-yellow), 0 0 40px var(--chaos-cyan);
+  }
+}
+
+/* Chaos chat bubbles */
+body.theme-chaos .msg-bubble {
+  animation: chaos-bubble-entry 0.8s ease-out, chaos-bubble-float 3s ease infinite;
+  border: 2px solid;
+  border-image: linear-gradient(45deg, var(--chaos-primary), var(--chaos-secondary), var(--chaos-accent)) 1;
+  box-shadow: 0 0 20px var(--chaos-glow), 
+              inset 0 0 10px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+body.theme-chaos .msg-bubble::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: chaos-bubble-shimmer 2s ease infinite;
+}
+
+body.theme-chaos .msg-bubble:hover {
+  animation: chaos-bubble-hover 0.3s ease infinite, chaos-bubble-float 3s ease infinite;
+  cursor: pointer;
+}
+
+body.theme-chaos.boost-chaos .msg-bubble {
+  animation: chaos-bubble-entry 0.4s ease-out, chaos-bubble-float 1.5s ease infinite, chaos-bubble-glitch 0.2s infinite;
+}
+
+@keyframes chaos-bubble-entry {
+  0% { 
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  50% { 
+    transform: scale(1.2) rotate(90deg);
+    opacity: 0.7;
+    filter: blur(5px);
+  }
+  100% { 
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+@keyframes chaos-bubble-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-2px) rotate(0.5deg); }
+  66% { transform: translateY(2px) rotate(-0.5deg); }
+}
+
+@keyframes chaos-bubble-shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes chaos-bubble-hover {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.05); filter: brightness(1.2); }
+}
+
+@keyframes chaos-bubble-glitch {
+  0%, 95% { transform: translate(0); }
+  96% { transform: translate(1px, 0); }
+  97% { transform: translate(-1px, 0); }
+  98% { transform: translate(0, 1px); }
+  99% { transform: translate(0, -1px); }
+}
+
+/* Random font variations for chaos bubbles */
+body.theme-chaos .msg-bubble.chaos-font-1 { font-family: 'Orbitron', monospace; font-weight: 700; }
+body.theme-chaos .msg-bubble.chaos-font-2 { font-family: 'VT323', monospace; font-size: 1.3em; }
+body.theme-chaos .msg-bubble.chaos-font-3 { font-family: 'Share Tech Mono', monospace; letter-spacing: 2px; }
+body.theme-chaos .msg-bubble.chaos-font-4 { font-family: 'UnifrakturCook', cursive; font-weight: 700; }
+body.theme-chaos .msg-bubble.chaos-font-5 { font-family: 'Poppins', sans-serif; font-weight: 800; text-transform: uppercase; }
+
+/* Random shape variations */
+body.theme-chaos .msg-bubble.chaos-shape-1 { border-radius: 0; transform: skew(-5deg); }
+body.theme-chaos .msg-bubble.chaos-shape-2 { border-radius: 50% 20% 50% 20%; }
+body.theme-chaos .msg-bubble.chaos-shape-3 { border-radius: 0 30px 0 30px; }
+body.theme-chaos .msg-bubble.chaos-shape-4 { border-radius: 20px 0 20px 0; transform: rotate(2deg); }
+body.theme-chaos .msg-bubble.chaos-shape-5 { clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%); }
+
+/* Random color variations */
+body.theme-chaos .msg-bubble.chaos-color-1 { 
+  background: linear-gradient(45deg, var(--chaos-primary), var(--chaos-accent));
+  color: white;
+}
+body.theme-chaos .msg-bubble.chaos-color-2 { 
+  background: linear-gradient(45deg, var(--chaos-secondary), var(--chaos-yellow));
+  color: black;
+}
+body.theme-chaos .msg-bubble.chaos-color-3 { 
+  background: linear-gradient(45deg, var(--chaos-cyan), var(--chaos-orange));
+  color: white;
+}
+body.theme-chaos .msg-bubble.chaos-color-4 { 
+  background: linear-gradient(45deg, var(--chaos-accent), var(--chaos-primary));
+  color: white;
+}
+body.theme-chaos .msg-bubble.chaos-color-5 { 
+  background: linear-gradient(45deg, var(--chaos-yellow), var(--chaos-cyan));
+  color: black;
+}
+
+/* Chaos input and buttons */
+body.theme-chaos .chat-input {
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid var(--chaos-primary);
+  animation: chaos-input-glow 2s ease infinite alternate;
+  color: var(--chaos-cyan);
+  font-family: 'Orbitron', monospace;
+}
+
+body.theme-chaos .chat-input:focus {
+  animation: chaos-input-glow 0.5s ease infinite alternate, chaos-input-shake 0.1s infinite;
+  box-shadow: 0 0 30px var(--chaos-glow);
+}
+
+body.theme-chaos.boost-chaos .chat-input {
+  animation: chaos-input-glow 0.5s ease infinite alternate, chaos-input-glitch 0.2s infinite;
+}
+
+@keyframes chaos-input-glow {
+  0% { border-color: var(--chaos-primary); box-shadow: 0 0 10px var(--chaos-primary); }
+  100% { border-color: var(--chaos-secondary); box-shadow: 0 0 20px var(--chaos-secondary); }
+}
+
+@keyframes chaos-input-shake {
+  0%, 90% { transform: translate(0); }
+  95% { transform: translate(1px, 0); }
+  100% { transform: translate(-1px, 0); }
+}
+
+@keyframes chaos-input-glitch {
+  0%, 95% { transform: translate(0); }
+  96% { transform: translate(2px, 1px); }
+  97% { transform: translate(-1px, -1px); }
+  98% { transform: translate(1px, -1px); }
+  99% { transform: translate(-1px, 1px); }
+}
+
+/* Chaos buttons */
+body.theme-chaos .send-btn,
+body.theme-chaos .start-btn,
+body.theme-chaos .skip-btn,
+body.theme-chaos .end-btn {
+  background: linear-gradient(45deg, var(--chaos-primary), var(--chaos-accent), var(--chaos-secondary));
+  background-size: 300% 300%;
+  animation: chaos-button-bg 2s ease infinite;
+  border: 2px solid var(--chaos-yellow);
+  color: white;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+body.theme-chaos .send-btn:hover,
+body.theme-chaos .start-btn:hover,
+body.theme-chaos .skip-btn:hover,
+body.theme-chaos .end-btn:hover {
+  animation: chaos-button-bg 0.5s ease infinite, chaos-button-hover 0.2s ease infinite;
+  transform: scale(1.05);
+}
+
+body.theme-chaos.boost-chaos .send-btn,
+body.theme-chaos.boost-chaos .start-btn,
+body.theme-chaos.boost-chaos .skip-btn,
+body.theme-chaos.boost-chaos .end-btn {
+  animation: chaos-button-bg 1s ease infinite, chaos-button-glitch 0.1s infinite;
+}
+
+@keyframes chaos-button-bg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes chaos-button-hover {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+@keyframes chaos-button-glitch {
+  0%, 95% { transform: translate(0); }
+  96% { transform: translate(1px, 1px); }
+  97% { transform: translate(-1px, -1px); }
+  98% { transform: translate(1px, -1px); }
+  99% { transform: translate(-1px, 1px); }
+}
+
+/* Chaos Demon character */
+.chaos-demon {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  font-size: 60px;
+  z-index: 1000;
+  pointer-events: none;
+  animation: chaos-demon-float 3s ease infinite;
+  filter: drop-shadow(0 0 10px var(--chaos-glow));
+  transition: all 0.3s ease;
+}
+
+.chaos-demon.appearing {
+  animation: chaos-demon-appear 1s ease-out, chaos-demon-float 3s ease infinite;
+}
+
+.chaos-demon.disappearing {
+  animation: chaos-demon-disappear 1s ease-in;
+}
+
+.chaos-demon.winking {
+  animation: chaos-demon-wink 0.5s ease;
+}
+
+.chaos-demon.middle-finger {
+  animation: chaos-demon-gesture 2s ease;
+}
+
+body.theme-chaos.boost-chaos .chaos-demon {
+  animation: chaos-demon-float 1.5s ease infinite, chaos-demon-boost-glitch 0.1s infinite;
+}
+
+@keyframes chaos-demon-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(2deg); }
+  66% { transform: translateY(5px) rotate(-2deg); }
+}
+
+@keyframes chaos-demon-appear {
+  0% { 
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  50% { 
+    transform: scale(1.3) rotate(90deg);
+    opacity: 0.7;
+    filter: blur(5px);
+  }
+  100% { 
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+@keyframes chaos-demon-disappear {
+  0% { 
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: blur(0px);
+  }
+  50% { 
+    transform: scale(1.2) rotate(-90deg);
+    opacity: 0.5;
+    filter: blur(5px);
+  }
+  100% { 
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+
+@keyframes chaos-demon-wink {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1) rotate(5deg); }
+}
+
+@keyframes chaos-demon-gesture {
+  0%, 80%, 100% { transform: scale(1) rotate(0deg); }
+  10% { transform: scale(1.2) rotate(10deg); }
+  90% { transform: scale(1.1) rotate(-5deg); }
+}
+
+@keyframes chaos-demon-boost-glitch {
+  0%, 90% { filter: hue-rotate(0deg) brightness(1); }
+  95% { filter: hue-rotate(180deg) brightness(1.5); }
+  100% { filter: hue-rotate(0deg) brightness(1); }
+}
+
+/* Boost Chaos Button */
+.boost-chaos-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: linear-gradient(45deg, var(--chaos-primary), var(--chaos-secondary), var(--chaos-accent));
+  background-size: 300% 300%;
+  border: 3px solid var(--chaos-yellow);
+  border-radius: 15px;
+  color: white;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 20px;
+  cursor: pointer;
+  z-index: 1000;
+  animation: boost-chaos-pulse 2s ease infinite;
+  box-shadow: 0 0 20px var(--chaos-glow);
+  transition: all 0.3s ease;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.boost-chaos-btn:hover {
+  animation: boost-chaos-pulse 0.5s ease infinite, chaos-button-hover 0.2s ease infinite;
+  transform: scale(1.05);
+}
+
+.boost-chaos-btn.active {
+  background: linear-gradient(45deg, var(--chaos-yellow), var(--chaos-cyan), var(--chaos-orange));
+  animation: boost-chaos-active 1s ease infinite;
+  border-color: var(--chaos-primary);
+}
+
+body.theme-chaos.boost-chaos .boost-chaos-btn {
+  animation: boost-chaos-active 0.5s ease infinite, chaos-button-glitch 0.1s infinite;
+}
+
+@keyframes boost-chaos-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 20px var(--chaos-glow);
+    background-position: 0% 50%;
+  }
+  50% { 
+    box-shadow: 0 0 40px var(--chaos-glow), 0 0 60px var(--chaos-secondary);
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes boost-chaos-active {
+  0% { 
+    background-position: 0% 50%;
+    filter: brightness(1.2) saturate(1.5);
+  }
+  50% { 
+    background-position: 100% 50%;
+    filter: brightness(1.5) saturate(2);
+  }
+  100% { 
+    background-position: 0% 50%;
+    filter: brightness(1.2) saturate(1.5);
+  }
+}
+
+/* UI Elements chaos effects */
+body.theme-chaos .theme-switcher,
+body.theme-chaos .online-count,
+body.theme-chaos .language-switcher,
+body.theme-chaos .stats-button {
+  border: 2px solid var(--chaos-primary);
+  animation: chaos-ui-glow 3s ease infinite alternate;
+  font-family: 'Orbitron', monospace;
+}
+
+body.theme-chaos.boost-chaos .theme-switcher,
+body.theme-chaos.boost-chaos .online-count,
+body.theme-chaos.boost-chaos .language-switcher,
+body.theme-chaos.boost-chaos .stats-button {
+  animation: chaos-ui-glow 1s ease infinite alternate, chaos-ui-shake 0.3s infinite;
+}
+
+@keyframes chaos-ui-glow {
+  0% { 
+    border-color: var(--chaos-primary);
+    box-shadow: 0 0 10px var(--chaos-primary);
+  }
+  100% { 
+    border-color: var(--chaos-secondary);
+    box-shadow: 0 0 20px var(--chaos-secondary);
+  }
+}
+
+@keyframes chaos-ui-shake {
+  0%, 90% { transform: translate(0); }
+  92% { transform: translate(1px, 0); }
+  94% { transform: translate(-1px, 0); }
+  96% { transform: translate(0, 1px); }
+  98% { transform: translate(0, -1px); }
+}
+
+/* Loading text chaos effects */
+body.theme-chaos .loading-text {
+  font-family: 'Orbitron', monospace;
+  animation: chaos-loading-text 2s ease infinite;
+  text-shadow: 0 0 20px var(--chaos-glow), 0 0 40px var(--chaos-secondary);
+}
+
+body.theme-chaos.boost-chaos .loading-text {
+  animation: chaos-loading-text 0.5s ease infinite, chaos-text-glitch 0.1s infinite;
+}
+
+@keyframes chaos-loading-text {
+  0% { 
+    color: var(--chaos-primary);
+    text-shadow: 0 0 20px var(--chaos-primary);
+  }
+  25% { 
+    color: var(--chaos-secondary);
+    text-shadow: 0 0 20px var(--chaos-secondary);
+  }
+  50% { 
+    color: var(--chaos-accent);
+    text-shadow: 0 0 20px var(--chaos-accent);
+  }
+  75% { 
+    color: var(--chaos-yellow);
+    text-shadow: 0 0 20px var(--chaos-yellow);
+  }
+}
+
+@keyframes chaos-text-glitch {
+  0%, 95% { transform: translate(0); }
+  96% { transform: translate(2px, 1px); }
+  97% { transform: translate(-1px, -2px); }
+  98% { transform: translate(1px, 2px); }
+  99% { transform: translate(-2px, -1px); }
+}
+
+/* Performance optimizations for less powerful devices */
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  body.theme-chaos {
+    animation: none;
+  }
+  
+  body.theme-chaos::before {
+    animation: chaos-background-shift 6s ease infinite;
+  }
+  
+  body.theme-chaos .msg-bubble {
+    animation: chaos-bubble-entry 0.8s ease-out;
+  }
+  
+  body.theme-chaos .glow {
+    animation: chaos-title-shake 4s ease infinite;
+  }
+  
+  .chaos-glitch-overlay {
+    display: none;
+  }
+  
+  body.theme-chaos.boost-chaos {
+    animation: chaos-body-glitch 0.2s infinite;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chaos-demon {
+    width: 60px;
+    height: 60px;
+    font-size: 45px;
+  }
+  
+  .boost-chaos-btn {
+    bottom: 60px;
+    right: 15px;
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}

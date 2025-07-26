@@ -12,6 +12,13 @@ This directory contains audio files for AnonXChat sound effects:
 - `chill-2.mp3` - Nature background sound  
 - `chill-3.mp3` - Relaxing background sound
 
+## Chaos Theme Sound Effects (Premium Feature)
+- `chaos-glitch.mp3` - Digital glitch sound effect
+- `chaos-laugh.mp3` - Demonic laughter sound effect
+- `chaos-explosion.mp3` - Explosion sound effect
+- `chaos-scream.mp3` - Scream sound effect
+- `chaos-zap.mp3` - Electric zap sound effect
+
 The Chill theme background sounds are automatically played when the Chill theme is active and provide a relaxing ambience. Users can cycle through different sounds and mute/unmute using the sound control button that appears in the bottom-right corner when using the Chill theme.
 
 ## Format Requirements
