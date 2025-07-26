@@ -3225,6 +3225,31 @@ function showNotif(msg, btns = false) {
       notification.style.opacity = '1';
     }, 10);
   }, 150);
+  
+  // Auto-dismiss notification without buttons after 5 seconds
+  if (!btns) {
+    setTimeout(() => {
+      hideNotification();
+    }, 5000);
+  }
+}
+
+function hideNotification() {
+  const notification = document.getElementById('notification');
+  const mainPage = document.getElementById('mainPage');
+  
+  if (notification.style.display !== 'none') {
+    notification.style.opacity = '0';
+    setTimeout(() => {
+      notification.style.display = 'none';
+      // Return to main page
+      mainPage.style.display = 'flex';
+      mainPage.style.opacity = '0';
+      setTimeout(() => {
+        mainPage.style.opacity = '1';
+      }, 10);
+    }, 300);
+  }
 }
 
 function showLoadingOverlay() {
@@ -3909,6 +3934,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set up theme modal
   setupThemeModal();
   
+  // Set up notification click-to-dismiss
+  setupNotificationHandlers();
+  
   // Show welcome message for new users
   if (userStats.totalChats === 0 && !localStorage.getItem('anonx_welcome_shown')) {
     setTimeout(() => {
@@ -3923,6 +3951,22 @@ document.addEventListener('DOMContentLoaded', function() {
     togglePremiumAccess();
   });
 });
+
+// Notification Handlers Setup
+function setupNotificationHandlers() {
+  const notification = document.getElementById('notification');
+  
+  if (!notification) return;
+  
+  // Click to dismiss notifications without buttons
+  notification.addEventListener('click', function(e) {
+    const notifBtns = document.getElementById('notifBtns');
+    // Only allow click-to-dismiss if no buttons are shown
+    if (notifBtns && notifBtns.style.display === 'none') {
+      hideNotification();
+    }
+  });
+}
 
 // Bug Feedback Button Setup
 function setupBugFeedbackButton() {
