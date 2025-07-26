@@ -24,7 +24,7 @@
   }
 }
 
-/* Sparkle container - only visible when Hello Kitty theme is active */
+/* Sparkle container - hidden for clean background */
 .kitty-sparkles {
   position: fixed;
   top: 0;
@@ -35,10 +35,12 @@
   z-index: 1;
   opacity: 0;
   transition: opacity 0.5s ease;
+  display: none !important; /* Force hide sparkles */
 }
 
 body.theme-hellokitty .kitty-sparkles {
-  opacity: 1;
+  opacity: 0 !important; /* Keep sparkles hidden in Hello Kitty theme */
+  display: none !important; /* Force hide sparkles */
 }
 
 /* Individual sparkle elements */
@@ -70,11 +72,13 @@ body.theme-hellokitty .kitty-sparkles {
   transition: all 0.3s ease;
   opacity: 0;
   pointer-events: none;
+  display: none !important; /* Force hide Hello Kitty character */
 }
 
-/* Show Hello Kitty only when theme is active */
+/* Hide Hello Kitty character in theme */
 body.theme-hellokitty .hello-kitty-character {
-  opacity: 1;
+  opacity: 0 !important; /* Keep character hidden */
+  display: none !important; /* Force hide character */
 }
 
 /* ===== MAIN PAGE POSITIONING VARIANTS ===== */
@@ -639,10 +643,12 @@ body.theme-hellokitty .msg-left::before {
   opacity: 0;
   transition: all 0.3s ease;
   box-shadow: 0 2px 10px rgba(255, 105, 180, 0.3);
+  display: none !important; /* Force hide sparkle toggle */
 }
 
 body.theme-hellokitty .sparkle-toggle {
-  opacity: 1;
+  opacity: 0 !important; /* Keep toggle hidden */
+  display: none !important; /* Force hide toggle */
 }
 
 .sparkle-toggle:hover {
@@ -657,13 +663,11 @@ body.theme-hellokitty .sparkle-toggle {
 
 /* ===== ENHANCED THEME BACKGROUND ===== */
 body.theme-hellokitty {
-  /* Matte pink background without gradients */
-  background: #ffb6c1;
-  /* Keep only subtle pattern overlay */
-  background-image: 
-    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    radial-gradient(circle at 80% 20%, rgba(255, 105, 180, 0.05) 1px, transparent 1px);
-  background-size: 50px 50px, 30px 30px;
+  /* Clean matte pink background without any patterns, gradients, or overlays */
+  background: #ffb6c1 !important;
+  /* Remove all background images and patterns */
+  background-image: none !important;
+  background-size: auto !important;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
