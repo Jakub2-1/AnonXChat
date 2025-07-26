@@ -14,6 +14,8 @@ class PhantomTheme {
     this.fogParticles = [];
     this.dissolvingTextTimeout = null;
     this.boostToggleButton = null;
+    this.ghostInterval = null;
+    this.ghostElements = [];
     
     // Bind methods
     this.activate = this.activate.bind(this);
@@ -22,6 +24,10 @@ class PhantomTheme {
     this.showDissolvingText = this.showDissolvingText.bind(this);
     this.createFogOverlay = this.createFogOverlay.bind(this);
     this.createBoostControls = this.createBoostControls.bind(this);
+    this.createGhostCharacter = this.createGhostCharacter.bind(this);
+    this.startGhostAnimation = this.startGhostAnimation.bind(this);
+    this.stopGhostAnimation = this.stopGhostAnimation.bind(this);
+    this.cleanupGhostElements = this.cleanupGhostElements.bind(this);
   }
 
   /**
@@ -41,6 +47,9 @@ class PhantomTheme {
     
     // Create fog overlay
     this.createFogOverlay();
+    
+    // Start ghost character animation
+    this.startGhostAnimation();
     
     // Create boost controls if in demo mode
     if (this.isDemoMode()) {
@@ -70,6 +79,9 @@ class PhantomTheme {
     
     // Clean up fog overlay
     this.removeFogOverlay();
+    
+    // Stop ghost animation
+    this.stopGhostAnimation();
     
     // Clean up dissolving text
     this.removeDissolvingText();
@@ -151,6 +163,125 @@ class PhantomTheme {
     if (existingOverlay) {
       existingOverlay.remove();
     }
+  }
+
+  /**
+   * Start ghost character animation with random intervals
+   */
+  startGhostAnimation() {
+    if (this.ghostInterval) {
+      clearInterval(this.ghostInterval);
+    }
+
+    // Create first ghost after a short delay
+    setTimeout(() => {
+      if (this.isActive) {
+        this.createGhostCharacter();
+      }
+    }, 2000);
+
+    // Set up recurring ghost appearances
+    const scheduleNextGhost = () => {
+      if (!this.isActive) return;
+      
+      // Random interval between 6-15 seconds
+      const interval = 6000 + Math.random() * 9000;
+      
+      this.ghostInterval = setTimeout(() => {
+        if (this.isActive) {
+          this.createGhostCharacter();
+          scheduleNextGhost();
+        }
+      }, interval);
+    };
+
+    scheduleNextGhost();
+    console.log('Ghost character animation started');
+  }
+
+  /**
+   * Stop ghost character animation
+   */
+  stopGhostAnimation() {
+    if (this.ghostInterval) {
+      clearTimeout(this.ghostInterval);
+      this.ghostInterval = null;
+    }
+    this.cleanupGhostElements();
+    console.log('Ghost character animation stopped');
+  }
+
+  /**
+   * Create and animate a ghost character
+   */
+  createGhostCharacter() {
+    // Clean up any existing ghost elements first
+    this.cleanupGhostElements();
+
+    const ghost = document.createElement('div');
+    
+    // Random choice between emoji and SVG
+    const useEmoji = Math.random() > 0.5;
+    
+    if (useEmoji) {
+      ghost.className = 'phantom-ghost-character';
+      ghost.textContent = '👻';
+    } else {
+      ghost.className = 'phantom-ghost-svg';
+      ghost.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 100%; height: 100%;">
+          <path d="M12 2C8.14 2 5 5.14 5 9v8l2-2 2 2 3-3 3 3 2-2 2 2V9c0-3.86-3.14-7-7-7zm-1 12.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zm2 0c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5z"/>
+        </svg>
+      `;
+    }
+    
+    // Set random horizontal position (10% to 90% of screen width)
+    const randomX = 10 + Math.random() * 80;
+    
+    // Set vertical position (30% to 70% of screen height)
+    const randomY = 30 + Math.random() * 40;
+    
+    ghost.style.left = `${randomX}%`;
+    ghost.style.top = `${randomY}%`;
+    ghost.style.color = Math.random() > 0.5 ? 'var(--phantom-purple)' : 'var(--phantom-turquoise)';
+    
+    // Add to DOM and track
+    document.body.appendChild(ghost);
+    this.ghostElements.push(ghost);
+    
+    // Trigger animation
+    setTimeout(() => {
+      ghost.classList.add('appearing');
+    }, 100);
+    
+    // Remove after animation completes (4 seconds)
+    setTimeout(() => {
+      this.removeGhostElement(ghost);
+    }, 4500);
+    
+    console.log('Ghost character created at position', randomX + '%', randomY + '%');
+  }
+
+  /**
+   * Remove a specific ghost element
+   */
+  removeGhostElement(ghost) {
+    if (ghost && ghost.parentNode) {
+      ghost.parentNode.removeChild(ghost);
+    }
+    this.ghostElements = this.ghostElements.filter(el => el !== ghost);
+  }
+
+  /**
+   * Clean up all ghost elements
+   */
+  cleanupGhostElements() {
+    this.ghostElements.forEach(ghost => {
+      if (ghost && ghost.parentNode) {
+        ghost.parentNode.removeChild(ghost);
+      }
+    });
+    this.ghostElements = [];
   }
 
   /**
