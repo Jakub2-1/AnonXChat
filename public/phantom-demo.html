@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Phantom Theme Demo - AnonX Chat</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="phantom-theme.module.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+</head>
+<body class="theme-phantom">
+  <!-- Demo Header -->
+  <div class="demo-header">
+    <h1 class="demo-title">Phantom Theme Demo</h1>
+    <p class="demo-subtitle">Experience the mystical hacker-inspired premium theme</p>
+  </div>
+
+  <!-- Demo Controls -->
+  <div class="phantom-demo-controls">
+    <button type="button" class="phantom-boost-toggle" id="boostToggle">
+      Activate Boost 🚀
+    </button>
+    <button type="button" class="demo-reset-btn" id="resetDemo">
+      Reset Demo
+    </button>
+  </div>
+
+  <!-- Main Demo Content -->
+  <div class="demo-content phantom-demo-container">
+    <!-- Simulated Chat Interface -->
+    <div class="demo-chat-container">
+      <div class="demo-chat-header">
+        <h2>Chat Preview</h2>
+        <span class="demo-status">✅ Connected to Phantom realm</span>
+      </div>
+      
+      <div class="messages" id="demoMessages">
+        <div class="message theirs">
+          <div class="message-content">Hey there! Welcome to the Phantom realm... 👻</div>
+          <div class="message-time">Just now</div>
+        </div>
+        <div class="message mine">
+          <div class="message-content">This theme is incredible! The ethereal effects are amazing.</div>
+          <div class="message-time">Just now</div>
+        </div>
+        <div class="message theirs">
+          <div class="message-content">I know right? The fog effects and neon borders make it feel so mystical ✨</div>
+          <div class="message-time">Just now</div>
+        </div>
+        <div class="message mine">
+          <div class="message-content">And this Montserrat font gives it such an elegant touch!</div>
+          <div class="message-time">Just now</div>
+        </div>
+      </div>
+      
+      <!-- Typing Indicator Demo -->
+      <div id="typingIndicator" class="typing-indicator" style="display: block;">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      </div>
+      
+      <!-- Chat Input Demo -->
+      <form class="demo-chat-form" id="demoChatForm">
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="demoInput" 
+                 placeholder="Experience the phantom chat magic..." 
+                 autocomplete="off" maxlength="500"/>
+          <button type="submit" class="send-btn">Send</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Feature Showcase -->
+    <div class="demo-features">
+      <h2 class="features-title">Phantom Theme Features</h2>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🌫️</div>
+          <div class="feature-name">Fog Animation</div>
+          <div class="feature-description">Mystical fog particles drift across the screen</div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">✨</div>
+          <div class="feature-name">Dissolving Text</div>
+          <div class="feature-description">"Entering Phantom Mode..." effect on activation</div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-name">Boost Effect</div>
+          <div class="feature-description">Pulsating shadows and ethereal glow</div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <div class="feature-name">Glass Bubbles</div>
+          <div class="feature-description">Transparent messages with neon borders</div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🔮</div>
+          <div class="feature-name">Typing Glow</div>
+          <div class="feature-description">Animated glow on typing indicator</div>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <div class="feature-name">Responsive</div>
+          <div class="feature-description">Perfect on all devices with accessibility</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo Actions -->
+    <div class="demo-actions">
+      <button type="button" class="demo-btn" id="triggerDissolveBtn">
+        Trigger Dissolve Effect
+      </button>
+      <button type="button" class="demo-btn" id="addMessageBtn">
+        Add Demo Message
+      </button>
+      <button type="button" class="demo-btn" id="toggleTypingBtn">
+        Toggle Typing Indicator
+      </button>
+    </div>
+  </div>
+
+  <!-- Back to Main App -->
+  <div class="demo-footer">
+    <a href="/" class="back-link">← Back to AnonX Chat</a>
+    <p class="demo-note">
+      This is a demonstration of the Phantom premium theme. 
+      <br>
+      In the actual app, this theme requires premium access.
+    </p>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="phantom-theme.js"></script>
+  <script>
+    // Demo-specific JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+      // Enable demo mode
+      localStorage.setItem('phantom_demo_mode', 'true');
+      
+      // Initialize phantom theme
+      if (window.phantomTheme) {
+        window.phantomTheme.activate();
+      }
+      
+      // Demo functionality
+      const boostToggle = document.getElementById('boostToggle');
+      const resetDemo = document.getElementById('resetDemo');
+      const triggerDissolve = document.getElementById('triggerDissolveBtn');
+      const addMessage = document.getElementById('addMessageBtn');
+      const toggleTyping = document.getElementById('toggleTypingBtn');
+      const demoForm = document.getElementById('demoChatForm');
+      const demoInput = document.getElementById('demoInput');
+      const demoMessages = document.getElementById('demoMessages');
+      const typingIndicator = document.getElementById('typingIndicator');
+      
+      let messageCount = 0;
+      let typingVisible = true;
+      
+      // Boost toggle handler (handled by phantom-theme.js)
+      
+      // Reset demo
+      resetDemo.addEventListener('click', function() {
+        // Clear messages except first few
+        const messages = demoMessages.querySelectorAll('.message');
+        for (let i = 4; i < messages.length; i++) {
+          messages[i].remove();
+        }
+        messageCount = 0;
+        
+        // Reset input
+        demoInput.value = '';
+        
+        // Show typing indicator
+        typingIndicator.style.display = 'block';
+        typingVisible = true;
+        
+        // Reset boost
+        if (window.phantomTheme && window.phantomTheme.isBoostActive) {
+          window.phantomTheme.deactivateBoost();
+        }
+        
+        // Trigger dissolve effect
+        if (window.phantomTheme) {
+          window.phantomTheme.showDissolvingText();
+        }
+      });
+      
+      // Trigger dissolve effect
+      triggerDissolve.addEventListener('click', function() {
+        if (window.phantomTheme) {
+          window.phantomTheme.showDissolvingText();
+        }
+      });
+      
+      // Add demo message
+      addMessage.addEventListener('click', function() {
+        const messages = [
+          "The phantom realm is truly mystical! 🌟",
+          "I love how the messages have that ethereal glow ✨",
+          "The fog effects make everything feel otherworldly 🌫️",
+          "This theme is perfect for late-night conversations 🌙",
+          "The neon borders remind me of a cyberpunk aesthetic 💫",
+          "Phantom mode activated successfully! 👻"
+        ];
+        
+        const message = messages[messageCount % messages.length];
+        const ismine = messageCount % 2 === 0;
+        
+        const messageEl = document.createElement('div');
+        messageEl.className = `message ${ismine ? 'mine' : 'theirs'}`;
+        messageEl.innerHTML = `
+          <div class="message-content">${message}</div>
+          <div class="message-time">Just now</div>
+        `;
+        
+        demoMessages.appendChild(messageEl);
+        messageCount++;
+        
+        // Scroll to bottom
+        demoMessages.scrollTop = demoMessages.scrollHeight;
+      });
+      
+      // Toggle typing indicator
+      toggleTyping.addEventListener('click', function() {
+        typingVisible = !typingVisible;
+        typingIndicator.style.display = typingVisible ? 'block' : 'none';
+      });
+      
+      // Demo form submission
+      demoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const text = demoInput.value.trim();
+        if (!text) return;
+        
+        const messageEl = document.createElement('div');
+        messageEl.className = 'message mine';
+        messageEl.innerHTML = `
+          <div class="message-content">${text}</div>
+          <div class="message-time">Just now</div>
+        `;
+        
+        demoMessages.appendChild(messageEl);
+        demoInput.value = '';
+        
+        // Scroll to bottom
+        demoMessages.scrollTop = demoMessages.scrollHeight;
+        
+        // Simulate partner response after delay
+        setTimeout(function() {
+          const responses = [
+            "That's interesting! Tell me more about that 🤔",
+            "I completely agree with you! ✨",
+            "Wow, that's fascinating! 🌟",
+            "Thanks for sharing that with me! 💫",
+            "That's a great point! 👻",
+            "I never thought about it that way! 🌙"
+          ];
+          
+          const response = responses[Math.floor(Math.random() * responses.length)];
+          const responseEl = document.createElement('div');
+          responseEl.className = 'message theirs';
+          responseEl.innerHTML = `
+            <div class="message-content">${response}</div>
+            <div class="message-time">Just now</div>
+          `;
+          
+          demoMessages.appendChild(responseEl);
+          demoMessages.scrollTop = demoMessages.scrollHeight;
+        }, 1000 + Math.random() * 2000);
+      });
+      
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', function() {
+        localStorage.removeItem('phantom_demo_mode');
+      });
+    });
+  </script>
+
+  <style>
+    /* Demo-specific styles */
+    .demo-header {
+      text-align: center;
+      padding: 40px 20px 20px;
+      background: rgba(147, 112, 219, 0.1);
+      margin-bottom: 30px;
+    }
+    
+    .demo-title {
+      font-family: var(--phantom-font-family);
+      font-size: 3rem;
+      font-weight: 500;
+      color: var(--phantom-text-primary);
+      text-shadow: 
+        0 0 10px var(--phantom-glow-purple),
+        0 0 20px var(--phantom-shadow-purple);
+      margin: 0 0 10px;
+    }
+    
+    .demo-subtitle {
+      font-family: var(--phantom-font-family);
+      font-size: 1.2rem;
+      color: var(--phantom-text-secondary);
+      margin: 0;
+    }
+    
+    .demo-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .demo-chat-container {
+      background: var(--phantom-bubble-bg);
+      border: 1px solid var(--phantom-bubble-border);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 40px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .demo-chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--phantom-bubble-border);
+    }
+    
+    .demo-chat-header h2 {
+      font-family: var(--phantom-font-family);
+      color: var(--phantom-text-primary);
+      margin: 0;
+    }
+    
+    .demo-status {
+      color: var(--phantom-turquoise);
+      font-size: 0.9rem;
+    }
+    
+    .demo-features {
+      margin-bottom: 40px;
+    }
+    
+    .features-title {
+      font-family: var(--phantom-font-family);
+      font-size: 2rem;
+      color: var(--phantom-text-primary);
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px var(--phantom-glow-purple);
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .feature-card {
+      background: var(--phantom-bubble-bg);
+      border: 1px solid var(--phantom-bubble-border);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      border-color: var(--phantom-turquoise);
+      box-shadow: 0 0 15px var(--phantom-shadow-turquoise);
+      transform: translateY(-2px);
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    
+    .feature-name {
+      font-family: var(--phantom-font-family);
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--phantom-text-primary);
+      margin-bottom: 8px;
+    }
+    
+    .feature-description {
+      font-family: var(--phantom-font-family);
+      color: var(--phantom-text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .demo-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .demo-btn {
+      background: rgba(147, 112, 219, 0.2);
+      border: 1px solid var(--phantom-purple);
+      color: var(--phantom-text-primary);
+      font-family: var(--phantom-font-family);
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+    
+    .demo-btn:hover {
+      background: rgba(64, 224, 208, 0.2);
+      border-color: var(--phantom-turquoise);
+      box-shadow: 0 0 10px var(--phantom-shadow-turquoise);
+      transform: translateY(-1px);
+    }
+    
+    .demo-reset-btn {
+      background: rgba(220, 20, 60, 0.2);
+      border: 1px solid #dc143c;
+      color: var(--phantom-text-primary);
+      font-family: var(--phantom-font-family);
+      padding: 8px 16px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      margin-left: 10px;
+    }
+    
+    .demo-reset-btn:hover {
+      background: rgba(220, 20, 60, 0.3);
+      box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
+    }
+    
+    .demo-footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--phantom-bubble-border);
+      margin-top: 40px;
+    }
+    
+    .back-link {
+      display: inline-block;
+      color: var(--phantom-turquoise);
+      text-decoration: none;
+      font-family: var(--phantom-font-family);
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      text-shadow: 0 0 10px var(--phantom-glow-turquoise);
+    }
+    
+    .demo-note {
+      font-family: var(--phantom-font-family);
+      color: var(--phantom-text-secondary);
+      font-size: 0.9rem;
+      margin: 0;
+      line-height: 1.4;
+    }
+    
+    /* Mobile responsiveness for demo */
+    @media (max-width: 768px) {
+      .demo-title {
+        font-size: 2rem;
+      }
+      
+      .demo-chat-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+      
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .demo-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .phantom-demo-controls {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 20px auto;
+        text-align: center;
+      }
+    }
+  </style>
+</body>
+</html>
