@@ -923,6 +923,8 @@ function applyMainTheme(themeName) {
     createRetroNeonEffects();
   } else if (themeName === 'digitalvoid') {
     createDigitalVoidEffects();
+  } else if (themeName === 'hellokitty') {
+    createHelloKittyEffects();
   }
   
   // Apply color variations for themes that support them
@@ -973,6 +975,9 @@ function removeThemeOverlays() {
       element.remove();
     }
   });
+  
+  // Remove Hello Kitty effects when switching themes
+  removeHelloKittyEffects();
 }
 
 // Create retro neon effects
@@ -994,6 +999,325 @@ function createDigitalVoidEffects() {
   digitalOverlay.id = 'digitalVoidOverlay';
   body.appendChild(digitalOverlay);
 }
+
+// ===== HELLO KITTY LUXURY THEME FUNCTIONS =====
+
+// Global variables for Hello Kitty theme
+let sparklesEnabled = localStorage.getItem('kitty_sparkles') !== 'false'; // Default to enabled
+let currentKittyPosition = 'random';
+let helloKittyCharacter = null;
+let sparkleContainer = null;
+let sparkleToggleBtn = null;
+
+// Create Hello Kitty effects when theme is activated
+function createHelloKittyEffects() {
+  const body = document.body;
+  
+  // Create sparkles container
+  createSparklesContainer();
+  
+  // Create Hello Kitty character
+  createHelloKittyCharacter();
+  
+  // Create sparkle toggle button
+  createSparkleToggle();
+  
+  // Set random positioning based on current page
+  setRandomKittyPosition();
+  
+  // Add message interaction listeners
+  setupKittyInteractions();
+  
+  // Add chat bubble click listeners for heart effect
+  setupChatBubbleHearts();
+}
+
+// Create animated sparkles background
+function createSparklesContainer() {
+  if (sparkleContainer) {
+    sparkleContainer.remove();
+  }
+  
+  sparkleContainer = document.createElement('div');
+  sparkleContainer.className = 'kitty-sparkles';
+  sparkleContainer.id = 'kittySparkles';
+  
+  // Create multiple sparkles
+  for (let i = 0; i < 20; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = `sparkle sparkle-${(i % 6) + 1}`;
+    sparkle.textContent = Math.random() > 0.5 ? '✨' : '💎';
+    
+    // Random positioning
+    sparkle.style.left = Math.random() * 100 + '%';
+    sparkle.style.top = Math.random() * 100 + '%';
+    
+    // Add drift animation randomly
+    if (Math.random() > 0.5) {
+      sparkle.classList.add('drift');
+    }
+    
+    sparkleContainer.appendChild(sparkle);
+  }
+  
+  // Show/hide based on user preference
+  if (!sparklesEnabled) {
+    sparkleContainer.style.display = 'none';
+  }
+  
+  document.body.appendChild(sparkleContainer);
+}
+
+// Create Hello Kitty character element
+function createHelloKittyCharacter() {
+  if (helloKittyCharacter) {
+    helloKittyCharacter.remove();
+  }
+  
+  helloKittyCharacter = document.createElement('div');
+  helloKittyCharacter.className = 'hello-kitty-character';
+  helloKittyCharacter.id = 'helloKittyCharacter';
+  
+  // Load SVG content
+  helloKittyCharacter.innerHTML = `
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+      <!-- Head -->
+      <ellipse cx="100" cy="110" rx="65" ry="55" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
+      
+      <!-- Left ear -->
+      <ellipse cx="65" cy="75" rx="20" ry="25" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
+      
+      <!-- Right ear -->
+      <ellipse cx="135" cy="75" rx="20" ry="25" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
+      
+      <!-- Left ear inner -->
+      <ellipse cx="65" cy="80" rx="10" ry="12" fill="#ffb6c1"/>
+      
+      <!-- Right ear inner -->
+      <ellipse cx="135" cy="80" rx="10" ry="12" fill="#ffb6c1"/>
+      
+      <!-- Eyes -->
+      <circle cx="85" cy="105" r="4" fill="#000000" class="kitty-eye-left"/>
+      <circle cx="115" cy="105" r="4" fill="#000000" class="kitty-eye-right"/>
+      
+      <!-- Eye highlights -->
+      <circle cx="86" cy="103" r="1.5" fill="#ffffff"/>
+      <circle cx="116" cy="103" r="1.5" fill="#ffffff"/>
+      
+      <!-- Nose -->
+      <ellipse cx="100" cy="115" rx="2" ry="1.5" fill="#ff69b4"/>
+      
+      <!-- Bow -->
+      <path d="M 120 70 Q 130 60 140 70 Q 130 80 120 70 Q 110 60 120 70" fill="#ff1493"/>
+      <ellipse cx="130" cy="70" rx="3" ry="5" fill="#ff69b4"/>
+      
+      <!-- Whiskers -->
+      <line x1="60" y1="110" x2="40" y2="108" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="60" y1="120" x2="40" y2="122" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+      
+      <line x1="140" y1="110" x2="160" y2="108" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="140" y1="120" x2="160" y2="122" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+      
+      <!-- Body (hidden by default) -->
+      <ellipse cx="100" cy="170" rx="40" ry="30" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-body" style="display:none;"/>
+      
+      <!-- Arms -->
+      <ellipse cx="70" cy="155" rx="15" ry="20" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-arm-left" style="display:none;"/>
+      <ellipse cx="130" cy="155" rx="15" ry="20" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-arm-right" style="display:none;"/>
+    </svg>
+  `;
+  
+  document.body.appendChild(helloKittyCharacter);
+}
+
+// Create sparkle toggle button
+function createSparkleToggle() {
+  if (sparkleToggleBtn) {
+    sparkleToggleBtn.remove();
+  }
+  
+  sparkleToggleBtn = document.createElement('button');
+  sparkleToggleBtn.className = 'sparkle-toggle';
+  sparkleToggleBtn.id = 'sparkleToggle';
+  sparkleToggleBtn.innerHTML = sparklesEnabled ? '✨' : '🌫️';
+  sparkleToggleBtn.title = sparklesEnabled ? 'Disable sparkles' : 'Enable sparkles';
+  
+  if (!sparklesEnabled) {
+    sparkleToggleBtn.classList.add('disabled');
+  }
+  
+  sparkleToggleBtn.addEventListener('click', toggleSparkles);
+  
+  document.body.appendChild(sparkleToggleBtn);
+}
+
+// Toggle sparkles on/off for performance
+function toggleSparkles() {
+  sparklesEnabled = !sparklesEnabled;
+  localStorage.setItem('kitty_sparkles', sparklesEnabled.toString());
+  
+  if (sparkleContainer) {
+    sparkleContainer.style.display = sparklesEnabled ? 'block' : 'none';
+  }
+  
+  if (sparkleToggleBtn) {
+    sparkleToggleBtn.innerHTML = sparklesEnabled ? '✨' : '🌫️';
+    sparkleToggleBtn.title = sparklesEnabled ? 'Disable sparkles' : 'Enable sparkles';
+    sparkleToggleBtn.classList.toggle('disabled', !sparklesEnabled);
+  }
+}
+
+// Set random Hello Kitty positioning based on current page
+function setRandomKittyPosition() {
+  if (!helloKittyCharacter) return;
+  
+  const isMainPage = document.getElementById('mainPage').style.display !== 'none';
+  const isChatPage = document.getElementById('chatPage').style.display !== 'none';
+  
+  // Clear existing position classes
+  helloKittyCharacter.className = 'hello-kitty-character';
+  
+  if (isMainPage) {
+    // Main page variants
+    const mainVariants = ['kitty-main-hug', 'kitty-main-lay'];
+    const randomVariant = mainVariants[Math.floor(Math.random() * mainVariants.length)];
+    helloKittyCharacter.classList.add(randomVariant);
+    currentKittyPosition = randomVariant;
+    
+    // Show body and arms for main page positions
+    const body = helloKittyCharacter.querySelector('.kitty-body');
+    const armLeft = helloKittyCharacter.querySelector('.kitty-arm-left');
+    const armRight = helloKittyCharacter.querySelector('.kitty-arm-right');
+    if (body) body.style.display = 'block';
+    if (armLeft) armLeft.style.display = 'block';
+    if (armRight) armRight.style.display = 'block';
+    
+  } else if (isChatPage) {
+    // Chat page variants
+    const chatVariants = ['kitty-chat-wave', 'kitty-chat-jump', 'kitty-assistant'];
+    const randomVariant = chatVariants[Math.floor(Math.random() * chatVariants.length)];
+    helloKittyCharacter.classList.add(randomVariant);
+    currentKittyPosition = randomVariant;
+    
+    // Hide body for chat positions (head only)
+    const body = helloKittyCharacter.querySelector('.kitty-body');
+    const armLeft = helloKittyCharacter.querySelector('.kitty-arm-left');
+    const armRight = helloKittyCharacter.querySelector('.kitty-arm-right');
+    if (body) body.style.display = 'none';
+    if (armLeft) armLeft.style.display = 'none';
+    if (armRight) armRight.style.display = 'none';
+  }
+}
+
+// Setup Hello Kitty interactions for messages
+function setupKittyInteractions() {
+  // Remove existing listeners to prevent duplicates
+  if (window.kittyMessageListener) {
+    document.removeEventListener('kitty:newMessage', window.kittyMessageListener);
+  }
+  
+  // Create new listener for message reactions
+  window.kittyMessageListener = function(event) {
+    if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+    
+    const reactions = ['wink', 'clap'];
+    const reaction = reactions[Math.floor(Math.random() * reactions.length)];
+    
+    // Remove existing reaction classes
+    helloKittyCharacter.classList.remove('kitty-wink', 'kitty-clap');
+    
+    // Add reaction class
+    helloKittyCharacter.classList.add(`kitty-${reaction}`);
+    
+    // Remove class after animation
+    setTimeout(() => {
+      helloKittyCharacter.classList.remove(`kitty-${reaction}`);
+    }, 1000);
+  };
+  
+  document.addEventListener('kitty:newMessage', window.kittyMessageListener);
+}
+
+// Setup chat bubble heart effects
+function setupChatBubbleHearts() {
+  // Remove existing listeners
+  if (window.kittyBubbleListener) {
+    document.removeEventListener('click', window.kittyBubbleListener);
+  }
+  
+  window.kittyBubbleListener = function(event) {
+    if (currentTheme !== 'hellokitty') return;
+    
+    const message = event.target.closest('.msg-bubble');
+    if (!message) return;
+    
+    // Create heart animation
+    createHeartAnimation(event.clientX, event.clientY);
+    
+    // Trigger Hello Kitty reaction
+    if (window.kittyMessageListener) {
+      document.dispatchEvent(new CustomEvent('kitty:newMessage'));
+    }
+  };
+  
+  document.addEventListener('click', window.kittyBubbleListener);
+}
+
+// Create floating heart animation at click position
+function createHeartAnimation(x, y) {
+  const heart = document.createElement('div');
+  heart.className = 'chat-heart';
+  heart.innerHTML = '💕';
+  
+  // Position at click location
+  heart.style.left = x + 'px';
+  heart.style.top = y + 'px';
+  
+  document.body.appendChild(heart);
+  
+  // Remove heart after animation
+  setTimeout(() => {
+    heart.remove();
+  }, 1000);
+}
+
+// Trigger Hello Kitty reaction when new message arrives (called from existing message handling)
+function triggerKittyMessageReaction() {
+  if (currentTheme === 'hellokitty') {
+    document.dispatchEvent(new CustomEvent('kitty:newMessage'));
+  }
+}
+
+// Remove Hello Kitty effects when theme changes
+function removeHelloKittyEffects() {
+  if (sparkleContainer) {
+    sparkleContainer.remove();
+    sparkleContainer = null;
+  }
+  
+  if (helloKittyCharacter) {
+    helloKittyCharacter.remove();
+    helloKittyCharacter = null;
+  }
+  
+  if (sparkleToggleBtn) {
+    sparkleToggleBtn.remove();
+    sparkleToggleBtn = null;
+  }
+  
+  // Remove event listeners
+  if (window.kittyMessageListener) {
+    document.removeEventListener('kitty:newMessage', window.kittyMessageListener);
+    window.kittyMessageListener = null;
+  }
+  
+  if (window.kittyBubbleListener) {
+    document.removeEventListener('click', window.kittyBubbleListener);
+    window.kittyBubbleListener = null;
+  }
+}
+
+// ===== END HELLO KITTY FUNCTIONS =====
 
 // Chaos theme color variations
 function randomizeChaosTheme() {
@@ -1325,6 +1649,11 @@ function showChatPage() {
     setTimeout(() => {
       chatPage.style.opacity = '1';
       loadingOverlay.style.opacity = '1';
+      
+      // Update Hello Kitty positioning for chat page
+      if (currentTheme === 'hellokitty') {
+        setRandomKittyPosition();
+      }
     }, 10);
   }, 150);
 }
@@ -1387,6 +1716,11 @@ function showMainPage() {
       
       setTimeout(() => {
         mainPage.style.opacity = '1';
+        
+        // Update Hello Kitty positioning for main page
+        if (currentTheme === 'hellokitty') {
+          setRandomKittyPosition();
+        }
       }, 10);
     }, 150);
   } else {
@@ -1409,6 +1743,11 @@ function showMainPage() {
     
     // Ensure main page is visible
     mainPage.style.opacity = '1';
+    
+    // Update Hello Kitty positioning for main page
+    if (currentTheme === 'hellokitty') {
+      setRandomKittyPosition();
+    }
   }
 }
 
@@ -1492,6 +1831,11 @@ function addMsg(text, side, time) {
   el.innerHTML = text + '<span class="msg-time">' + (time || getTimeNow()) + '</span>';
   document.getElementById('messages').appendChild(el);
   document.getElementById('messages').scrollTop = 99999;
+  
+  // Trigger Hello Kitty reaction for incoming messages (left side)
+  if (side === 'left' && currentTheme === 'hellokitty') {
+    triggerKittyMessageReaction();
+  }
 }
 
 // Odeslání zprávy
