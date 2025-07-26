@@ -1,0 +1,349 @@
+/*
+ * Pixel Quest Retro Theme CSS
+ * Enhanced 8-bit Gameboy style with retro gaming aesthetics
+ */
+
+/* ===== PIXEL QUEST THEME VARIABLES ===== */
+.theme-pixelquest {
+  --theme-bg-primary: #C7C7A5; /* Light Gameboy green */
+  --theme-bg-secondary: #B5B59B;
+  --theme-bg-accent: #A5A591;
+  --theme-text-primary: #3E3E3E; /* Dark brown text */
+  --theme-text-secondary: #2E2E2E;
+  --theme-bubble-left: #86C232; /* Left bubble green */
+  --theme-bubble-right: #FF7F11; /* Right bubble orange */
+  --theme-button-bg: #000000; /* NES controller black */
+  --theme-button-text: #FF0000; /* NES controller red */
+  --theme-border: #3E3E3E;
+  --theme-shadow: rgba(62, 62, 62, 0.3);
+  --theme-pixel-border: #2E2E2E;
+  --theme-font-family: 'Press Start 2P', 'VT323', monospace;
+}
+
+/* ===== PIXEL TEXTURE BACKGROUND ===== */
+body.theme-pixelquest {
+  background: var(--theme-bg-primary);
+  font-family: var(--theme-font-family);
+  /* Pixel grid pattern */
+  background-image: 
+    linear-gradient(90deg, rgba(62,62,62,0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(62,62,62,0.05) 1px, transparent 1px);
+  background-size: 4px 4px;
+  color: var(--theme-text-primary);
+}
+
+/* ===== RETRO GAME BANNER ===== */
+.pixel-quest-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(45deg, #000 25%, #333 25%, #333 50%, #000 50%, #000 75%, #333 75%);
+  background-size: 8px 8px;
+  border-bottom: 2px solid var(--theme-pixel-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  font-family: var(--theme-font-family);
+  font-size: 12px;
+  color: #00FF00;
+  text-shadow: 1px 1px 0px #000;
+  animation: pixelBlink 2s infinite;
+}
+
+@keyframes pixelBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.8; }
+}
+
+/* ===== MAIN CONTENT ADJUSTMENT FOR BANNER ===== */
+body.theme-pixelquest #mainPage,
+body.theme-pixelquest #chatPage,
+body.theme-pixelquest #loadingOverlay {
+  margin-top: 40px;
+}
+
+/* ===== 8-BIT STYLE BUTTONS ===== */
+body.theme-pixelquest .start-btn,
+body.theme-pixelquest .send-btn,
+body.theme-pixelquest .skip-btn,
+body.theme-pixelquest .end-btn,
+body.theme-pixelquest .exit-btn,
+body.theme-pixelquest .notif-btn,
+body.theme-pixelquest .rating-btn {
+  background: var(--theme-button-bg);
+  color: var(--theme-button-text);
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0; /* No rounding - classic NES style */
+  font-family: var(--theme-font-family);
+  font-size: 12px;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 
+    inset -2px -2px 0px #333,
+    inset 2px 2px 0px #666,
+    2px 2px 4px rgba(0,0,0,0.3);
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+
+body.theme-pixelquest .start-btn:hover,
+body.theme-pixelquest .send-btn:hover,
+body.theme-pixelquest .skip-btn:hover,
+body.theme-pixelquest .end-btn:hover,
+body.theme-pixelquest .exit-btn:hover,
+body.theme-pixelquest .notif-btn:hover,
+body.theme-pixelquest .rating-btn:hover {
+  box-shadow: 
+    inset -1px -1px 0px #333,
+    inset 1px 1px 0px #666,
+    1px 1px 2px rgba(0,0,0,0.3);
+  transform: translate(1px, 1px);
+}
+
+body.theme-pixelquest .start-btn:active,
+body.theme-pixelquest .send-btn:active,
+body.theme-pixelquest .skip-btn:active,
+body.theme-pixelquest .end-btn:active,
+body.theme-pixelquest .exit-btn:active,
+body.theme-pixelquest .notif-btn:active,
+body.theme-pixelquest .rating-btn:active {
+  box-shadow: 
+    inset 2px 2px 0px #333,
+    inset -1px -1px 0px #666;
+  transform: translate(2px, 2px);
+}
+
+/* ===== CHAT BUBBLES WITH 8-BIT STYLE ===== */
+body.theme-pixelquest .msg-bubble,
+body.theme-pixelquest .message {
+  font-family: var(--theme-font-family);
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 8px 0;
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0;
+  box-shadow: 2px 2px 0px rgba(62,62,62,0.5);
+  animation: pixelPop 0.3s ease-out;
+}
+
+body.theme-pixelquest .msg-bubble.msg-left,
+body.theme-pixelquest .message.left {
+  background: var(--theme-bubble-left);
+  color: var(--theme-text-primary);
+  border-left: 4px solid #6BA025;
+}
+
+body.theme-pixelquest .msg-bubble.msg-right,
+body.theme-pixelquest .message.right {
+  background: var(--theme-bubble-right);
+  color: var(--theme-text-primary);
+  border-right: 4px solid #E6700A;
+}
+
+/* ===== 8-BIT CHARACTER TYPING ANIMATION ===== */
+@keyframes pixelPop {
+  0% {
+    transform: scale(0) translate(-50%, -50%);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) translate(-50%, -50%);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes pixelCharacter {
+  0% { opacity: 0; transform: translateY(5px); }
+  50% { opacity: 1; transform: translateY(-2px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+body.theme-pixelquest .message.char-animation .message-text {
+  display: inline-block;
+}
+
+body.theme-pixelquest .message.char-animation .message-text .char {
+  display: inline-block;
+  animation: pixelCharacter 0.3s ease-out;
+}
+
+/* ===== CHAT INPUT STYLING ===== */
+body.theme-pixelquest .chat-input {
+  background: var(--theme-bg-secondary);
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0;
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  font-size: 12px;
+  padding: 8px;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+body.theme-pixelquest .chat-input:focus {
+  outline: none;
+  border-color: var(--theme-button-text);
+  box-shadow: 
+    inset 2px 2px 4px rgba(0,0,0,0.2),
+    0 0 8px rgba(255,0,0,0.3);
+}
+
+/* ===== TYPING INDICATOR ===== */
+body.theme-pixelquest .typing-indicator {
+  color: var(--theme-text-secondary);
+  font-family: var(--theme-font-family);
+  font-size: 10px;
+}
+
+body.theme-pixelquest .typing-dot {
+  background: var(--theme-text-secondary);
+  width: 4px;
+  height: 4px;
+  border-radius: 0; /* Square pixels */
+}
+
+/* ===== MAIN PAGE STYLING ===== */
+body.theme-pixelquest .glow {
+  font-family: var(--theme-font-family);
+  color: var(--theme-text-primary);
+  text-shadow: 
+    1px 1px 0px #000,
+    2px 2px 0px rgba(62,62,62,0.5);
+  font-size: 24px;
+  letter-spacing: 2px;
+}
+
+/* ===== NOTIFICATION STYLING ===== */
+body.theme-pixelquest .notif {
+  background: var(--theme-bg-accent);
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0;
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  font-size: 12px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* ===== LOADING OVERLAY ===== */
+body.theme-pixelquest .loading-bubble {
+  background: var(--theme-bg-secondary);
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0;
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+}
+
+body.theme-pixelquest .loading-text {
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+/* ===== SOUND TOGGLE BUTTON ===== */
+body.theme-pixelquest .sound-toggle {
+  background: var(--theme-button-bg);
+  color: var(--theme-button-text);
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0;
+  font-family: var(--theme-font-family);
+  font-size: 10px;
+}
+
+/* ===== STATS PANEL ===== */
+body.theme-pixelquest .stats-panel .stats-content {
+  background: var(--theme-bg-primary);
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0;
+  font-family: var(--theme-font-family);
+}
+
+body.theme-pixelquest .stats-title,
+body.theme-pixelquest .stat-label {
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  font-size: 12px;
+}
+
+body.theme-pixelquest .stat-number {
+  color: var(--theme-button-text);
+  font-family: var(--theme-font-family);
+  font-weight: normal;
+}
+
+/* ===== THEME SWITCHER ===== */
+body.theme-pixelquest .theme-switcher {
+  background: var(--theme-button-bg);
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* ===== RATING MODAL ===== */
+body.theme-pixelquest .rating-content {
+  background: var(--theme-bg-primary);
+  border: 2px solid var(--theme-pixel-border);
+  border-radius: 0;
+  font-family: var(--theme-font-family);
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+}
+
+body.theme-pixelquest .rating-title {
+  color: var(--theme-text-primary);
+  font-family: var(--theme-font-family);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+body.theme-pixelquest .rating-text {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+body.theme-pixelquest ::-webkit-scrollbar {
+  width: 12px;
+}
+
+body.theme-pixelquest ::-webkit-scrollbar-track {
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-pixel-border);
+}
+
+body.theme-pixelquest ::-webkit-scrollbar-thumb {
+  background: var(--theme-text-primary);
+  border: 1px solid var(--theme-pixel-border);
+  border-radius: 0;
+}
+
+body.theme-pixelquest ::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-button-text);
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+  .pixel-quest-banner {
+    font-size: 10px;
+    height: 32px;
+  }
+  
+  body.theme-pixelquest #mainPage,
+  body.theme-pixelquest #chatPage,
+  body.theme-pixelquest #loadingOverlay {
+    margin-top: 32px;
+  }
+  
+  body.theme-pixelquest .message {
+    font-size: 10px;
+  }
+  
+  body.theme-pixelquest .glow {
+    font-size: 18px;
+  }
+}
