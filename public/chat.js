@@ -260,6 +260,13 @@ const themeDefinitions = {
     category: 'free', 
     description: 'Dark gothic atmosphere'
   },
+  pixelquest: {
+    name: 'Pixel Quest',
+    icon: '🎮',
+    className: 'theme-pixelquest',
+    category: 'free',
+    description: 'Retro 8-bit Gameboy style adventure'
+  },
   
   // PREMIUM THEMES - Poltergeist moved here + new themes added
   poltergeist: {
@@ -934,6 +941,8 @@ function applyMainTheme(themeName) {
     }
   } else if (themeName === 'chaos') {
     createChaosEffects();
+  } else if (themeName === 'pixelquest') {
+    createPixelQuestEffects();
   } else {
     // Deactivate Phantom theme if switching away from it
     if (window.phantomTheme && window.phantomTheme.isActive) {
@@ -981,7 +990,7 @@ function removeThemeOverlays() {
   const overlays = [
     'fogOverlay', 'sparklesOverlay', 'shadowsOverlay', 
     'poltergeistGlitchOverlay', 'poltergeistStaticOverlay',
-    'retroNeonOverlay', 'digitalVoidOverlay'
+    'retroNeonOverlay', 'digitalVoidOverlay', 'pixelQuestBanner'
   ];
   overlays.forEach(id => {
     const element = document.getElementById(id);
@@ -998,6 +1007,9 @@ function removeThemeOverlays() {
   
   // Remove Chaos effects when switching themes
   removeChaosEffects();
+  
+  // Remove Pixel Quest effects when switching themes
+  removePixelQuestEffects();
 }
 
 // Create retro neon effects
@@ -1018,6 +1030,200 @@ function createDigitalVoidEffects() {
   digitalOverlay.className = 'digital-void-overlay';
   digitalOverlay.id = 'digitalVoidOverlay';
   body.appendChild(digitalOverlay);
+}
+
+// ===== PIXEL QUEST RETRO THEME FUNCTIONS =====
+
+// Pixel Quest theme constants
+const pixelQuestMessages = [
+  "Choose your fighter!",
+  "Insert coin",
+  "Press Start to continue",
+  "Player 1 ready!",
+  "Game Over... Try again?",
+  "Level Up!",
+  "New High Score!",
+  "Achievement unlocked!",
+  "Boss battle incoming!",
+  "Power up collected!"
+];
+
+let pixelQuestBannerInterval = null;
+let pixelQuestMessageIndex = 0;
+
+// Create Pixel Quest effects when theme is activated
+function createPixelQuestEffects() {
+  const body = document.body;
+  
+  // Create retro game banner
+  createPixelQuestBanner();
+  
+  // Override message send/receive sounds for this theme
+  setupPixelQuestSounds();
+  
+  // Setup character animation for new messages
+  setupPixelQuestMessageAnimations();
+}
+
+// Create the retro game banner at the top
+function createPixelQuestBanner() {
+  const existingBanner = document.getElementById('pixelQuestBanner');
+  if (existingBanner) {
+    existingBanner.remove();
+  }
+  
+  const banner = document.createElement('div');
+  banner.className = 'pixel-quest-banner';
+  banner.id = 'pixelQuestBanner';
+  banner.textContent = pixelQuestMessages[0];
+  
+  document.body.appendChild(banner);
+  
+  // Rotate messages every 5 seconds
+  pixelQuestBannerInterval = setInterval(() => {
+    pixelQuestMessageIndex = (pixelQuestMessageIndex + 1) % pixelQuestMessages.length;
+    banner.textContent = pixelQuestMessages[pixelQuestMessageIndex];
+  }, 5000);
+}
+
+// Setup pixel quest specific sounds
+function setupPixelQuestSounds() {
+  // Override the default sound functions for this theme
+  window.pixelQuestSendSound = function() {
+    playPixelQuestSound('inventory_open');
+  };
+  
+  window.pixelQuestReceiveSound = function() {
+    playPixelQuestSound('coin');
+  };
+}
+
+// Play pixel quest specific sounds
+function playPixelQuestSound(soundType) {
+  if (!soundEnabled) return;
+  
+  try {
+    let audioFile = '';
+    let fallbackConfig = {};
+    
+    if (soundType === 'inventory_open') {
+      audioFile = '/sounds/inventory_open.wav';
+      // Fallback sound for inventory open (ascending tones)
+      fallbackConfig = {
+        frequencies: [200, 400, 600],
+        duration: 0.3,
+        type: 'square'
+      };
+    } else if (soundType === 'coin') {
+      audioFile = '/sounds/coin.wav';
+      // Fallback sound for coin (classic coin sound)
+      fallbackConfig = {
+        frequencies: [800, 1000, 1200, 1000],
+        duration: 0.4,
+        type: 'sine'
+      };
+    }
+    
+    // Try to play audio file first, fallback to generated sound
+    const audio = new Audio(audioFile);
+    audio.volume = 0.3;
+    audio.play().catch(error => {
+      console.log('Could not play pixel quest sound file, using generated sound');
+      createPixelQuestSound(fallbackConfig);
+    });
+  } catch (error) {
+    createPixelQuestSound(fallbackConfig);
+  }
+}
+
+// Create pixel quest sound using Web Audio API
+function createPixelQuestSound(soundConfig) {
+  if (!soundEnabled) return;
+  
+  try {
+    const { frequencies, duration, type } = soundConfig;
+    const totalDuration = duration;
+    const noteDuration = totalDuration / frequencies.length;
+    
+    frequencies.forEach((freq, index) => {
+      setTimeout(() => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + noteDuration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + noteDuration);
+      }, noteDuration * index * 1000);
+    });
+  } catch (error) {
+    console.log('Pixel quest sound not available:', error);
+  }
+}
+
+// Setup character-by-character animations for messages
+function setupPixelQuestMessageAnimations() {
+  // This will be called when new messages are added
+  window.pixelQuestAnimateMessage = function(messageElement) {
+    if (currentTheme !== 'pixelquest') return;
+    
+    const messageText = messageElement.querySelector('.message-text');
+    if (!messageText) return;
+    
+    const originalText = messageText.textContent;
+    messageText.innerHTML = '';
+    
+    // Add char-animation class to trigger CSS animations
+    messageElement.classList.add('char-animation');
+    
+    // Animate each character appearing
+    Array.from(originalText).forEach((char, index) => {
+      setTimeout(() => {
+        const charSpan = document.createElement('span');
+        charSpan.className = 'char';
+        charSpan.textContent = char;
+        charSpan.style.animationDelay = `${index * 0.05}s`;
+        messageText.appendChild(charSpan);
+      }, index * 50); // 50ms delay between characters
+    });
+  };
+}
+
+// Remove pixel quest effects when switching themes
+function removePixelQuestEffects() {
+  // Remove banner
+  const banner = document.getElementById('pixelQuestBanner');
+  if (banner) {
+    banner.remove();
+  }
+  
+  // Clear banner interval
+  if (pixelQuestBannerInterval) {
+    clearInterval(pixelQuestBannerInterval);
+    pixelQuestBannerInterval = null;
+  }
+  
+  // Reset sound functions
+  if (window.pixelQuestSendSound) {
+    delete window.pixelQuestSendSound;
+  }
+  if (window.pixelQuestReceiveSound) {
+    delete window.pixelQuestReceiveSound;
+  }
+  if (window.pixelQuestAnimateMessage) {
+    delete window.pixelQuestAnimateMessage;
+  }
+  
+  // Reset message index
+  pixelQuestMessageIndex = 0;
 }
 
 // ===== HELLO KITTY LUXURY THEME FUNCTIONS =====
@@ -3038,6 +3244,26 @@ function addMsg(text, side, time) {
     triggerKittyMessageReaction();
   }
   
+  // Pixel Quest theme effects
+  if (currentTheme === 'pixelquest') {
+    // Play receive sound for incoming messages (left side)
+    if (side === 'left' && window.pixelQuestReceiveSound) {
+      window.pixelQuestReceiveSound();
+    }
+    
+    // Apply character animation
+    if (window.pixelQuestAnimateMessage) {
+      // Add message-text wrapper for animation
+      const textContent = el.innerHTML;
+      const timeMatch = textContent.match(/<span class="msg-time">.*<\/span>$/);
+      const messageText = textContent.replace(/<span class="msg-time">.*<\/span>$/, '');
+      const timeSpan = timeMatch ? timeMatch[0] : '';
+      
+      el.innerHTML = `<span class="message-text">${messageText}</span>${timeSpan}`;
+      window.pixelQuestAnimateMessage(el);
+    }
+  }
+  
   return el; // Return the element for further manipulation
 }
 
@@ -3053,6 +3279,10 @@ function sendMsg() {
   // Play theme-specific sound
   if (currentTheme === 'chaos') {
     playChaosMessageSound();
+  } else if (currentTheme === 'pixelquest') {
+    if (window.pixelQuestSendSound) {
+      window.pixelQuestSendSound();
+    }
   } else {
     playMessageSend();
   }
