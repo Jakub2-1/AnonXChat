@@ -409,6 +409,18 @@ io.on("connection", (socket) => {
       socket.to(socket.room).emit("typing");
     }
   });
+
+  // Phantom jumpscare effect
+  socket.on("phantom-jumpscare", (data) => {
+    socket.lastActive = Date.now();
+    if (socket.partner && socket.room) {
+      // Forward jumpscare to partner
+      socket.to(socket.room).emit("phantom-jumpscare", {
+        from: data.from || "anonymous"
+      });
+      console.log(`Jumpscare sent from ${data.from} to partner in room ${socket.room}`);
+    }
+  });
 // Oznámení od uživatele že opouští chat (např. přes skip nebo end chat)
 socket.on("leave_chat", () => {
     if (socket.room) {
