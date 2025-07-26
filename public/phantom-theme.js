@@ -10,7 +10,6 @@
 class PhantomTheme {
   constructor() {
     this.isActive = false;
-copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     this.hasPremiumAccess = false;
     this.silhouetteInterval = null;
     this.jumpscareButton = null;
@@ -24,14 +23,11 @@ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     this.ghostElements = [];
     this.benchShadowInterval = null;
     this.benchShadowElements = [];
-    this.jumpscareButton = null;
     this.isJumpscareActive = false;
- main
     
     // Bind methods
     this.activate = this.activate.bind(this);
     this.deactivate = this.deactivate.bind(this);
-copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     this.createJumpscareButton = this.createJumpscareButton.bind(this);
     this.sendJumpscare = this.sendJumpscare.bind(this);
     this.receiveJumpscare = this.receiveJumpscare.bind(this);
@@ -40,6 +36,22 @@ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     this.stopSilhouetteAnimation = this.stopSilhouetteAnimation.bind(this);
     this.playJumpscareSound = this.playJumpscareSound.bind(this);
     this.checkPremiumAccess = this.checkPremiumAccess.bind(this);
+    this.toggleBoost = this.toggleBoost.bind(this);
+    this.showDissolvingText = this.showDissolvingText.bind(this);
+    this.createFogOverlay = this.createFogOverlay.bind(this);
+    this.createBoostControls = this.createBoostControls.bind(this);
+    this.createGhostCharacter = this.createGhostCharacter.bind(this);
+    this.startGhostAnimation = this.startGhostAnimation.bind(this);
+    this.stopGhostAnimation = this.stopGhostAnimation.bind(this);
+    this.cleanupGhostElements = this.cleanupGhostElements.bind(this);
+    this.startBenchShadowAnimation = this.startBenchShadowAnimation.bind(this);
+    this.stopBenchShadowAnimation = this.stopBenchShadowAnimation.bind(this);
+    this.createBenchShadow = this.createBenchShadow.bind(this);
+    this.cleanupBenchShadows = this.cleanupBenchShadows.bind(this);
+    this.triggerJumpscare = this.triggerJumpscare.bind(this);
+    this.showJumpscareEffect = this.showJumpscareEffect.bind(this);
+    this.hideJumpscareEffect = this.hideJumpscareEffect.bind(this);
+    this.hasPhantomPremium = this.hasPhantomPremium.bind(this);
   }
 
   /**
@@ -53,25 +65,6 @@ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     
     this.hasPremiumAccess = isPremium || hasDevKey || hasPhantomTheme;
     return this.hasPremiumAccess;
-
-    this.toggleBoost = this.toggleBoost.bind(this);
-    this.showDissolvingText = this.showDissolvingText.bind(this);
-    this.createFogOverlay = this.createFogOverlay.bind(this);
-    this.createBoostControls = this.createBoostControls.bind(this);
-    this.createGhostCharacter = this.createGhostCharacter.bind(this);
-    this.startGhostAnimation = this.startGhostAnimation.bind(this);
-    this.stopGhostAnimation = this.stopGhostAnimation.bind(this);
-    this.cleanupGhostElements = this.cleanupGhostElements.bind(this);
-    this.startBenchShadowAnimation = this.startBenchShadowAnimation.bind(this);
-    this.stopBenchShadowAnimation = this.stopBenchShadowAnimation.bind(this);
-    this.createBenchShadow = this.createBenchShadow.bind(this);
-    this.cleanupBenchShadows = this.cleanupBenchShadows.bind(this);
-    this.createJumpscareButton = this.createJumpscareButton.bind(this);
-    this.triggerJumpscare = this.triggerJumpscare.bind(this);
-    this.showJumpscareEffect = this.showJumpscareEffect.bind(this);
-    this.hideJumpscareEffect = this.hideJumpscareEffect.bind(this);
-    this.hasPhantomPremium = this.hasPhantomPremium.bind(this);
- main
   }
 
   /**
@@ -92,24 +85,13 @@ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     // Start silhouette animation
     this.startSilhouetteAnimation();
     
-copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     // Create jumpscare button if user has premium access
     if (this.hasPremiumAccess) {
       this.createJumpscareButton();
+    }
 
     // Start bench shadow animation
     this.startBenchShadowAnimation();
-    
-    // Create jumpscare button for premium users
-    if (this.hasPhantomPremium()) {
-      this.createJumpscareButton();
-    }
-    
-    // Create boost controls if in demo mode
-    if (this.isDemoMode()) {
-      this.createBoostControls();
- main
-    }
     
     // Set up Socket.IO listeners for jumpscare
     this.setupSocketListeners();
@@ -138,25 +120,11 @@ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     // Remove jumpscare button
     this.removeJumpscareButton();
     
- copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
     // Remove any active jumpscare overlay
     this.removeJumpscareOverlay();
 
-    // Stop ghost animation
-    this.stopGhostAnimation();
-    
     // Stop bench shadow animation
     this.stopBenchShadowAnimation();
-    
-    // Clean up dissolving text
-    this.removeDissolvingText();
-    
-    // Remove boost controls
-    this.removeBoostControls();
- main
-    
-    // Remove jumpscare button
-    this.removeJumpscareButton();
     
     console.log('Phantom theme deactivated');
   }
@@ -169,8 +137,31 @@ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
       clearInterval(this.silhouetteInterval);
     }
 
-   // Create first silhouette after a short delay
- copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
+    // Create first silhouette after a short delay
+    setTimeout(() => {
+      if (this.isActive) {
+        this.createSilhouette();
+      }
+    }, 3000);
+
+    // Set up recurring silhouette appearances
+    const scheduleNextSilhouette = () => {
+      if (!this.isActive) return;
+      
+      // Random interval between 8-20 seconds
+      const interval = 8000 + Math.random() * 12000;
+      
+      this.silhouetteInterval = setTimeout(() => {
+        if (this.isActive) {
+          this.createSilhouette();
+          scheduleNextSilhouette();
+        }
+      }, interval);
+    };
+
+    scheduleNextSilhouette();
+    console.log('Silhouette animation started');
+  }
 
   /**
    * Create fog/smoke overlay with animated particles
@@ -328,37 +319,6 @@ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
       }
     });
     this.benchShadowElements = [];
-  }
-  startGhostAnimation() {
-    if (this.ghostInterval) {
-      clearInterval(this.ghostInterval);
-    }
-
-    // Create first ghost after a short delay
-main
-    setTimeout(() => {
-      if (this.isActive) {
-        this.createSilhouette();
-      }
-    }, 3000);
-
-    // Set up recurring silhouette appearances
-    const scheduleNextSilhouette = () => {
-      if (!this.isActive) return;
-      
-      // Random interval between 8-20 seconds
-      const interval = 8000 + Math.random() * 12000;
-      
-      this.silhouetteInterval = setTimeout(() => {
-        if (this.isActive) {
-          this.createSilhouette();
-          scheduleNextSilhouette();
-        }
-      }, interval);
-    };
-
-    scheduleNextSilhouette();
-    console.log('Silhouette animation started');
   }
 
   /**
@@ -700,6 +660,31 @@ main
       console.warn('Error playing jumpscare sound:', error);
     }
   }
+
+  /**
+   * Announce messages to screen readers for accessibility
+   */
+  announceToScreenReader(message) {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.style.position = 'absolute';
+    announcement.style.left = '-10000px';
+    announcement.style.width = '1px';
+    announcement.style.height = '1px';
+    announcement.style.overflow = 'hidden';
+    announcement.textContent = message;
+    
+    document.body.appendChild(announcement);
+    
+    // Remove after announcement
+    setTimeout(() => {
+      if (announcement.parentNode) {
+        announcement.parentNode.removeChild(announcement);
+      }
+    }, 1000);
+  }
+
   static integratewithThemeSystem() {
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
