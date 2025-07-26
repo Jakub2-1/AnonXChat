@@ -1,10 +1,69 @@
-/* Theme color variables - will be set dynamically */
+/* 
+ * UI/UX Optimization: Enhanced CSS Custom Properties System
+ * Reason: Centralized design tokens for consistent spacing, typography, and responsive design
+ * Impact: Better maintainability, consistent visual hierarchy, improved scalability
+ */
 :root {
+  /* Theme color variables - will be set dynamically */
   --theme-primary: #667eea;
   --theme-secondary: #764ba2;
   --theme-accent: #f093fb;
   --theme-glow: rgba(102, 126, 234, 0.8);
   --theme-shadow: rgba(102, 126, 234, 0.4);
+  
+  /* 
+   * Responsive Spacing System
+   * Uses 8px grid system for consistent spacing across all breakpoints
+   */
+  --spacing-xs: 0.5rem;   /* 8px */
+  --spacing-sm: 1rem;     /* 16px */
+  --spacing-md: 1.5rem;   /* 24px */
+  --spacing-lg: 2rem;     /* 32px */
+  --spacing-xl: 3rem;     /* 48px */
+  --spacing-2xl: 4rem;    /* 64px */
+  
+  /* 
+   * Typography Scale - Mobile-first approach
+   * Minimum 16px base for mobile accessibility (WCAG guidelines)
+   */
+  --font-size-xs: 0.875rem;   /* 14px */
+  --font-size-sm: 1rem;       /* 16px - minimum mobile size */
+  --font-size-md: 1.125rem;   /* 18px */
+  --font-size-lg: 1.25rem;    /* 20px */
+  --font-size-xl: 1.5rem;     /* 24px */
+  --font-size-2xl: 2rem;      /* 32px */
+  --font-size-3xl: 2.5rem;    /* 40px */
+  --font-size-4xl: 3rem;      /* 48px */
+  
+  /* Line heights for better readability */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* Modern font families - Inter primary, Montserrat secondary */
+  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-family-secondary: 'Montserrat', var(--font-family-primary);
+  --font-family-mono: 'Share Tech Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* Consistent border radius values */
+  --radius-sm: 0.5rem;    /* 8px */
+  --radius-md: 0.75rem;   /* 12px */
+  --radius-lg: 1rem;      /* 16px */
+  --radius-xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;  /* Fully rounded */
+  
+  /* Touch target sizes for accessibility */
+  --touch-target-min: 2.75rem; /* 44px minimum */
+  --touch-target-comfortable: 3rem; /* 48px comfortable */
+  
+  /* Z-index system */
+  --z-behind: -1;
+  --z-base: 0;
+  --z-raised: 10;
+  --z-floating: 100;
+  --z-overlay: 1000;
+  --z-modal: 1100;
+  --z-tooltip: 1200;
 }
 
 /* Goth Theme (Deep Gothic) */
@@ -161,15 +220,36 @@
   --theme-font-family: 'Orbitron', 'VT323', 'Share Tech Mono', monospace;
 }
 
+/*
+ * UI/UX Optimization: Enhanced Body Foundation
+ * Reason: Better responsive design, accessibility, and performance
+ * Impact: Improved mobile experience, consistent typography, reduced layout shifts
+ */
 body {
   margin: 0;
-  font-family: var(--theme-font-family, 'Inter', sans-serif);
+  padding: 0;
+  font-family: var(--theme-font-family, var(--font-family-primary));
+  font-size: var(--font-size-sm); /* 16px minimum for mobile accessibility */
+  line-height: var(--line-height-normal);
   background: #0f0f1a;
   color: #fff;
   min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
   overflow-x: hidden;
   position: relative;
-  transition: all 0.5s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth easing */
+  
+  /* Improved text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  
+  /* Better touch scrolling on mobile */
+  -webkit-overflow-scrolling: touch;
+  
+  /* Prevent horizontal scroll issues */
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Theme-specific body styles */
@@ -673,20 +753,32 @@ body.theme-goth .shadows-overlay {
   }
 }
 
+/*
+ * UI/UX Optimization: Responsive Main Title
+ * Reason: Better mobile experience, proper scaling, improved readability
+ * Impact: Title scales properly across all devices, maintains visual hierarchy
+ */
 .glow {
-  font-size: 2.7rem;
+  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl)); /* Responsive scaling */
   font-weight: 700;
+  font-family: var(--font-family-secondary); /* Montserrat for display text */
   text-align: center;
-  margin-top: 40px;
+  margin-top: clamp(var(--spacing-lg), 5vh, var(--spacing-2xl));
+  margin-bottom: var(--spacing-lg);
   color: #fff;
-  text-shadow: 0 0 20px rgba(120, 113, 255, 0.8), 
-               0 0 40px rgba(255, 113, 181, 0.6),
-               0 0 60px rgba(0, 255, 255, 0.4),
-               0 0 15px rgba(255, 255, 255, 0.5);
-  letter-spacing: 2px;
-  transition: all 0.4s ease;
+  text-shadow: 0 0 1.25rem rgba(120, 113, 255, 0.8), 
+               0 0 2.5rem rgba(255, 113, 181, 0.6),
+               0 0 3.75rem rgba(0, 255, 255, 0.4),
+               0 0 0.9375rem rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.125rem; /* Improved readability */
+  line-height: var(--line-height-tight);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   animation: glow-pulse 3s ease-in-out infinite alternate;
   position: relative;
+  
+  /* Better text rendering for display text */
+  font-optical-sizing: auto;
+  font-feature-settings: "kern" 1;
 }
 
 /* Goth theme title */
@@ -1104,13 +1196,22 @@ body.theme-glow .glow {
 .language-switcher:hover .language-icon {
   transform: scale(1.1);
 }
+/*
+ * UI/UX Optimization: Enhanced Centered Layout
+ * Reason: Better responsive design, flexible spacing, improved mobile experience
+ * Impact: Layout adapts better to different screen sizes and orientations
+ */
 .centered {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 80vh;
-  animation: fade-in 1s ease-out;
+  min-height: 80dvh; /* Dynamic viewport height for mobile */
+  padding: var(--spacing-md) var(--spacing-sm);
+  max-width: 100%;
+  animation: fade-in 1s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: var(--spacing-md); /* Consistent spacing between elements */
 }
 
 @keyframes fade-in {
@@ -1123,22 +1224,43 @@ body.theme-glow .glow {
     transform: translateY(0);
   }
 }
+/*
+ * UI/UX Optimization: Enhanced Start Button
+ * Reason: Better accessibility, proper touch targets, improved interaction feedback
+ * Impact: More accessible on mobile, better visual feedback, consistent sizing
+ */
 .start-btn {
-  margin-top: 60px;
-  padding: 20px 65px;
-  font-size: 1.5rem;
+  margin-top: 0; /* Removed - using gap in parent */
+  padding: var(--spacing-md) var(--spacing-xl);
+  min-height: var(--touch-target-comfortable); /* Accessible touch target */
+  min-width: 12rem; /* Consistent minimum width */
+  font-size: clamp(var(--font-size-lg), 3vw, var(--font-size-xl));
   font-weight: 700;
-  border-radius: 2.2rem;
+  font-family: var(--font-family-secondary);
+  border-radius: var(--radius-xl);
   border: none;
   background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 50%, var(--theme-accent) 100%);
   background-size: 200% 200%;
   color: #fff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 8px 32px var(--theme-shadow),
-              0 0 0 1px rgba(255, 255, 255, 0.1);
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0.5rem 2rem var(--theme-shadow),
+              0 0 0 0.0625rem rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  
+  /* Better text rendering */
+  text-decoration: none;
+  text-align: center;
+  line-height: 1;
+  
+  /* Focus accessibility */
+  outline: none;
+  
+  /* Prevent text selection */
+  user-select: none;
+  -webkit-user-select: none;
+}
   overflow: hidden;
   animation: gradient-shift 3s ease infinite, pulse-on-load 2s ease-out;
 }
@@ -1154,11 +1276,28 @@ body.theme-glow .glow {
   transition: left 0.5s ease;
 }
 
+/*
+ * UI/UX Optimization: Enhanced Button Interactions
+ * Reason: Better accessibility, improved user feedback, consistent interaction patterns
+ * Impact: More accessible for keyboard users, better visual feedback on all interactions
+ */
 .start-btn:hover {
-  transform: scale(1.05) translateY(-2px);
-  box-shadow: 0 15px 40px var(--theme-shadow),
-              0 0 0 1px rgba(255, 255, 255, 0.2),
-              0 0 30px var(--theme-glow);
+  transform: scale(1.05) translateY(-0.125rem);
+  box-shadow: 0 0.9375rem 2.5rem var(--theme-shadow),
+              0 0 0 0.125rem rgba(255, 255, 255, 0.2),
+              0 0 1.875rem var(--theme-glow);
+}
+
+.start-btn:focus {
+  outline: 0.125rem solid var(--theme-primary);
+  outline-offset: 0.25rem;
+  box-shadow: 0 0.9375rem 2.5rem var(--theme-shadow),
+              0 0 0 0.125rem rgba(255, 255, 255, 0.2),
+              0 0 1.875rem var(--theme-glow);
+}
+
+.start-btn:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .start-btn:hover::before {
@@ -1166,8 +1305,8 @@ body.theme-glow .glow {
 }
 
 .start-btn:active {
-  transform: scale(0.95) translateY(-1px);
-  transition: all 0.1s ease;
+  transform: scale(0.95) translateY(-0.0625rem);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes pulse-on-load {
@@ -1180,22 +1319,37 @@ body.theme-glow .glow {
 }
 
 /* Sound toggle */
+/*
+ * UI/UX Optimization: Enhanced Sound Toggle Component
+ * Reason: Better accessibility, responsive design, improved interaction patterns
+ * Impact: More accessible, better mobile experience, consistent visual design
+ */
 .sound-toggle-container {
-  margin-top: 30px;
-  animation: fade-in 1s ease-out 0.5s both;
+  margin-top: 0; /* Removed - using gap in parent */
+  animation: fade-in 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
 }
 
 .sound-toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  min-height: var(--touch-target-min); /* Accessible touch target */
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 2rem;
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
   color: #fff;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-primary);
+  text-decoration: none;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
   font-size: 0.85rem;
   font-weight: 400;
   cursor: pointer;
@@ -1205,15 +1359,36 @@ body.theme-glow .glow {
   opacity: 0.8;
 }
 
+/*
+ * UI/UX Optimization: Enhanced Sound Toggle Interactions
+ * Reason: Better accessibility, consistent interaction patterns, improved feedback
+ * Impact: More accessible for keyboard/screen reader users, better visual feedback
+ */
 .sound-toggle:hover {
   background: rgba(255, 255, 255, 0.12);
-  transform: scale(0.68) translateY(-1px);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
-  opacity: 0.9;
+  transform: translateY(-0.0625rem);
+  box-shadow: 0 0.1875rem 0.75rem rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.sound-toggle:focus {
+  outline: 0.125rem solid rgba(255, 255, 255, 0.5);
+  outline-offset: 0.125rem;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.sound-toggle:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.sound-toggle:active {
+  transform: translateY(0.0625rem);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sound-toggle.muted {
-  opacity: 0.5;
+  opacity: 0.6;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .sound-toggle.muted .sound-icon {
@@ -1803,27 +1978,10 @@ body.theme-glow .glow {
     opacity: 0;
   }
 }
-@media (max-width: 700px) {
-  .chat-container {max-width:98vw; border-radius:1.2rem; padding:10px 2px 8px 2px;}
-  .messages {padding: 0 3px 10px 3px;}
-  
-  .theme-switcher {
-    right: 120px;
-    padding: 10px 14px;
-    font-size: 1.2rem;
-  }
-  
-  .language-switcher {
-    top: 20px;
-    right: 70px;
-    padding: 10px 14px;
-    font-size: 1.2rem;
-  }
-  
-  .stats-button {
-    right: 200px;
-    padding: 10px 14px;
-    font-size: 1.2rem;
+/*
+ * UI/UX Optimization: Mobile Chat Container Improvements
+ * Integrated into comprehensive responsive system above
+ */
   }
   
   .floating-idea-button {
@@ -1892,59 +2050,151 @@ body.theme-glow .glow {
   }
 }
 
-/* Mobile landscape mode improvements */
+/*
+ * UI/UX Optimization: Comprehensive Responsive Design System
+ * Reason: Better mobile experience, consistent scaling, improved accessibility
+ * Impact: App works seamlessly across all device sizes, better UX on mobile/tablet
+ */
+
+/* Mobile-first responsive breakpoints */
+@media (max-width: 480px) {
+  /* Small mobile devices */
+  :root {
+    --spacing-xs: 0.25rem;   /* 4px */
+    --spacing-sm: 0.75rem;   /* 12px */
+    --spacing-md: 1rem;      /* 16px */
+    --spacing-lg: 1.5rem;    /* 24px */
+    --spacing-xl: 2rem;      /* 32px */
+    --spacing-2xl: 2.5rem;   /* 40px */
+  }
+  
+  .glow {
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+    margin-top: var(--spacing-md);
+    letter-spacing: 0.0625rem;
+  }
+  
+  .start-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-lg);
+    min-width: 10rem;
+  }
+  
+  .centered {
+    padding: var(--spacing-sm);
+    min-height: 75vh;
+    min-height: 75dvh;
+  }
+  
+  /* Floating action buttons optimization */
+  .theme-switcher,
+  .language-switcher,
+  .stats-button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 1rem;
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+  }
+  
+  .theme-switcher { right: 4rem; }
+  .language-switcher { right: 0.75rem; }
+  .stats-button { right: 7.5rem; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Large mobile and small tablet */
+  .glow {
+    font-size: clamp(2rem, 5vw, 2.75rem);
+  }
+  
+  .theme-switcher { right: 7.5rem; }
+  .language-switcher { right: 4.375rem; }  
+  .stats-button { right: 12.5rem; }
+}
+
+@media (max-width: 768px) {
+  /* General mobile and tablet optimizations */
+  .chat-container {
+    max-width: 98vw;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-sm);
+    margin: var(--spacing-xs);
+  }
+  
+  .messages {
+    padding: 0 var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  /* Improved touch targets for mobile */
+  .theme-switcher,
+  .language-switcher,
+  .stats-button,
+  .bug-feedback-button {
+    padding: var(--spacing-sm);
+    font-size: 1.2rem;
+    min-height: var(--touch-target-comfortable);
+    min-width: var(--touch-target-comfortable);
+  }
+}
+
+/* Landscape mobile optimization */
 @media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
   .centered {
     min-height: 70vh;
-    padding: 10px;
+    min-height: 70dvh;
+    padding: var(--spacing-sm);
   }
   
   .glow {
     font-size: 2.2rem;
-    margin-top: 20px;
+    margin-top: var(--spacing-sm);
   }
   
   .start-btn {
-    margin-top: 25px;
-    padding: 15px 50px;
-    font-size: 1.3rem;
-  }
-  
-  .sound-toggle-container {
-    margin-top: 15px;
-  }
-  
-  .sound-toggle {
-    transform: scale(0.6);
-  }
-  
-  .online-count {
-    top: 15px;
-    right: 15px;
-    padding: 6px 12px;
-    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-xl);
+    font-size: var(--font-size-lg);
   }
 }
 
-/* Small mobile landscape */
-@media (max-width: 700px) and (max-height: 400px) and (orientation: landscape) {
+/* Small landscape screens optimization */
+@media (max-width: 768px) and (max-height: 400px) and (orientation: landscape) {
   .glow {
     font-size: 1.8rem;
-    margin-top: 10px;
+    margin-top: var(--spacing-xs);
   }
   
   .start-btn {
-    margin-top: 15px;
-    padding: 12px 40px;
-    font-size: 1.2rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-md);
   }
   
-  .sound-toggle-container {
-    margin-top: 10px;
+  .centered {
+    min-height: 60vh;
+    min-height: 60dvh;
+  }
+}
+
+/* Large screens optimization */
+@media (min-width: 1200px) {
+  .glow {
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
   }
   
-  .sound-toggle {
-    transform: scale(0.55);
+  .start-btn {
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    font-size: var(--font-size-xl);
+  }
+  
+  .centered {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1920px) {
+  .centered {
+    max-width: 1400px;
+    margin: 0 auto;
   }
 }
 
