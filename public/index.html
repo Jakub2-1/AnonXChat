@@ -107,7 +107,7 @@
   </div>
   
   <div class="online-count" id="onlineCount" style="display:none;">Online: 0</div>
-  <div class="theme-switcher" id="themeSwitcher" title="Switch Theme">
+  <div class="theme-switcher" id="themeSwitcher" title="Switch Theme" role="button" aria-label="Switch Theme" tabindex="0">
     <span class="theme-icon" id="themeIcon">👻</span>
   </div>
   
@@ -141,14 +141,14 @@
       </div>
     </div>
   </div>
-  <div class="language-switcher" id="languageSwitcher" title="Změnit jazyk / Change Language">
+  <div class="language-switcher" id="languageSwitcher" title="Změnit jazyk / Change Language" role="button" aria-label="Change Language" tabindex="0">
     <span class="language-icon" id="languageIcon">🇬🇧</span>
   </div>
-  <div class="stats-button" id="statsButton" title="Moje statistiky">
+  <div class="stats-button" id="statsButton" title="Moje statistiky" role="button" aria-label="View Statistics" tabindex="0">
     <span class="stats-icon">📊</span>
   </div>
   <!-- Bug report / feedback button - moved to bottom right -->
-  <div class="bug-feedback-button" id="bugFeedbackButton" title="Bug report / Feedback">
+  <div class="bug-feedback-button" id="bugFeedbackButton" title="Bug report / Feedback" role="button" aria-label="Report Bug or Feedback" tabindex="0">
     <span class="feedback-icon">📩</span>
   </div>
   
@@ -216,9 +216,9 @@
     <div id="retroNeonLogo" class="retro-neon-logo" style="display: none;">
       <object data="retro-neon-logo.svg" type="image/svg+xml" class="neon-logo-svg" aria-label="AnonXChat Retro Neon Logo"></object>
     </div>
-    <button class="start-btn" id="startBtn">Start Chat</button>
+    <button class="start-btn" id="startBtn" aria-label="Start anonymous chat">Start Chat</button>
     <div class="sound-toggle-container">
-      <button class="sound-toggle" id="soundToggle" title="Toggle sound effects">
+      <button class="sound-toggle" id="soundToggle" title="Toggle sound effects" aria-label="Toggle sound effects">
         <span class="sound-icon" id="soundIcon">🔊</span>
         <span class="sound-text">Sound ON</span>
       </button>
