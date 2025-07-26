@@ -1008,6 +1008,8 @@ let currentKittyPosition = 'random';
 let helloKittyCharacter = null;
 let sparkleContainer = null;
 let sparkleToggleBtn = null;
+let autoWaveInterval = null;
+let kittyClickHandler = null;
 
 // Create Hello Kitty effects when theme is activated
 function createHelloKittyEffects() {
@@ -1178,11 +1180,33 @@ function setRandomKittyPosition() {
   helloKittyCharacter.className = 'hello-kitty-character';
   
   if (isMainPage) {
-    // Main page variants
-    const mainVariants = ['kitty-main-hug', 'kitty-main-lay'];
-    const randomVariant = mainVariants[Math.floor(Math.random() * mainVariants.length)];
+    // Main page variants - 5 above positions, 5 side positions
+    const aboveVariants = [
+      'kitty-main-above-sitting',
+      'kitty-main-above-lying', 
+      'kitty-main-above-sleepy',
+      'kitty-main-above-curious',
+      'kitty-main-above-playful'
+    ];
+    
+    const sideVariants = [
+      'kitty-main-side-peek-left',
+      'kitty-main-side-hide-right',
+      'kitty-main-side-corner-left', 
+      'kitty-main-side-corner-right',
+      'kitty-main-side-behind'
+    ];
+    
+    // Randomly choose between above or side positioning
+    const useAbove = Math.random() < 0.5;
+    const variants = useAbove ? aboveVariants : sideVariants;
+    const randomVariant = variants[Math.floor(Math.random() * variants.length)];
+    
     helloKittyCharacter.classList.add(randomVariant);
     currentKittyPosition = randomVariant;
+    
+    // Store position type for click interactions
+    helloKittyCharacter.dataset.positionType = useAbove ? 'above' : 'side';
     
     // Show body and arms for main page positions
     const body = helloKittyCharacter.querySelector('.kitty-body');
@@ -1199,6 +1223,9 @@ function setRandomKittyPosition() {
     helloKittyCharacter.classList.add(randomVariant);
     currentKittyPosition = randomVariant;
     
+    // Store position type for click interactions
+    helloKittyCharacter.dataset.positionType = 'chat';
+    
     // Hide body for chat positions (head only)
     const body = helloKittyCharacter.querySelector('.kitty-body');
     const armLeft = helloKittyCharacter.querySelector('.kitty-arm-left');
@@ -1207,9 +1234,15 @@ function setRandomKittyPosition() {
     if (armLeft) armLeft.style.display = 'none';
     if (armRight) armRight.style.display = 'none';
   }
+  
+  // Make character clickable and add click handler
+  if (helloKittyCharacter) {
+    helloKittyCharacter.style.cursor = 'pointer';
+    helloKittyCharacter.style.pointerEvents = 'auto';
+  }
 }
 
-// Setup Hello Kitty interactions for messages
+// Setup Hello Kitty interactions for messages and clicks
 function setupKittyInteractions() {
   // Remove existing listeners to prevent duplicates
   if (window.kittyMessageListener) {
@@ -1220,11 +1253,11 @@ function setupKittyInteractions() {
   window.kittyMessageListener = function(event) {
     if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
     
-    const reactions = ['wink', 'clap'];
+    const reactions = ['wink', 'clap', 'excited'];
     const reaction = reactions[Math.floor(Math.random() * reactions.length)];
     
     // Remove existing reaction classes
-    helloKittyCharacter.classList.remove('kitty-wink', 'kitty-clap');
+    clearKittyAnimations();
     
     // Add reaction class
     helloKittyCharacter.classList.add(`kitty-${reaction}`);
@@ -1232,10 +1265,106 @@ function setupKittyInteractions() {
     // Remove class after animation
     setTimeout(() => {
       helloKittyCharacter.classList.remove(`kitty-${reaction}`);
-    }, 1000);
+    }, 1500);
   };
   
   document.addEventListener('kitty:newMessage', window.kittyMessageListener);
+  
+  // Setup click interactions
+  setupKittyClickInteractions();
+  
+  // Setup automatic waving
+  setupAutoWaving();
+}
+
+// Setup click interactions for Hello Kitty character
+function setupKittyClickInteractions() {
+  // Remove existing click handler
+  if (kittyClickHandler && helloKittyCharacter) {
+    helloKittyCharacter.removeEventListener('click', kittyClickHandler);
+  }
+  
+  // Create new click handler
+  kittyClickHandler = function(event) {
+    event.stopPropagation();
+    
+    if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+    
+    const positionType = helloKittyCharacter.dataset.positionType || 'above';
+    
+    // Clear any existing animations
+    clearKittyAnimations();
+    
+    // Choose animation based on position type
+    let animation;
+    if (positionType === 'above') {
+      const aboveAnimations = ['excited', 'spin', 'wink', 'clap'];
+      animation = aboveAnimations[Math.floor(Math.random() * aboveAnimations.length)];
+    } else if (positionType === 'side') {
+      const sideAnimations = ['hide', 'wink', 'excited', 'clap'];
+      animation = sideAnimations[Math.floor(Math.random() * sideAnimations.length)];
+    } else {
+      const chatAnimations = ['wink', 'clap', 'excited'];
+      animation = chatAnimations[Math.floor(Math.random() * chatAnimations.length)];
+    }
+    
+    // Apply animation
+    helloKittyCharacter.classList.add(`kitty-${animation}`);
+    
+    // Remove animation class after completion
+    setTimeout(() => {
+      helloKittyCharacter.classList.remove(`kitty-${animation}`);
+    }, 1500);
+    
+    // Create heart animation at click position
+    createHeartAnimation(event.clientX || window.innerWidth/2, event.clientY || window.innerHeight/2);
+  };
+  
+  // Add click listener to character
+  if (helloKittyCharacter) {
+    helloKittyCharacter.addEventListener('click', kittyClickHandler);
+  }
+}
+
+// Setup automatic waving at random intervals
+function setupAutoWaving() {
+  // Clear existing interval
+  if (autoWaveInterval) {
+    clearInterval(autoWaveInterval);
+  }
+  
+  // Set up new interval for automatic waving
+  autoWaveInterval = setInterval(() => {
+    if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+    
+    // Random chance to wave (30% chance every interval)
+    if (Math.random() < 0.3) {
+      // Clear existing animations
+      clearKittyAnimations();
+      
+      // Apply auto-wave animation
+      helloKittyCharacter.classList.add('kitty-auto-wave');
+      
+      // Remove after animation
+      setTimeout(() => {
+        helloKittyCharacter.classList.remove('kitty-auto-wave');
+      }, 2000);
+    }
+  }, 8000 + Math.random() * 12000); // Random interval between 8-20 seconds
+}
+
+// Helper function to clear all animation classes
+function clearKittyAnimations() {
+  if (!helloKittyCharacter) return;
+  
+  const animationClasses = [
+    'kitty-wink', 'kitty-clap', 'kitty-excited', 'kitty-spin', 
+    'kitty-hide', 'kitty-auto-wave'
+  ];
+  
+  animationClasses.forEach(className => {
+    helloKittyCharacter.classList.remove(className);
+  });
 }
 
 // Setup chat bubble heart effects
@@ -1296,6 +1425,12 @@ function removeHelloKittyEffects() {
   }
   
   if (helloKittyCharacter) {
+    // Remove click listener before removing element
+    if (kittyClickHandler) {
+      helloKittyCharacter.removeEventListener('click', kittyClickHandler);
+      kittyClickHandler = null;
+    }
+    
     helloKittyCharacter.remove();
     helloKittyCharacter = null;
   }
@@ -1303,6 +1438,12 @@ function removeHelloKittyEffects() {
   if (sparkleToggleBtn) {
     sparkleToggleBtn.remove();
     sparkleToggleBtn = null;
+  }
+  
+  // Clear auto wave interval
+  if (autoWaveInterval) {
+    clearInterval(autoWaveInterval);
+    autoWaveInterval = null;
   }
   
   // Remove event listeners
