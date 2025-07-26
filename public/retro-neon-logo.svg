@@ -1,0 +1,247 @@
+<svg width="400" height="80" viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient definitions for neon effects -->
+    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff69b4;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff1493;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Inner glow gradient -->
+    <linearGradient id="innerGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.8" />
+    </linearGradient>
+
+    <!-- Filters for realistic neon effects -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <!-- Outer glow -->
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="strongGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <!-- Strong outer glow for main effect -->
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feFlood flood-color="#ff69b4" flood-opacity="0.6"/>
+      <feComposite in2="coloredBlur" operator="in"/>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="xGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <!-- Special glow for X letter -->
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feFlood flood-color="#00ffff" flood-opacity="0.8"/>
+      <feComposite in2="coloredBlur" operator="in"/>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Drop shadow filter -->
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Blinking animation for X -->
+    <animate id="blinkAnimation" attributeName="opacity" values="1;0.3;1;0.5;1" dur="2s" repeatCount="indefinite"/>
+  </defs>
+
+  <!-- Background subtle glow -->
+  <rect width="100%" height="100%" fill="url(#neonGradient)" opacity="0.1" rx="10"/>
+
+  <!-- Letter A -->
+  <g transform="translate(20,10)">
+    <path d="M 10 60 L 20 20 L 30 60 M 15 45 L 25 45" 
+          stroke="url(#neonGradient)" 
+          stroke-width="4" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          filter="url(#strongGlow)"/>
+    <path d="M 10 60 L 20 20 L 30 60 M 15 45 L 25 45" 
+          stroke="url(#innerGlow)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Letter n -->
+  <g transform="translate(55,10)">
+    <path d="M 5 60 L 5 30 Q 5 25 10 25 Q 15 25 15 30 L 15 60" 
+          stroke="url(#neonGradient)" 
+          stroke-width="4" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          filter="url(#strongGlow)"/>
+    <path d="M 5 60 L 5 30 Q 5 25 10 25 Q 15 25 15 30 L 15 60" 
+          stroke="url(#innerGlow)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Letter o -->
+  <g transform="translate(85,10)">
+    <circle cx="10" cy="42.5" r="12" 
+            stroke="url(#neonGradient)" 
+            stroke-width="4" 
+            fill="none"
+            filter="url(#strongGlow)"/>
+    <circle cx="10" cy="42.5" r="12" 
+            stroke="url(#innerGlow)" 
+            stroke-width="1.5" 
+            fill="none"/>
+  </g>
+
+  <!-- Letter n -->
+  <g transform="translate(115,10)">
+    <path d="M 5 60 L 5 30 Q 5 25 10 25 Q 15 25 15 30 L 15 60" 
+          stroke="url(#neonGradient)" 
+          stroke-width="4" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          filter="url(#strongGlow)"/>
+    <path d="M 5 60 L 5 30 Q 5 25 10 25 Q 15 25 15 30 L 15 60" 
+          stroke="url(#innerGlow)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Letter X (tilted and blinking) -->
+  <g transform="translate(150,10) rotate(-5)">
+    <path d="M 5 25 L 20 60 M 20 25 L 5 60" 
+          stroke="#00ffff" 
+          stroke-width="5" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          filter="url(#xGlow)"
+          opacity="1">
+      <animate attributeName="opacity" values="1;0.3;1;0.5;1" dur="2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 5 25 L 20 60 M 20 25 L 5 60" 
+          stroke="#ffffff" 
+          stroke-width="2" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0.2;0.8;0.4;0.8" dur="2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Letter C -->
+  <g transform="translate(185,10)">
+    <path d="M 20 30 Q 5 30 5 42.5 Q 5 55 20 55" 
+          stroke="url(#neonGradient)" 
+          stroke-width="4" 
+          fill="none" 
+          stroke-linecap="round"
+          filter="url(#strongGlow)"/>
+    <path d="M 20 30 Q 5 30 5 42.5 Q 5 55 20 55" 
+          stroke="url(#innerGlow)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round"/>
+  </g>
+
+  <!-- Letter h -->
+  <g transform="translate(215,10)">
+    <path d="M 5 20 L 5 60 M 5 35 Q 5 30 10 30 Q 15 30 15 35 L 15 60" 
+          stroke="url(#neonGradient)" 
+          stroke-width="4" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          filter="url(#strongGlow)"/>
+    <path d="M 5 20 L 5 60 M 5 35 Q 5 30 10 30 Q 15 30 15 35 L 15 60" 
+          stroke="url(#innerGlow)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Letter a -->
+  <g transform="translate(245,10)">
+    <circle cx="8" cy="45" r="8" 
+            stroke="url(#neonGradient)" 
+            stroke-width="4" 
+            fill="none"
+            filter="url(#strongGlow)"/>
+    <circle cx="8" cy="45" r="8" 
+            stroke="url(#innerGlow)" 
+            stroke-width="1.5" 
+            fill="none"/>
+    <path d="M 16 37 L 16 60" 
+          stroke="url(#neonGradient)" 
+          stroke-width="4" 
+          stroke-linecap="round"
+          filter="url(#strongGlow)"/>
+    <path d="M 16 37 L 16 60" 
+          stroke="url(#innerGlow)" 
+          stroke-width="1.5" 
+          stroke-linecap="round"/>
+  </g>
+
+  <!-- Letter t -->
+  <g transform="translate(275,10)">
+    <path d="M 8 25 L 8 55 Q 8 60 12 60 L 15 60" 
+          stroke="url(#neonGradient)" 
+          stroke-width="4" 
+          fill="none" 
+          stroke-linecap="round"
+          filter="url(#strongGlow)"/>
+    <path d="M 8 25 L 8 55 Q 8 60 12 60 L 15 60" 
+          stroke="url(#innerGlow)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round"/>
+    <path d="M 3 35 L 13 35" 
+          stroke="url(#neonGradient)" 
+          stroke-width="4" 
+          stroke-linecap="round"
+          filter="url(#strongGlow)"/>
+    <path d="M 3 35 L 13 35" 
+          stroke="url(#innerGlow)" 
+          stroke-width="1.5" 
+          stroke-linecap="round"/>
+  </g>
+
+  <!-- Additional neon tube effect -->
+  <rect x="10" y="15" width="290" height="50" 
+        stroke="url(#neonGradient)" 
+        stroke-width="1" 
+        fill="none" 
+        opacity="0.3" 
+        rx="25"
+        filter="url(#neonGlow)"/>
+
+  <!-- Electrical spark effects -->
+  <g opacity="0.6">
+    <circle cx="50" cy="15" r="1" fill="#ffffff">
+      <animate attributeName="opacity" values="0;1;0" dur="0.5s" repeatCount="indefinite" begin="0s"/>
+    </circle>
+    <circle cx="180" cy="65" r="1" fill="#00ffff">
+      <animate attributeName="opacity" values="0;1;0" dur="0.7s" repeatCount="indefinite" begin="0.3s"/>
+    </circle>
+    <circle cx="280" cy="20" r="1" fill="#ff69b4">
+      <animate attributeName="opacity" values="0;1;0" dur="0.4s" repeatCount="indefinite" begin="0.6s"/>
+    </circle>
+  </g>
+</svg>
