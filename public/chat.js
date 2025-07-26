@@ -957,6 +957,9 @@ function applyMainTheme(themeName) {
   body.classList.add(themeData.className);
   themeIcon.textContent = themeData.icon;
   
+  // Show/hide retro neon logo based on theme
+  updateRetroNeonLogo(themeName);
+  
   // Add special effects for specific themes
   if (themeName === 'goth') {
     createDeepGothOverlays();
@@ -1049,6 +1052,9 @@ function removeThemeOverlays() {
   
   // Remove Digital Void Matrix rain effects when switching themes
   removeDigitalVoidEffects();
+  
+  // Remove retro neon logo electrical effects when switching themes
+  removeElectricalSparks();
 }
 
 // Create retro neon effects
@@ -1075,6 +1081,129 @@ function createRetroNeonEffects() {
       });
     }
   }, 2000); // Check every 2 seconds
+}
+
+// Update retro neon logo visibility based on theme
+function updateRetroNeonLogo(themeName) {
+  const logoElement = document.getElementById('retroNeonLogo');
+  const body = document.body;
+  
+  if (!logoElement) return;
+  
+  if (themeName === 'retroneon') {
+    // Show the logo with animation
+    logoElement.style.display = 'block';
+    body.classList.add('logo-active');
+    
+    // Trigger entrance animation
+    logoElement.style.opacity = '0';
+    logoElement.style.transform = 'translateY(20px) scale(0.8)';
+    
+    // Use requestAnimationFrame to ensure CSS is applied before animation
+    requestAnimationFrame(() => {
+      logoElement.style.transition = 'all 0.8s ease-out';
+      logoElement.style.opacity = '1';
+      logoElement.style.transform = 'translateY(0) scale(1)';
+    });
+    
+    // Add electrical spark effects
+    createElectricalSparks();
+    
+  } else {
+    // Hide the logo with fade out animation
+    if (logoElement.style.display !== 'none') {
+      logoElement.style.transition = 'all 0.5s ease-in';
+      logoElement.style.opacity = '0';
+      logoElement.style.transform = 'translateY(-10px) scale(0.9)';
+      
+      setTimeout(() => {
+        logoElement.style.display = 'none';
+        body.classList.remove('logo-active');
+      }, 500);
+    }
+    
+    // Remove electrical effects
+    removeElectricalSparks();
+  }
+}
+
+// Create electrical spark effects around the logo
+function createElectricalSparks() {
+  // Remove existing sparks first
+  removeElectricalSparks();
+  
+  const logoElement = document.getElementById('retroNeonLogo');
+  if (!logoElement) return;
+  
+  // Create spark container
+  const sparksContainer = document.createElement('div');
+  sparksContainer.className = 'electrical-sparks-container';
+  sparksContainer.id = 'electricalSparks';
+  logoElement.appendChild(sparksContainer);
+  
+  // Create multiple spark points
+  for (let i = 0; i < 6; i++) {
+    const spark = document.createElement('div');
+    spark.className = 'electrical-spark';
+    spark.style.cssText = `
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #00ffff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00ffff, 0 0 20px #ff69b4;
+      animation: sparkFlicker ${0.5 + Math.random() * 1}s ease-in-out infinite;
+      animation-delay: ${Math.random() * 2}s;
+    `;
+    
+    // Random positioning around the logo
+    const angle = (i / 6) * 360 + Math.random() * 60;
+    const distance = 120 + Math.random() * 40;
+    const x = Math.cos(angle * Math.PI / 180) * distance;
+    const y = Math.sin(angle * Math.PI / 180) * distance;
+    
+    spark.style.left = `calc(50% + ${x}px)`;
+    spark.style.top = `calc(50% + ${y}px)`;
+    
+    sparksContainer.appendChild(spark);
+  }
+  
+  // Add CSS for spark animation if not already present
+  if (!document.getElementById('sparkAnimationStyles')) {
+    const sparkStyles = document.createElement('style');
+    sparkStyles.id = 'sparkAnimationStyles';
+    sparkStyles.textContent = `
+      .electrical-sparks-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+      }
+      
+      @keyframes sparkFlicker {
+        0%, 70%, 100% { opacity: 0; transform: scale(1); }
+        71% { opacity: 0.3; transform: scale(0.8); }
+        72% { opacity: 1; transform: scale(1.2); }
+        73% { opacity: 0.5; transform: scale(1); }
+        74% { opacity: 0.8; transform: scale(1.1); }
+        75% { opacity: 0.1; transform: scale(0.9); }
+        76% { opacity: 0.9; transform: scale(1.3); }
+        80% { opacity: 0; transform: scale(1); }
+      }
+    `;
+    document.head.appendChild(sparkStyles);
+  }
+}
+
+// Remove electrical spark effects
+function removeElectricalSparks() {
+  const sparksContainer = document.getElementById('electricalSparks');
+  if (sparksContainer) {
+    sparksContainer.remove();
+  }
 }
 
 // Create digital void effects  

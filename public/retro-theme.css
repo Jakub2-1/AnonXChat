@@ -1,0 +1,222 @@
+/* Retro Neon Theme Specific Styles */
+
+/* Retro Neon Logo Container */
+.retro-neon-logo {
+  margin: 30px 0 20px 0;
+  text-align: center;
+  animation: logoFadeIn 1s ease-out, neonPulse 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Logo SVG Styling */
+.neon-logo-svg {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  filter: drop-shadow(0 0 20px rgba(255, 105, 180, 0.8)) 
+          drop-shadow(0 0 40px rgba(0, 255, 255, 0.6))
+          drop-shadow(0 0 60px rgba(255, 20, 147, 0.4));
+  transition: all 0.3s ease;
+}
+
+/* Hover effect for the logo */
+.retro-neon-logo:hover .neon-logo-svg {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 25px rgba(255, 105, 180, 1)) 
+          drop-shadow(0 0 50px rgba(0, 255, 255, 0.8))
+          drop-shadow(0 0 75px rgba(255, 20, 147, 0.6));
+}
+
+/* Neon pulse animation for the logo */
+@keyframes neonPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(255, 105, 180, 0.8)) 
+            drop-shadow(0 0 40px rgba(0, 255, 255, 0.6))
+            drop-shadow(0 0 60px rgba(255, 20, 147, 0.4));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(255, 105, 180, 1)) 
+            drop-shadow(0 0 50px rgba(0, 255, 255, 0.8))
+            drop-shadow(0 0 80px rgba(255, 20, 147, 0.6));
+    transform: scale(1.02);
+  }
+}
+
+/* Logo fade in animation */
+@keyframes logoFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Retro neon theme specific enhancements */
+body.theme-retroneon .retro-neon-logo {
+  display: block !important;
+}
+
+/* Enhanced retro neon theme background effects when logo is present */
+body.theme-retroneon.logo-active::before {
+  background: linear-gradient(45deg, #000000 0%, #0a0a1a 25%, #1a0a2a 50%, #2a0a4a 75%, #000000 100%);
+  background-size: 400% 400%;
+  animation: aurora-retroneon-enhanced 20s ease infinite;
+}
+
+body.theme-retroneon.logo-active::after {
+  background: radial-gradient(circle at 20% 80%, rgba(0, 191, 255, 0.3) 0%, transparent 60%),
+              radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.4) 0%, transparent 60%),
+              radial-gradient(circle at 40% 40%, rgba(255, 105, 180, 0.2) 0%, transparent 50%),
+              radial-gradient(circle at 60% 70%, rgba(255, 255, 0, 0.15) 0%, transparent 45%);
+  animation: aurora-overlay-retroneon-enhanced 18s ease infinite reverse;
+}
+
+/* Enhanced aurora animations for retro neon theme with logo */
+@keyframes aurora-retroneon-enhanced {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: brightness(1) saturate(1.2) hue-rotate(0deg);
+  }
+  25% {
+    background-position: 50% 25%;
+    filter: brightness(1.2) saturate(1.5) hue-rotate(5deg);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(0.9) saturate(1.8) hue-rotate(-3deg);
+  }
+  75% {
+    background-position: 25% 75%;
+    filter: brightness(1.1) saturate(1.4) hue-rotate(3deg);
+  }
+}
+
+@keyframes aurora-overlay-retroneon-enhanced {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+    filter: brightness(1) saturate(1.3);
+  }
+  25% {
+    opacity: 0.7;
+    transform: scale(1.03);
+    filter: brightness(1.4) saturate(1.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(0.97);
+    filter: brightness(0.8) saturate(2);
+  }
+  75% {
+    opacity: 0.8;
+    transform: scale(1.02);
+    filter: brightness(1.2) saturate(1.5);
+  }
+}
+
+/* Flickering electrical effects around the logo */
+.retro-neon-logo::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(0, 255, 255, 0.3) 0%, transparent 15%),
+    radial-gradient(circle at 90% 80%, rgba(255, 105, 180, 0.3) 0%, transparent 15%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 0, 0.2) 0%, transparent 10%);
+  border-radius: 20px;
+  animation: electricalFlicker 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes electricalFlicker {
+  0%, 85%, 100% {
+    opacity: 0.3;
+  }
+  86% {
+    opacity: 0.1;
+  }
+  87% {
+    opacity: 0.8;
+  }
+  88% {
+    opacity: 0.2;
+  }
+  89% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.1;
+  }
+  92% {
+    opacity: 0.6;
+  }
+}
+
+/* Mobile responsive adjustments for retro neon logo */
+@media (max-width: 768px) {
+  .retro-neon-logo {
+    margin: 20px 0 15px 0;
+  }
+  
+  .neon-logo-svg {
+    max-width: 300px;
+  }
+  
+  .retro-neon-logo::before {
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .retro-neon-logo {
+    margin: 15px 0 10px 0;
+  }
+  
+  .neon-logo-svg {
+    max-width: 250px;
+  }
+}
+
+/* Logo visibility control - ensure it's only shown with retro neon theme */
+body:not(.theme-retroneon) .retro-neon-logo {
+  display: none !important;
+}
+
+/* Subtle neon grid effect behind logo (optional enhancement) */
+.retro-neon-logo::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  transform: translate(-50%, -50%);
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 105, 180, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  animation: gridShift 10s linear infinite;
+  pointer-events: none;
+  z-index: -2;
+}
+
+@keyframes gridShift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 20px;
+  }
+}
