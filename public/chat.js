@@ -927,6 +927,16 @@ function applyMainTheme(themeName) {
     createHelloKittyEffects();
   } else if (themeName === 'chill') {
     createChillEffects();
+  } else if (themeName === 'phantom') {
+    // Activate Phantom theme via the PhantomTheme class
+    if (window.phantomTheme) {
+      window.phantomTheme.activate();
+    }
+  } else {
+    // Deactivate Phantom theme if switching away from it
+    if (window.phantomTheme && window.phantomTheme.isActive) {
+      window.phantomTheme.deactivate();
+    }
   }
   
   // Apply color variations for themes that support them
