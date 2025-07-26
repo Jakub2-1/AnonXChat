@@ -121,6 +121,7 @@ const languageDefinitions = {
     // Notifications
     findNewPartner: 'Najít nového partnera',
     goBack: 'Zpět',
+    exitSearch: 'Odejít',
     favoriteAdded: '⭐ Partner přidán do oblíbených!',
     mutualFavorite: '💫 Skvělé! Máte vzájemně oblíbeného partnera! Nyní se můžete spojit mimo běžné párování.',
     favoriteAddError: '❌ Nepodařilo se přidat partnera do oblíbených.',
@@ -210,6 +211,7 @@ const languageDefinitions = {
     // Notifications
     findNewPartner: 'Find New Partner',
     goBack: 'Go Back',
+    exitSearch: 'Exit',
     favoriteAdded: '⭐ Partner added to favorites!',
     mutualFavorite: '💫 Great! You have a mutual favorite partner! You can now connect outside regular pairing.',
     favoriteAddError: '❌ Failed to add partner to favorites.',
@@ -1178,6 +1180,9 @@ function updateAllTexts() {
   const endBtn = document.getElementById('endBtn');
   if (endBtn) endBtn.textContent = getText('endChat');
   
+  const exitBtn = document.getElementById('exitBtn');
+  if (exitBtn) exitBtn.textContent = getText('exitSearch');
+  
   // Sound toggle
   updateSoundToggle();
   
@@ -1861,6 +1866,19 @@ document.getElementById('continueBtn').onclick = function() {
 document.getElementById('returnBtn').onclick = function() {
   // Clear chat messages
   document.getElementById('messages').innerHTML = '';
+  
+  // Return to main page
+  showMainPage();
+};
+
+// EXIT BTN = exit from partner search and return to main page
+document.getElementById('exitBtn').onclick = function() {
+  // Disconnect from search
+  if (socket) {
+    socket.removeAllListeners();
+    socket.disconnect();
+    socket = null;
+  }
   
   // Return to main page
   showMainPage();
