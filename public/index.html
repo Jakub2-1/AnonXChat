@@ -6,6 +6,7 @@
   <title>AnonX Chat</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="kitty-theme.css"/>
+  <link rel="stylesheet" href="chill-theme.css"/>
   <link href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -14,6 +15,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 </head>
 <body>
+  <!-- Chill Theme Elements -->
+  <div class="chill-background"></div>
+  <div class="chill-floating-elements" id="chillFloatingElements"></div>
+  <div class="chill-assistant" id="chillAssistant">☁️</div>
+  
   <div class="online-count" id="onlineCount" style="display:none;">Online: 0</div>
   <div class="theme-switcher" id="themeSwitcher" title="Switch Theme">
     <span class="theme-icon" id="themeIcon">👻</span>
@@ -90,6 +96,10 @@
             <div class="theme-option" data-theme="poltergeist">
               <div class="theme-preview poltergeist-preview">👁️‍🗨️</div>
               <div class="theme-name">Poltergeist</div>
+            </div>
+            <div class="theme-option" data-theme="chill">
+              <div class="theme-preview chill-preview">🌸</div>
+              <div class="theme-name">Chill</div>
             </div>
           </div>
         </div>
