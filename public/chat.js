@@ -280,8 +280,8 @@ const themeDefinitions = {
     name: 'Chill',
     icon: '🌸',
     className: 'theme-chill',
-    category: 'free',
-    description: 'Relaxing gradient with floating elements'
+    category: 'premium',
+    description: 'Relaxing gradient with floating elements and ambient sounds'
   },
   chaos: {
     name: 'Chaos',
@@ -1333,12 +1333,23 @@ let chillAnimationIntervals = [];
 let chillAudioContext = null;
 let chillBackgroundSound = null;
 let chillSoundEnabled = localStorage.getItem('chill_sound') !== 'false';
+let chillSoundButton = null;
+let currentChillSound = parseInt(localStorage.getItem('chill_sound_selection') || '0');
+let chillSoundMuted = localStorage.getItem('chill_sound_muted') === 'true';
+
+// Chill sound files
+const chillSounds = [
+  { name: 'Ambient', file: 'chill-1.mp3' },
+  { name: 'Nature', file: 'chill-2.mp3' },
+  { name: 'Relaxing', file: 'chill-3.mp3' }
+];
 
 // Create chill theme effects
 function createChillEffects() {
   initializeChillAssistant();
   initializeFloatingElements();
   setupChillInteractions();
+  createChillSoundButton();
   createChillSoundSystem();
 }
 
@@ -1567,26 +1578,123 @@ function showAssistantSpeech() {
   }, 3000);
 }
 
-// Sound system using Web Audio API
-function createChillSoundSystem() {
-  if (!chillSoundEnabled) return;
+// Create chill sound selection button
+function createChillSoundButton() {
+  if (chillSoundButton) {
+    chillSoundButton.remove();
+    chillSoundButton = null;
+  }
+
+  chillSoundButton = document.createElement('div');
+  chillSoundButton.className = 'chill-sound-button';
+  chillSoundButton.innerHTML = `
+    <div class="sound-button-icon">${chillSoundMuted ? '🔇' : '🎵'}</div>
+    <div class="sound-button-text">${chillSounds[currentChillSound].name}</div>
+    <div class="sound-button-controls">
+      <button class="sound-control-btn sound-prev" title="Previous sound">‹</button>
+      <button class="sound-control-btn sound-toggle" title="${chillSoundMuted ? 'Unmute' : 'Mute'}">${chillSoundMuted ? '🔇' : '🔊'}</button>
+      <button class="sound-control-btn sound-next" title="Next sound">›</button>
+    </div>
+  `;
+
+  // Add event listeners
+  const prevBtn = chillSoundButton.querySelector('.sound-prev');
+  const nextBtn = chillSoundButton.querySelector('.sound-next');
+  const toggleBtn = chillSoundButton.querySelector('.sound-toggle');
+
+  prevBtn.addEventListener('click', () => cyclePreviousChillSound());
+  nextBtn.addEventListener('click', () => cycleNextChillSound());
+  toggleBtn.addEventListener('click', () => toggleChillSoundMute());
+
+  document.body.appendChild(chillSoundButton);
+}
+
+// Cycle to previous chill sound
+function cyclePreviousChillSound() {
+  currentChillSound = (currentChillSound - 1 + chillSounds.length) % chillSounds.length;
+  updateChillSoundButton();
+  saveChillSoundPreferences();
+  if (!chillSoundMuted) {
+    playCurrentChillSound();
+  }
+}
+
+// Cycle to next chill sound
+function cycleNextChillSound() {
+  currentChillSound = (currentChillSound + 1) % chillSounds.length;
+  updateChillSoundButton();
+  saveChillSoundPreferences();
+  if (!chillSoundMuted) {
+    playCurrentChillSound();
+  }
+}
+
+// Toggle mute state
+function toggleChillSoundMute() {
+  chillSoundMuted = !chillSoundMuted;
+  updateChillSoundButton();
+  saveChillSoundPreferences();
+  
+  if (chillSoundMuted) {
+    stopChillBackgroundSound();
+  } else {
+    playCurrentChillSound();
+  }
+}
+
+// Update sound button display
+function updateChillSoundButton() {
+  if (!chillSoundButton) return;
+  
+  const icon = chillSoundButton.querySelector('.sound-button-icon');
+  const text = chillSoundButton.querySelector('.sound-button-text');
+  const toggleBtn = chillSoundButton.querySelector('.sound-toggle');
+  
+  icon.textContent = chillSoundMuted ? '🔇' : '🎵';
+  text.textContent = chillSounds[currentChillSound].name;
+  toggleBtn.textContent = chillSoundMuted ? '🔇' : '🔊';
+  toggleBtn.title = chillSoundMuted ? 'Unmute' : 'Mute';
+  
+  // Add visual feedback for muted state
+  chillSoundButton.classList.toggle('muted', chillSoundMuted);
+}
+
+// Save sound preferences to localStorage
+function saveChillSoundPreferences() {
+  localStorage.setItem('chill_sound_selection', currentChillSound.toString());
+  localStorage.setItem('chill_sound_muted', chillSoundMuted.toString());
+}
+
+// Play current selected chill sound
+function playCurrentChillSound() {
+  stopChillBackgroundSound();
+  
+  if (chillSoundMuted) return;
   
   try {
-    // Create audio context
-    chillAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audio = new Audio(`/sounds/${chillSounds[currentChillSound].file}`);
+    audio.loop = true;
+    audio.volume = 0.3; // Keep volume low for background ambience
+    audio.play().catch(error => {
+      console.log('Could not play chill sound:', error);
+      // Fallback to Web Audio API generated sound
+      createChillBackgroundSound();
+    });
     
-    // Create lo-fi background sound (simple oscillators)
-    createChillBackgroundSound();
-    
-    // Add sound toggle to the assistant
-    chillAssistant.title = 'Click to toggle chill sounds';
-    
-    // Double-click to toggle sound
-    chillAssistant.addEventListener('dblclick', toggleChillSound);
-    
+    // Store reference for stopping later
+    chillBackgroundSound = { audio };
   } catch (error) {
-    console.log('Web Audio API not supported or failed to initialize');
+    console.log('Audio file not available, using generated sound');
+    createChillBackgroundSound();
   }
+}
+
+// Sound system using Web Audio API
+function createChillSoundSystem() {
+  if (chillSoundMuted) return;
+  
+  // Try to play the selected sound file first
+  playCurrentChillSound();
 }
 
 function createChillBackgroundSound() {
@@ -1623,26 +1731,21 @@ function createChillBackgroundSound() {
   chillBackgroundSound = { osc1, osc2, gainNode };
 }
 
-function toggleChillSound() {
-  chillSoundEnabled = !chillSoundEnabled;
-  localStorage.setItem('chill_sound', chillSoundEnabled.toString());
-  
-  if (chillSoundEnabled && !chillBackgroundSound) {
-    createChillBackgroundSound();
-  } else if (!chillSoundEnabled && chillBackgroundSound) {
-    stopChillBackgroundSound();
-  }
-  
-  showAssistantSpeech();
-}
 
 function stopChillBackgroundSound() {
   if (chillBackgroundSound) {
     try {
-      chillBackgroundSound.osc1.stop();
-      chillBackgroundSound.osc2.stop();
+      if (chillBackgroundSound.audio) {
+        // Stop HTML5 audio
+        chillBackgroundSound.audio.pause();
+        chillBackgroundSound.audio.currentTime = 0;
+      } else if (chillBackgroundSound.osc1 && chillBackgroundSound.osc2) {
+        // Stop Web Audio API oscillators
+        chillBackgroundSound.osc1.stop();
+        chillBackgroundSound.osc2.stop();
+      }
     } catch (error) {
-      // Oscillators might already be stopped
+      // Oscillators or audio might already be stopped
     }
     chillBackgroundSound = null;
   }
@@ -1657,6 +1760,12 @@ function removeChillEffects() {
   // Remove floating elements
   if (chillFloatingElements) {
     chillFloatingElements.innerHTML = '';
+  }
+  
+  // Remove sound button
+  if (chillSoundButton) {
+    chillSoundButton.remove();
+    chillSoundButton = null;
   }
   
   // Stop background sound
@@ -1683,7 +1792,6 @@ function removeChillEffects() {
   // Reset assistant
   if (chillAssistant) {
     chillAssistant.removeEventListener('click', handleAssistantClick);
-    chillAssistant.removeEventListener('dblclick', toggleChillSound);
     chillAssistant.title = '';
   }
 }
