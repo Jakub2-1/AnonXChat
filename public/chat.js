@@ -1085,54 +1085,90 @@ function createHelloKittyCharacter() {
   helloKittyCharacter.className = 'hello-kitty-character';
   helloKittyCharacter.id = 'helloKittyCharacter';
   
-  // Load SVG content
-  helloKittyCharacter.innerHTML = `
-    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
-      <!-- Head -->
-      <ellipse cx="100" cy="110" rx="65" ry="55" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
-      
-      <!-- Left ear -->
-      <ellipse cx="65" cy="75" rx="20" ry="25" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
-      
-      <!-- Right ear -->
-      <ellipse cx="135" cy="75" rx="20" ry="25" fill="#ffffff" stroke="#ff69b4" stroke-width="2"/>
-      
-      <!-- Left ear inner -->
-      <ellipse cx="65" cy="80" rx="10" ry="12" fill="#ffb6c1"/>
-      
-      <!-- Right ear inner -->
-      <ellipse cx="135" cy="80" rx="10" ry="12" fill="#ffb6c1"/>
-      
-      <!-- Eyes -->
-      <circle cx="85" cy="105" r="4" fill="#000000" class="kitty-eye-left"/>
-      <circle cx="115" cy="105" r="4" fill="#000000" class="kitty-eye-right"/>
-      
-      <!-- Eye highlights -->
-      <circle cx="86" cy="103" r="1.5" fill="#ffffff"/>
-      <circle cx="116" cy="103" r="1.5" fill="#ffffff"/>
-      
-      <!-- Nose -->
-      <ellipse cx="100" cy="115" rx="2" ry="1.5" fill="#ff69b4"/>
-      
-      <!-- Bow -->
-      <path d="M 120 70 Q 130 60 140 70 Q 130 80 120 70 Q 110 60 120 70" fill="#ff1493"/>
-      <ellipse cx="130" cy="70" rx="3" ry="5" fill="#ff69b4"/>
-      
-      <!-- Whiskers -->
-      <line x1="60" y1="110" x2="40" y2="108" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="60" y1="120" x2="40" y2="122" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-      
-      <line x1="140" y1="110" x2="160" y2="108" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="140" y1="120" x2="160" y2="122" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-      
-      <!-- Body (hidden by default) -->
-      <ellipse cx="100" cy="170" rx="40" ry="30" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-body" style="display:none;"/>
-      
-      <!-- Arms -->
-      <ellipse cx="70" cy="155" rx="15" ry="20" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-arm-left" style="display:none;"/>
-      <ellipse cx="130" cy="155" rx="15" ry="20" fill="#ffffff" stroke="#ff69b4" stroke-width="2" class="kitty-arm-right" style="display:none;"/>
-    </svg>
-  `;
+  // Load improved SVG content from file
+  fetch('/images/hellokitty.svg')
+    .then(response => response.text())
+    .then(svgContent => {
+      helloKittyCharacter.innerHTML = svgContent;
+      setupKittyInteractions();
+      startKittyBlinking();
+    })
+    .catch(() => {
+      // Fallback to inline SVG if file loading fails
+      helloKittyCharacter.innerHTML = `
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+          <!-- Enhanced Hello Kitty SVG - More authentic design -->
+          
+          <!-- Head with more authentic shape -->
+          <ellipse cx="100" cy="110" rx="68" ry="58" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5"/>
+          
+          <!-- Left ear with proper proportions -->
+          <ellipse cx="62" cy="72" rx="22" ry="28" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5"/>
+          
+          <!-- Right ear with proper proportions -->
+          <ellipse cx="138" cy="72" rx="22" ry="28" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5"/>
+          
+          <!-- Left ear inner -->
+          <ellipse cx="62" cy="78" rx="12" ry="15" fill="#ffb6c1"/>
+          
+          <!-- Right ear inner -->
+          <ellipse cx="138" cy="78" rx="12" ry="15" fill="#ffb6c1"/>
+          
+          <!-- Eyes with authentic oval shape -->
+          <ellipse cx="85" cy="105" rx="6" ry="8" fill="#000000" class="kitty-eye-left"/>
+          <ellipse cx="115" cy="105" rx="6" ry="8" fill="#000000" class="kitty-eye-right"/>
+          
+          <!-- Eye highlights for sparkle -->
+          <ellipse cx="87" cy="102" rx="2" ry="3" fill="#ffffff" class="eye-highlight-left"/>
+          <ellipse cx="117" cy="102" rx="2" ry="3" fill="#ffffff" class="eye-highlight-right"/>
+          
+          <!-- Nose with authentic yellow color -->
+          <ellipse cx="100" cy="118" rx="3" ry="2" fill="#ffeb3b" stroke="#ff8f00" stroke-width="0.5"/>
+          
+          <!-- Iconic bow - more detailed and authentic -->
+          <g class="kitty-bow">
+            <!-- Left bow part -->
+            <path d="M 115 65 Q 125 50 135 65 Q 125 75 115 65" fill="#ff1493" stroke="#c2185b" stroke-width="1"/>
+            <!-- Right bow part -->
+            <path d="M 135 65 Q 145 50 155 65 Q 145 75 135 65" fill="#ff1493" stroke="#c2185b" stroke-width="1"/>
+            <!-- Center knot -->
+            <ellipse cx="135" cy="65" rx="5" ry="8" fill="#e91e63" stroke="#c2185b" stroke-width="1"/>
+            <!-- Bow highlights -->
+            <ellipse cx="125" cy="60" rx="2" ry="3" fill="#ff69b4" opacity="0.7"/>
+            <ellipse cx="145" cy="60" rx="2" ry="3" fill="#ff69b4" opacity="0.7"/>
+          </g>
+          
+          <!-- Whiskers with proper spacing -->
+          <line x1="55" y1="105" x2="30" y2="103" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-left-top"/>
+          <line x1="55" y1="115" x2="30" y2="115" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-left-middle"/>
+          <line x1="55" y1="125" x2="30" y2="127" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-left-bottom"/>
+          
+          <line x1="145" y1="105" x2="170" y2="103" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-right-top"/>
+          <line x1="145" y1="115" x2="170" y2="115" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-right-middle"/>
+          <line x1="145" y1="125" x2="170" y2="127" stroke="#000000" stroke-width="1.5" stroke-linecap="round" class="whisker-right-bottom"/>
+          
+          <!-- Body for when positioned -->
+          <ellipse cx="100" cy="170" rx="42" ry="32" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-body" style="display:none;"/>
+          
+          <!-- Arms for interactions -->
+          <ellipse cx="68" cy="155" rx="18" ry="22" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-arm-left" style="display:none;"/>
+          <ellipse cx="132" cy="155" rx="18" ry="22" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-arm-right" style="display:none;"/>
+          
+          <!-- Hands for covering eyes interaction -->
+          <circle cx="85" cy="105" r="12" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-hand-left" style="display:none;"/>
+          <circle cx="115" cy="105" r="12" fill="#ffffff" stroke="#ff69b4" stroke-width="1.5" class="kitty-hand-right" style="display:none;"/>
+          
+          <!-- Blush spots for shy animation -->
+          <ellipse cx="70" cy="115" rx="8" ry="6" fill="#ff69b4" opacity="0" class="blush-left"/>
+          <ellipse cx="130" cy="115" rx="8" ry="6" fill="#ff69b4" opacity="0" class="blush-right"/>
+          
+          <!-- Mouth for smiling animations -->
+          <path d="M 92 130 Q 100 138 108 130" stroke="#ff69b4" stroke-width="2" fill="none" stroke-linecap="round" class="kitty-mouth" style="display:none;"/>
+        </svg>
+      `;
+      setupKittyInteractions();
+      startKittyBlinking();
+    });
   
   document.body.appendChild(helloKittyCharacter);
 }
@@ -1185,33 +1221,43 @@ function setRandomKittyPosition() {
   helloKittyCharacter.className = 'hello-kitty-character';
   
   if (isMainPage) {
-    // Main page variants - 5 above positions, 5 side positions
-    const aboveVariants = [
-      'kitty-main-above-sitting',
-      'kitty-main-above-lying', 
-      'kitty-main-above-sleepy',
-      'kitty-main-above-curious',
-      'kitty-main-above-playful'
-    ];
+    // 20% chance for button hugging, 40% for above positions, 40% for side positions
+    const positionType = Math.random();
     
-    const sideVariants = [
-      'kitty-main-side-peek-left',
-      'kitty-main-side-hide-right',
-      'kitty-main-side-corner-left', 
-      'kitty-main-side-corner-right',
-      'kitty-main-side-behind'
-    ];
-    
-    // Randomly choose between above or side positioning
-    const useAbove = Math.random() < 0.5;
-    const variants = useAbove ? aboveVariants : sideVariants;
-    const randomVariant = variants[Math.floor(Math.random() * variants.length)];
-    
-    helloKittyCharacter.classList.add(randomVariant);
-    currentKittyPosition = randomVariant;
-    
-    // Store position type for click interactions
-    helloKittyCharacter.dataset.positionType = useAbove ? 'above' : 'side';
+    if (positionType < 0.2) {
+      // Button hugging position
+      setKittyHugButton();
+      helloKittyCharacter.dataset.positionType = 'hug';
+      currentKittyPosition = 'kitty-main-hug-button';
+    } else if (positionType < 0.6) {
+      // Above positions
+      const aboveVariants = [
+        'kitty-main-above-sitting',
+        'kitty-main-above-lying', 
+        'kitty-main-above-sleepy',
+        'kitty-main-above-curious',
+        'kitty-main-above-playful'
+      ];
+      
+      const randomVariant = aboveVariants[Math.floor(Math.random() * aboveVariants.length)];
+      helloKittyCharacter.classList.add(randomVariant);
+      helloKittyCharacter.dataset.positionType = 'above';
+      currentKittyPosition = randomVariant;
+    } else {
+      // Side positions
+      const sideVariants = [
+        'kitty-main-side-peek-left',
+        'kitty-main-side-hide-right',
+        'kitty-main-side-corner-left', 
+        'kitty-main-side-corner-right',
+        'kitty-main-side-behind'
+      ];
+      
+      const randomVariant = sideVariants[Math.floor(Math.random() * sideVariants.length)];
+      helloKittyCharacter.classList.add(randomVariant);
+      helloKittyCharacter.dataset.positionType = 'side';
+      currentKittyPosition = randomVariant;
+    }
     
     // Show body and arms for main page positions
     const body = helloKittyCharacter.querySelector('.kitty-body');
@@ -1300,7 +1346,7 @@ function setupKittyClickInteractions() {
     // Clear any existing animations
     clearKittyAnimations();
     
-    // Choose animation based on position type
+    // Choose animation based on position type and add new interactive animations
     let animation;
     if (positionType === 'above') {
       const aboveAnimations = ['excited', 'spin', 'wink', 'clap'];
@@ -1315,6 +1361,20 @@ function setupKittyClickInteractions() {
     
     // Apply animation
     helloKittyCharacter.classList.add(`kitty-${animation}`);
+    
+    // Add random interactive animations with the main animation
+    const interactiveAnimations = [
+      () => triggerKittyBlush(),
+      () => triggerKittyCoverEyes(),
+      () => triggerKittySmile(),
+      () => triggerKittyHappy()
+    ];
+    
+    // 40% chance to trigger an interactive animation
+    if (Math.random() < 0.4) {
+      const randomInteractive = interactiveAnimations[Math.floor(Math.random() * interactiveAnimations.length)];
+      setTimeout(randomInteractive, 500); // Slight delay for layered effect
+    }
     
     // Remove animation class after completion
     setTimeout(() => {
@@ -1419,6 +1479,95 @@ function createHeartAnimation(x, y) {
 function triggerKittyMessageReaction() {
   if (currentTheme === 'hellokitty') {
     document.dispatchEvent(new CustomEvent('kitty:newMessage'));
+  }
+}
+
+// Start automatic blinking animation
+function startKittyBlinking() {
+  if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+  
+  // Add blinking class periodically
+  const blinkInterval = setInterval(() => {
+    if (!helloKittyCharacter || currentTheme !== 'hellokitty') {
+      clearInterval(blinkInterval);
+      return;
+    }
+    
+    helloKittyCharacter.classList.add('kitty-blinking');
+    setTimeout(() => {
+      if (helloKittyCharacter) {
+        helloKittyCharacter.classList.remove('kitty-blinking');
+      }
+    }, 3000);
+  }, 5000 + Math.random() * 3000); // Random blinking between 5-8 seconds
+}
+
+// Trigger blushing animation
+function triggerKittyBlush() {
+  if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+  
+  helloKittyCharacter.classList.add('kitty-blushing');
+  setTimeout(() => {
+    if (helloKittyCharacter) {
+      helloKittyCharacter.classList.remove('kitty-blushing');
+    }
+  }, 2000);
+}
+
+// Trigger eye covering animation (when shy/surprised)
+function triggerKittyCoverEyes() {
+  if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+  
+  helloKittyCharacter.classList.add('kitty-covering-eyes');
+  setTimeout(() => {
+    if (helloKittyCharacter) {
+      helloKittyCharacter.classList.remove('kitty-covering-eyes');
+    }
+  }, 2000);
+}
+
+// Trigger smiling animation
+function triggerKittySmile() {
+  if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+  
+  helloKittyCharacter.classList.add('kitty-smiling');
+  setTimeout(() => {
+    if (helloKittyCharacter) {
+      helloKittyCharacter.classList.remove('kitty-smiling');
+    }
+  }, 2000);
+}
+
+// Trigger happy animation (bow wiggle)
+function triggerKittyHappy() {
+  if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+  
+  helloKittyCharacter.classList.add('kitty-happy');
+  setTimeout(() => {
+    if (helloKittyCharacter) {
+      helloKittyCharacter.classList.remove('kitty-happy');
+    }
+  }, 1000);
+}
+
+// Set Hello Kitty to hug button position
+function setKittyHugButton() {
+  if (!helloKittyCharacter || currentTheme !== 'hellokitty') return;
+  
+  // Clear existing position classes
+  helloKittyCharacter.className = 'hello-kitty-character';
+  helloKittyCharacter.classList.add('kitty-main-hug-button');
+  
+  // Show body and arms for hugging pose
+  const svg = helloKittyCharacter.querySelector('svg');
+  if (svg) {
+    const body = svg.querySelector('.kitty-body');
+    const leftArm = svg.querySelector('.kitty-arm-left');
+    const rightArm = svg.querySelector('.kitty-arm-right');
+    
+    if (body) body.style.display = 'block';
+    if (leftArm) leftArm.style.display = 'block';
+    if (rightArm) rightArm.style.display = 'block';
   }
 }
 
