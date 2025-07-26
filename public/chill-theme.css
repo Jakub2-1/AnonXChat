@@ -220,10 +220,114 @@ body.theme-chill .message.pulse-animation {
   animation: emojiReaction 1.5s ease-out;
 }
 
+/* ===== CHILL SOUND BUTTON ===== */
+.chill-sound-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 12px;
+  min-width: 200px;
+  z-index: 1001;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  font-family: 'Poppins', sans-serif;
+  user-select: none;
+}
+
+body.theme-chill .chill-sound-button {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chill-sound-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+}
+
+.chill-sound-button.muted {
+  opacity: 0.6;
+}
+
+.sound-button-icon {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 8px;
+  animation: soundPulse 2s ease-in-out infinite;
+}
+
+.chill-sound-button.muted .sound-button-icon {
+  animation: none;
+  filter: grayscale(100%);
+}
+
+.sound-button-text {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 10px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.sound-button-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.sound-control-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.sound-control-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.sound-control-btn:active {
+  transform: scale(0.95);
+}
+
+/* Sound pulse animation */
+@keyframes soundPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Hide sound button for other themes */
+body:not(.theme-chill) .chill-sound-button {
+  display: none !important;
+}
+
 /* ===== CHILL ASSISTANT ===== */
 .chill-assistant {
   position: fixed;
-  bottom: 20px;
+  bottom: 80px;
   right: 20px;
   font-size: 48px;
   z-index: 1000;
