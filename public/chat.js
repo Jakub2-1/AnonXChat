@@ -1046,6 +1046,9 @@ function removeThemeOverlays() {
   
   // Remove Pixel Quest effects when switching themes
   removePixelQuestEffects();
+  
+  // Remove Digital Void Matrix rain effects when switching themes
+  removeDigitalVoidEffects();
 }
 
 // Create retro neon effects
@@ -1066,6 +1069,89 @@ function createDigitalVoidEffects() {
   digitalOverlay.className = 'digital-void-overlay';
   digitalOverlay.id = 'digitalVoidOverlay';
   body.appendChild(digitalOverlay);
+  
+  // Start Matrix rain effect
+  startMatrixRain(digitalOverlay);
+}
+
+// Matrix rain effect implementation
+function startMatrixRain(container) {
+  // Characters for the Matrix rain
+  const matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  
+  // Create columns based on screen width
+  const columnWidth = 20;
+  const columns = Math.floor(window.innerWidth / columnWidth);
+  
+  // Store active rain drops
+  const rainDrops = [];
+  
+  function createRainDrop() {
+    const column = Math.floor(Math.random() * columns);
+    const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+    
+    const drop = document.createElement('div');
+    drop.className = 'matrix-rain';
+    
+    // Random brightness for variety
+    const brightness = Math.random();
+    if (brightness > 0.8) {
+      drop.classList.add('bright');
+    } else if (brightness < 0.3) {
+      drop.classList.add('dim');
+    }
+    
+    drop.textContent = char;
+    drop.style.left = column * columnWidth + 'px';
+    drop.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2-5 seconds
+    drop.style.animationDelay = Math.random() * 2 + 's'; // 0-2 seconds delay
+    
+    container.appendChild(drop);
+    rainDrops.push(drop);
+    
+    // Remove drop after animation completes
+    setTimeout(() => {
+      if (drop.parentNode) {
+        drop.parentNode.removeChild(drop);
+      }
+      const index = rainDrops.indexOf(drop);
+      if (index > -1) {
+        rainDrops.splice(index, 1);
+      }
+    }, 7000); // Max animation time + buffer
+  }
+  
+  function createMatrixRainPattern() {
+    // Create multiple drops at once for denser effect
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => {
+        createRainDrop();
+      }, i * 100);
+    }
+  }
+  
+  // Start the rain pattern
+  const matrixInterval = setInterval(createMatrixRainPattern, 200);
+  
+  // Store interval reference for cleanup
+  if (!window.matrixIntervals) {
+    window.matrixIntervals = [];
+  }
+  window.matrixIntervals.push(matrixInterval);
+  
+  // Handle window resize
+  const resizeHandler = () => {
+    const newColumns = Math.floor(window.innerWidth / columnWidth);
+    // Columns count updated automatically for new drops
+  };
+  
+  window.addEventListener('resize', resizeHandler);
+  
+  // Store resize handler for cleanup
+  if (!window.matrixResizeHandlers) {
+    window.matrixResizeHandlers = [];
+  }
+  window.matrixResizeHandlers.push(resizeHandler);
 }
 
 // ===== PIXEL QUEST RETRO THEME FUNCTIONS =====
@@ -2731,6 +2817,37 @@ function removeChaosEffects() {
 }
 
 // ===== END CHAOS THEME FUNCTIONALITY =====
+
+// ===== DIGITAL VOID THEME CLEANUP =====
+
+// Remove Digital Void Matrix rain effects when switching themes
+function removeDigitalVoidEffects() {
+  // Clear Matrix rain intervals
+  if (window.matrixIntervals) {
+    window.matrixIntervals.forEach(interval => {
+      clearInterval(interval);
+    });
+    window.matrixIntervals = [];
+  }
+  
+  // Remove resize handlers
+  if (window.matrixResizeHandlers) {
+    window.matrixResizeHandlers.forEach(handler => {
+      window.removeEventListener('resize', handler);
+    });
+    window.matrixResizeHandlers = [];
+  }
+  
+  // Remove any remaining matrix rain elements
+  const matrixElements = document.querySelectorAll('.matrix-rain');
+  matrixElements.forEach(element => {
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+  });
+}
+
+// ===== END DIGITAL VOID THEME FUNCTIONALITY =====
 
 // Chaos theme color variations
 function randomizeChaosTheme() {
