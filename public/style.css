@@ -1,7 +1,7 @@
-/* 
- * UI/UX Optimization: Enhanced CSS Custom Properties System
- * Reason: Centralized design tokens for consistent spacing, typography, and responsive design
- * Impact: Better maintainability, consistent visual hierarchy, improved scalability
+/*
+ * UI/UX Optimization: Enhanced CSS Custom Properties System with Animation Support
+ * Reason: Centralized design tokens for consistent spacing, typography, responsive design, and accessibility
+ * Impact: Better maintainability, consistent visual hierarchy, improved scalability, reduced motion support
  */
 :root {
   /* Theme color variables - will be set dynamically */
@@ -10,6 +10,16 @@
   --theme-accent: #f093fb;
   --theme-glow: rgba(102, 126, 234, 0.8);
   --theme-shadow: rgba(102, 126, 234, 0.4);
+  
+  /* 
+   * Animation and Transition Settings
+   * Respects user's motion preferences for accessibility
+   */
+  --animation-duration-fast: 0.15s;
+  --animation-duration-normal: 0.3s;
+  --animation-duration-slow: 0.6s;
+  --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-timing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   
   /* 
    * Responsive Spacing System
@@ -64,6 +74,34 @@
   --z-overlay: 1000;
   --z-modal: 1100;
   --z-tooltip: 1200;
+}
+
+/*
+ * UI/UX Optimization: Accessibility-First Animation System
+ * Reason: Respect user's motion preferences, reduce motion sickness, improve accessibility
+ * Impact: Better accessibility for users with vestibular disorders, improved performance
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-duration-fast: 0.01ms;
+    --animation-duration-normal: 0.01ms;
+    --animation-duration-slow: 0.01ms;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Disable complex background animations */
+  body::before,
+  body::after {
+    animation: none !important;
+  }
 }
 
 /* Goth Theme (Deep Gothic) */
@@ -182,23 +220,29 @@
   --theme-font-family: 'Share Tech Mono', 'Courier New', monospace;
 }
 
-/* Glow Theme (Light Contrast) */
+/*
+ * UI/UX Optimization: Enhanced Color Contrast and Accessibility
+ * Reason: WCAG AA/AAA compliance, better readability, improved accessibility
+ * Impact: Better visibility for users with visual impairments, improved overall UX
+ */
+
+/* Glow Theme - Enhanced for better contrast */
 .theme-glow {
-  --theme-bg-primary: #f0f9ff;
-  --theme-bg-secondary: #fdf2f8;
-  --theme-bg-accent: #fef3c7;
-  --theme-text-primary: #1f2937;
-  --theme-text-secondary: #4b5563;
-  --theme-bubble-light: rgba(255, 255, 255, 0.9);
-  --theme-bubble-accent: #fbbf24;
-  --theme-glow-soft: rgba(251, 191, 36, 0.6);
-  --theme-shadow-soft: rgba(251, 191, 36, 0.3);
-  --theme-primary: #3b82f6;
-  --theme-secondary: #ec4899;
-  --theme-accent: #fbbf24;
-  --theme-glow: rgba(59, 130, 246, 0.6);
-  --theme-shadow: rgba(59, 130, 246, 0.3);
-  --theme-font-family: 'Poppins', 'Arial', sans-serif;
+  --theme-bg-primary: #fafbff;      /* Lighter background for better contrast */
+  --theme-bg-secondary: #f3f4ff;
+  --theme-bg-accent: #fef7d4;
+  --theme-text-primary: #1e293b;    /* Darker text for better contrast ratio */
+  --theme-text-secondary: #475569;  /* Improved secondary text contrast */
+  --theme-bubble-light: rgba(255, 255, 255, 0.95);
+  --theme-bubble-accent: #f59e0b;   /* Better contrast amber */
+  --theme-glow-soft: rgba(245, 158, 11, 0.6);
+  --theme-shadow-soft: rgba(245, 158, 11, 0.3);
+  --theme-primary: #2563eb;         /* Better contrast blue */
+  --theme-secondary: #dc2626;       /* Better contrast red */
+  --theme-accent: #f59e0b;          /* Better contrast amber */
+  --theme-glow: rgba(37, 99, 235, 0.6);
+  --theme-shadow: rgba(37, 99, 235, 0.3);
+  --theme-font-family: var(--font-family-primary);
 }
 
 /* Poltergeist Theme (Dark & Disturbing) */
@@ -772,7 +816,7 @@ body.theme-goth .shadows-overlay {
                0 0 0.9375rem rgba(255, 255, 255, 0.5);
   letter-spacing: 0.125rem; /* Improved readability */
   line-height: var(--line-height-tight);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--animation-duration-normal) var(--animation-timing);
   animation: glow-pulse 3s ease-in-out infinite alternate;
   position: relative;
   
@@ -1131,56 +1175,118 @@ body.theme-glow .glow {
   animation: fade-in 0.6s ease-out;
 }
 
-.theme-switcher {
-  position: absolute;
-  top: 30px;
-  right: 160px;
+/*
+ * UI/UX Optimization: Enhanced Floating Action Buttons
+ * Reason: Better accessibility, consistent design, improved interaction patterns
+ * Impact: More accessible controls, better mobile experience, consistent visual design
+ */
+.theme-switcher,
+.language-switcher,
+.stats-button,
+.bug-feedback-button {
+  position: fixed;
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 12px 16px;
-  border-radius: 1.3rem;
-  font-size: 1.4rem;
+  backdrop-filter: blur(1.25rem);
+  -webkit-backdrop-filter: blur(1.25rem);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.2);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-lg);
+  min-height: var(--touch-target-comfortable);
+  min-width: var(--touch-target-comfortable);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  animation: fade-in 0.6s ease-out;
-  transition: all 0.3s ease;
-  z-index: 1000;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.3);
+  animation: fade-in var(--animation-duration-slow) var(--animation-timing);
+  transition: all var(--animation-duration-normal) var(--animation-timing);
+  z-index: var(--z-floating);
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.theme-switcher:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-}
-
-.theme-icon {
-  display: block;
-  transition: transform 0.3s ease;
-}
-
-.theme-switcher:hover .theme-icon {
-  transform: scale(1.1);
+/* Specific positioning */
+.theme-switcher {
+  top: var(--spacing-lg);
+  right: 10rem;
 }
 
 .language-switcher {
-  position: fixed;
-  top: 30px;
-  right: 90px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 12px 16px;
-  border-radius: 1.3rem;
-  font-size: 1.4rem;
-  cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  animation: fade-in 0.6s ease-out;
-  transition: all 0.3s ease;
-  z-index: 1000;
+  top: var(--spacing-lg);
+  right: 5.625rem;
 }
+
+.stats-button {
+  top: var(--spacing-lg);
+  right: 14.375rem;
+}
+
+.bug-feedback-button {
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+}
+}
+
+/*
+ * UI/UX Optimization: Enhanced Floating Button Interactions
+ * Reason: Better accessibility, consistent feedback, improved user experience
+ * Impact: More accessible for keyboard/screen readers, better visual feedback
+ */
+.theme-switcher:hover,
+.language-switcher:hover,
+.stats-button:hover,
+.bug-feedback-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.75rem 2.5rem rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-switcher:focus,
+.language-switcher:focus,
+.stats-button:focus,
+.bug-feedback-button:focus {
+  outline: 0.125rem solid rgba(255, 255, 255, 0.6);
+  outline-offset: 0.125rem;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.theme-switcher:focus:not(:focus-visible),
+.language-switcher:focus:not(:focus-visible),
+.stats-button:focus:not(:focus-visible),
+.bug-feedback-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.theme-switcher:active,
+.language-switcher:active,
+.stats-button:active,
+.bug-feedback-button:active {
+  transform: translateY(0.0625rem);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-icon,
+.language-icon,
+.stats-icon,
+.feedback-icon {
+  display: block;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: inherit;
+}
+
+.theme-switcher:hover .theme-icon,
+.language-switcher:hover .language-icon,
+.stats-button:hover .stats-icon,
+.bug-feedback-button:hover .feedback-icon {
+  transform: scale(1.1);
+}
+
+/* Language switcher specific styles removed - now handled by common floating button styles above */
 
 .language-switcher:hover {
   background: rgba(255, 255, 255, 0.15);
@@ -1210,14 +1316,19 @@ body.theme-glow .glow {
   min-height: 80dvh; /* Dynamic viewport height for mobile */
   padding: var(--spacing-md) var(--spacing-sm);
   max-width: 100%;
-  animation: fade-in 1s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fade-in var(--animation-duration-slow) var(--animation-timing);
   gap: var(--spacing-md); /* Consistent spacing between elements */
 }
 
+/*
+ * UI/UX Optimization: Enhanced fade-in animation with design tokens
+ * Reason: Consistent timing, better performance, accessibility support
+ * Impact: Smoother entrance animations, respects user motion preferences
+ */
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(0.5rem);
   }
   to {
     opacity: 1;
@@ -1349,14 +1460,6 @@ body.theme-glow .glow {
   outline: none;
   user-select: none;
   -webkit-user-select: none;
-}
-  font-size: 0.85rem;
-  font-weight: 400;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transform: scale(0.65);
-  opacity: 0.8;
 }
 
 /*
@@ -2456,38 +2559,8 @@ body.theme-goth .exit-btn:hover {
 }
 
 /* Statistics Button */
-.stats-button {
-  position: absolute;
-  top: 30px;
-  right: 300px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 12px 16px;
-  border-radius: 1.3rem;
-  font-size: 1.4rem;
-  cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  animation: fade-in 0.6s ease-out;
-  transition: all 0.3s ease;
-  z-index: 1000;
-}
-
-.stats-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-}
-
-.stats-icon {
-  display: block;
-  transition: transform 0.3s ease;
-}
-
-.stats-button:hover .stats-icon {
-  transform: scale(1.1);
-}
+/* Stats button specific styles removed - now handled by common floating button styles above */
+/* Removed duplicate hover styles - now handled by common floating button styles above */
 
 /* Bug report / feedback button - bottom right corner - Updated per requirements */
 .bug-feedback-button {
