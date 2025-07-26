@@ -1,0 +1,30 @@
+<!-- Dark shadow figure SVG - Sitting silhouette for bench -->
+<svg width="80" height="120" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadowBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1"/>
+      <feOffset dx="2" dy="2" result="offset"/>
+    </filter>
+  </defs>
+  
+  <!-- Shadow figure silhouette sitting -->
+  <g fill="#1a1a1a" opacity="0.8" filter="url(#shadowBlur)">
+    <!-- Head -->
+    <ellipse cx="40" cy="20" rx="12" ry="15" />
+    
+    <!-- Torso -->
+    <rect x="25" y="35" width="30" height="45" rx="5" />
+    
+    <!-- Arms -->
+    <ellipse cx="15" cy="55" rx="8" ry="20" transform="rotate(-20 15 55)" />
+    <ellipse cx="65" cy="55" rx="8" ry="20" transform="rotate(20 65 55)" />
+    
+    <!-- Thighs (sitting position) -->
+    <rect x="20" y="75" width="15" height="30" rx="7" transform="rotate(5 27 90)" />
+    <rect x="45" y="75" width="15" height="30" rx="7" transform="rotate(-5 52 90)" />
+    
+    <!-- Lower legs hanging down -->
+    <rect x="22" y="100" width="10" height="18" rx="5" />
+    <rect x="48" y="100" width="10" height="18" rx="5" />
+  </g>
+</svg>

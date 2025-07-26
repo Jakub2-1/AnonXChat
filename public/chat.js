@@ -4131,6 +4131,16 @@ function startSocket(preferFavorites = false) {
     playChatEnd();
   });
   
+  // Phantom theme jumpscare event
+  socket.on('phantom-jumpscare', (data) => {
+    console.log('Received jumpscare from partner:', data.from);
+    
+    // Only show jumpscare if Phantom theme is active
+    if (window.phantomTheme && window.phantomTheme.isActive) {
+      window.phantomTheme.showJumpscareEffect();
+    }
+  });
+  
   socket.on('disconnect', (reason)=> {
     console.log('Socket disconnected:', reason, 'Page visible:', isPageVisible);
     disconnectTime = Date.now();

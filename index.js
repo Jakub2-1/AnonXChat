@@ -410,6 +410,7 @@ io.on("connection", (socket) => {
     }
   });
 
+ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
   // Jumpscare feature for Phantom theme
   socket.on("jumpscare", (data) => {
     if (socket.partner && socket.room) {
@@ -421,6 +422,17 @@ io.on("connection", (socket) => {
       });
       
       console.log(`Jumpscare sent from ${socket.userId || 'anonymous'} to partner`);
+
+  // Phantom jumpscare effect
+  socket.on("phantom-jumpscare", (data) => {
+    socket.lastActive = Date.now();
+    if (socket.partner && socket.room) {
+      // Forward jumpscare to partner
+      socket.to(socket.room).emit("phantom-jumpscare", {
+        from: data.from || "anonymous"
+      });
+      console.log(`Jumpscare sent from ${data.from} to partner in room ${socket.room}`);
+main
     }
   });
 // Oznámení od uživatele že opouští chat (např. přes skip nebo end chat)

@@ -1,3 +1,4 @@
+ copilot/fix-785eb0ab-392b-4405-a799-3c9e43e610c2
 <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
   <!-- Dark background -->
   <rect width="800" height="600" fill="#0a0a0a"/>
@@ -43,4 +44,71 @@
   <circle cx="100" cy="300" r="60" fill="#333" opacity="0.1"/>
   <circle cx="600" cy="250" r="80" fill="#333" opacity="0.08"/>
   <circle cx="400" cy="500" r="100" fill="#222" opacity="0.05"/>
+
+<!-- Night bench scene SVG - Dark atmosphere with bench under street lamp -->
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark night sky background -->
+  <defs>
+    <radialGradient id="lampGlow" cx="75%" cy="20%" r="40%">
+      <stop offset="0%" style="stop-color:#ffeb3b;stop-opacity:0.4" />
+      <stop offset="30%" style="stop-color:#ffc107;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0" />
+    </radialGradient>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1a" />
+      <stop offset="100%" style="stop-color:#1a1a2e" />
+    </linearGradient>
+    <linearGradient id="groundGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a2a3a" />
+      <stop offset="100%" style="stop-color:#1a1a2a" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Night sky -->
+  <rect width="100%" height="100%" fill="url(#skyGradient)" />
+  
+  <!-- Ground -->
+  <rect x="0" y="800" width="1920" height="280" fill="url(#groundGradient)" />
+  
+  <!-- Street lamp post -->
+  <rect x="1400" y="200" width="15" height="600" fill="#3a3a3a" />
+  
+  <!-- Lamp head -->
+  <ellipse cx="1407" cy="190" rx="40" ry="25" fill="#2a2a2a" />
+  
+  <!-- Lamp glow -->
+  <ellipse cx="1100" cy="400" rx="800" ry="400" fill="url(#lampGlow)" />
+  
+  <!-- Bench legs (metal) -->
+  <rect x="600" y="720" width="15" height="80" fill="#4a4a4a" />
+  <rect x="700" y="720" width="15" height="80" fill="#4a4a4a" />
+  <rect x="1100" y="720" width="15" height="80" fill="#4a4a4a" />
+  <rect x="1200" y="720" width="15" height="80" fill="#4a4a4a" />
+  
+  <!-- Bench seat (wood) -->
+  <rect x="580" y="700" width="640" height="25" rx="12" fill="#5d4037" />
+  
+  <!-- Bench backrest -->
+  <rect x="580" y="650" width="25" height="75" rx="12" fill="#5d4037" />
+  <rect x="1195" y="650" width="25" height="75" rx="12" fill="#5d4037" />
+  <rect x="580" y="655" width="640" height="15" rx="7" fill="#5d4037" />
+  
+  <!-- Some atmospheric fog/mist -->
+  <ellipse cx="300" cy="850" rx="200" ry="50" fill="#ffffff" opacity="0.05" />
+  <ellipse cx="1500" cy="900" rx="300" ry="40" fill="#ffffff" opacity="0.03" />
+  <ellipse cx="900" cy="870" rx="150" ry="30" fill="#ffffff" opacity="0.04" />
+  
+  <!-- Stars -->
+  <circle cx="200" cy="100" r="2" fill="#ffffff" opacity="0.8" />
+  <circle cx="400" cy="150" r="1.5" fill="#ffffff" opacity="0.6" />
+  <circle cx="800" cy="80" r="1" fill="#ffffff" opacity="0.7" />
+  <circle cx="1200" cy="120" r="2" fill="#ffffff" opacity="0.5" />
+  <circle cx="1600" cy="90" r="1.5" fill="#ffffff" opacity="0.9" />
+  <circle cx="100" cy="200" r="1" fill="#ffffff" opacity="0.4" />
+  <circle cx="1800" cy="180" r="1.5" fill="#ffffff" opacity="0.7" />
+  
+  <!-- Tree silhouettes in background for atmosphere -->
+  <path d="M50 800 Q 100 700 150 800" stroke="#1a1a1a" stroke-width="20" fill="none" />
+  <path d="M1800 800 Q 1750 720 1700 800" stroke="#1a1a1a" stroke-width="15" fill="none" />
+ main
 </svg>
