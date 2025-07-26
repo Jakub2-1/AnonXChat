@@ -220,93 +220,198 @@ body.theme-chill .message.pulse-animation {
   animation: emojiReaction 1.5s ease-out;
 }
 
-/* ===== CHILL SOUND BUTTON ===== */
-.chill-sound-button {
+/* ===== CHILL AMBIENT SOUND CONTROLS ===== */
+.chill-ambient-sound-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 12px;
-  min-width: 200px;
   z-index: 1001;
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.3s ease;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   font-family: 'Poppins', sans-serif;
   user-select: none;
 }
 
-body.theme-chill .chill-sound-button {
+body.theme-chill .chill-ambient-sound-container {
   opacity: 1;
   transform: translateY(0);
 }
 
-.chill-sound-button:hover {
+/* Hide for other themes */
+body:not(.theme-chill) .chill-ambient-sound-container {
+  display: none !important;
+}
+
+/* Main ambient sound button */
+.ambient-sound-button {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 15px;
+  min-width: 140px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  text-align: center;
+}
+
+.ambient-sound-button:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
   box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
 }
 
-.chill-sound-button.muted {
-  opacity: 0.6;
+/* Scale animation when clicked */
+.ambient-sound-button.scaling {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
 }
 
 .sound-button-icon {
-  font-size: 24px;
-  text-align: center;
+  font-size: 28px;
   margin-bottom: 8px;
   animation: soundPulse 2s ease-in-out infinite;
 }
 
-.chill-sound-button.muted .sound-button-icon {
-  animation: none;
-  filter: grayscale(100%);
-}
-
-.sound-button-text {
+.sound-button-label {
   color: white;
   font-size: 14px;
   font-weight: 500;
-  text-align: center;
-  margin-bottom: 10px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.sound-button-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+/* Ambient sound player */
+.ambient-sound-player {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 15px;
+  min-width: 200px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  animation: slideUp 0.3s ease-out;
 }
 
-.sound-control-btn {
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Player controls */
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.player-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
+  border-radius: 8px;
   color: white;
-  font-size: 14px;
-  padding: 6px 10px;
+  font-size: 16px;
+  padding: 8px 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 40px;
   min-height: 32px;
 }
 
-.sound-control-btn:hover {
+.player-btn:hover {
   background: rgba(255, 255, 255, 0.35);
   transform: scale(1.05);
 }
 
-.sound-control-btn:active {
+.player-btn:active {
   transform: scale(0.95);
+}
+
+/* Volume slider */
+.volume-slider {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Sound selection */
+.sound-selection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sound-select-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  min-width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sound-select-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.1);
+}
+
+.current-sound-name {
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  flex: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Sound pulse animation */
@@ -315,13 +420,8 @@ body.theme-chill .chill-sound-button {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
-}
-
-/* Hide sound button for other themes */
-body:not(.theme-chill) .chill-sound-button {
-  display: none !important;
 }
 
 /* ===== CHILL ASSISTANT ===== */

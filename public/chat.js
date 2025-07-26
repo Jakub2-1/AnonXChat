@@ -1622,10 +1622,8 @@ let chillFloatingElements = null;
 let chillAnimationIntervals = [];
 let chillAudioContext = null;
 let chillBackgroundSound = null;
-let chillSoundEnabled = localStorage.getItem('chill_sound') !== 'false';
 let chillSoundButton = null;
 let currentChillSound = parseInt(localStorage.getItem('chill_sound_selection') || '0');
-let chillSoundMuted = localStorage.getItem('chill_sound_muted') === 'true';
 
 // Chill sound files
 const chillSounds = [
@@ -1868,7 +1866,7 @@ function showAssistantSpeech() {
   }, 3000);
 }
 
-// Create chill sound selection button
+// Create chill ambient sound button
 function createChillSoundButton() {
   if (chillSoundButton) {
     chillSoundButton.remove();
@@ -1876,25 +1874,80 @@ function createChillSoundButton() {
   }
 
   chillSoundButton = document.createElement('div');
-  chillSoundButton.className = 'chill-sound-button';
+  chillSoundButton.className = 'chill-ambient-sound-container';
   chillSoundButton.innerHTML = `
-    <div class="sound-button-icon">${chillSoundMuted ? '🔇' : '🎵'}</div>
-    <div class="sound-button-text">${chillSounds[currentChillSound].name}</div>
-    <div class="sound-button-controls">
-      <button class="sound-control-btn sound-prev" title="Previous sound">‹</button>
-      <button class="sound-control-btn sound-toggle" title="${chillSoundMuted ? 'Unmute' : 'Mute'}">${chillSoundMuted ? '🔇' : '🔊'}</button>
-      <button class="sound-control-btn sound-next" title="Next sound">›</button>
+    <div class="ambient-sound-button" id="ambientSoundButton">
+      <div class="sound-button-icon">🔊</div>
+      <div class="sound-button-label">ambient sound</div>
+    </div>
+    <div class="ambient-sound-player" id="ambientSoundPlayer" style="display: none;">
+      <div class="player-controls">
+        <button class="player-btn play-pause-btn" id="playPauseBtn" title="Play/Pause">▶️</button>
+        <button class="player-btn volume-btn" id="volumeBtn" title="Volume">🔊</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30">
+      </div>
+      <div class="sound-selection">
+        <button class="sound-select-btn" id="soundPrevBtn">‹</button>
+        <span class="current-sound-name" id="currentSoundName">${chillSounds[currentChillSound].name}</span>
+        <button class="sound-select-btn" id="soundNextBtn">›</button>
+      </div>
     </div>
   `;
 
   // Add event listeners
-  const prevBtn = chillSoundButton.querySelector('.sound-prev');
-  const nextBtn = chillSoundButton.querySelector('.sound-next');
-  const toggleBtn = chillSoundButton.querySelector('.sound-toggle');
+  const ambientButton = chillSoundButton.querySelector('#ambientSoundButton');
+  const player = chillSoundButton.querySelector('#ambientSoundPlayer');
+  const playPauseBtn = chillSoundButton.querySelector('#playPauseBtn');
+  const volumeBtn = chillSoundButton.querySelector('#volumeBtn');
+  const volumeSlider = chillSoundButton.querySelector('#volumeSlider');
+  const soundPrevBtn = chillSoundButton.querySelector('#soundPrevBtn');
+  const soundNextBtn = chillSoundButton.querySelector('#soundNextBtn');
 
-  prevBtn.addEventListener('click', () => cyclePreviousChillSound());
-  nextBtn.addEventListener('click', () => cycleNextChillSound());
-  toggleBtn.addEventListener('click', () => toggleChillSoundMute());
+  // Main button click - toggle player visibility with scale animation
+  ambientButton.addEventListener('click', () => {
+    const isPlayerVisible = player.style.display !== 'none';
+    
+    // Add scale animation
+    ambientButton.classList.add('scaling');
+    setTimeout(() => {
+      ambientButton.classList.remove('scaling');
+    }, 300);
+    
+    if (isPlayerVisible) {
+      // Hide player
+      player.style.display = 'none';
+    } else {
+      // Show player
+      player.style.display = 'block';
+    }
+  });
+
+  // Play/Pause button
+  playPauseBtn.addEventListener('click', () => {
+    if (chillBackgroundSound) {
+      // Stop playing
+      stopChillBackgroundSound();
+      playPauseBtn.textContent = '▶️';
+      playPauseBtn.title = 'Play';
+    } else {
+      // Start playing
+      playCurrentChillSound();
+      playPauseBtn.textContent = '⏸️';
+      playPauseBtn.title = 'Pause';
+    }
+  });
+
+  // Volume controls
+  volumeSlider.addEventListener('input', (e) => {
+    const volume = e.target.value / 100;
+    if (chillBackgroundSound && chillBackgroundSound.audio) {
+      chillBackgroundSound.audio.volume = volume;
+    }
+  });
+
+  // Sound selection
+  soundPrevBtn.addEventListener('click', () => cyclePreviousChillSound());
+  soundNextBtn.addEventListener('click', () => cycleNextChillSound());
 
   document.body.appendChild(chillSoundButton);
 }
@@ -1902,9 +1955,10 @@ function createChillSoundButton() {
 // Cycle to previous chill sound
 function cyclePreviousChillSound() {
   currentChillSound = (currentChillSound - 1 + chillSounds.length) % chillSounds.length;
-  updateChillSoundButton();
+  updateChillSoundDisplay();
   saveChillSoundPreferences();
-  if (!chillSoundMuted) {
+  if (chillBackgroundSound) {
+    // If currently playing, switch to new sound
     playCurrentChillSound();
   }
 }
@@ -1912,59 +1966,51 @@ function cyclePreviousChillSound() {
 // Cycle to next chill sound
 function cycleNextChillSound() {
   currentChillSound = (currentChillSound + 1) % chillSounds.length;
-  updateChillSoundButton();
+  updateChillSoundDisplay();
   saveChillSoundPreferences();
-  if (!chillSoundMuted) {
+  if (chillBackgroundSound) {
+    // If currently playing, switch to new sound
     playCurrentChillSound();
   }
 }
 
-// Toggle mute state
-function toggleChillSoundMute() {
-  chillSoundMuted = !chillSoundMuted;
-  updateChillSoundButton();
-  saveChillSoundPreferences();
-  
-  if (chillSoundMuted) {
-    stopChillBackgroundSound();
-  } else {
-    playCurrentChillSound();
-  }
-}
-
-// Update sound button display
-function updateChillSoundButton() {
+// Update sound display
+function updateChillSoundDisplay() {
   if (!chillSoundButton) return;
   
-  const icon = chillSoundButton.querySelector('.sound-button-icon');
-  const text = chillSoundButton.querySelector('.sound-button-text');
-  const toggleBtn = chillSoundButton.querySelector('.sound-toggle');
-  
-  icon.textContent = chillSoundMuted ? '🔇' : '🎵';
-  text.textContent = chillSounds[currentChillSound].name;
-  toggleBtn.textContent = chillSoundMuted ? '🔇' : '🔊';
-  toggleBtn.title = chillSoundMuted ? 'Unmute' : 'Mute';
-  
-  // Add visual feedback for muted state
-  chillSoundButton.classList.toggle('muted', chillSoundMuted);
+  const currentSoundName = chillSoundButton.querySelector('#currentSoundName');
+  if (currentSoundName) {
+    currentSoundName.textContent = chillSounds[currentChillSound].name;
+  }
 }
 
 // Save sound preferences to localStorage
 function saveChillSoundPreferences() {
   localStorage.setItem('chill_sound_selection', currentChillSound.toString());
-  localStorage.setItem('chill_sound_muted', chillSoundMuted.toString());
 }
 
 // Play current selected chill sound
 function playCurrentChillSound() {
   stopChillBackgroundSound();
   
-  if (chillSoundMuted) return;
+  // Initialize audio context if needed
+  if (!chillAudioContext) {
+    try {
+      chillAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (error) {
+      console.log('Web Audio API not available:', error);
+    }
+  }
   
   try {
     const audio = new Audio(`/sounds/${chillSounds[currentChillSound].file}`);
     audio.loop = true;
-    audio.volume = 0.3; // Keep volume low for background ambience
+    
+    // Get volume from slider if available
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volume = volumeSlider ? volumeSlider.value / 100 : 0.3;
+    audio.volume = volume;
+    
     audio.play().catch(error => {
       console.log('Could not play chill sound:', error);
       // Fallback to Web Audio API generated sound
@@ -1973,6 +2019,13 @@ function playCurrentChillSound() {
     
     // Store reference for stopping later
     chillBackgroundSound = { audio };
+    
+    // Update play/pause button
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    if (playPauseBtn) {
+      playPauseBtn.textContent = '⏸️';
+      playPauseBtn.title = 'Pause';
+    }
   } catch (error) {
     console.log('Audio file not available, using generated sound');
     createChillBackgroundSound();
@@ -1981,10 +2034,15 @@ function playCurrentChillSound() {
 
 // Sound system using Web Audio API
 function createChillSoundSystem() {
-  if (chillSoundMuted) return;
-  
-  // Try to play the selected sound file first
-  playCurrentChillSound();
+  // Initialize audio context but don't auto-start playing
+  // Music only starts when user clicks the ambient sound button
+  if (!chillAudioContext) {
+    try {
+      chillAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (error) {
+      console.log('Web Audio API not available:', error);
+    }
+  }
 }
 
 function createChillBackgroundSound() {
@@ -2038,6 +2096,13 @@ function stopChillBackgroundSound() {
       // Oscillators or audio might already be stopped
     }
     chillBackgroundSound = null;
+    
+    // Update play/pause button
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    if (playPauseBtn) {
+      playPauseBtn.textContent = '▶️';
+      playPauseBtn.title = 'Play';
+    }
   }
 }
 
