@@ -927,6 +927,7 @@ function applyMainTheme(themeName) {
     createHelloKittyEffects();
   } else if (themeName === 'chill') {
     createChillEffects();
+ copilot/fix-89f43fc7-b6f0-4bf2-b35b-4505df91a81f
   } else if (themeName === 'phantom') {
     // Activate Phantom theme via the PhantomTheme class
     if (window.phantomTheme) {
@@ -937,6 +938,10 @@ function applyMainTheme(themeName) {
     if (window.phantomTheme && window.phantomTheme.isActive) {
       window.phantomTheme.deactivate();
     }
+
+  } else if (themeName === 'chaos') {
+    createChaosEffects();
+main
   }
   
   // Apply color variations for themes that support them
@@ -993,6 +998,9 @@ function removeThemeOverlays() {
   
   // Remove Chill effects when switching themes
   removeChillEffects();
+  
+  // Remove Chaos effects when switching themes
+  removeChaosEffects();
 }
 
 // Create retro neon effects
@@ -1635,11 +1643,11 @@ let chillBackgroundSound = null;
 let chillSoundButton = null;
 let currentChillSound = parseInt(localStorage.getItem('chill_sound_selection') || '0');
 
-// Chill sound files
+// Enhanced relaxing sound files with icons for individual selection
 const chillSounds = [
-  { name: 'Ambient', file: 'chill-1.mp3' },
-  { name: 'Nature', file: 'chill-2.mp3' },
-  { name: 'Relaxing', file: 'chill-3.mp3' }
+  { name: 'Ocean Waves', file: 'oceanWave1.mp3', icon: '🌊' },
+  { name: 'Forest Birds', file: 'forestBirds.mp3', icon: '🌿' },
+  { name: 'Alternative Ocean', file: 'oceanWave2.mp3', icon: '🎧' }
 ];
 
 // Create chill theme effects
@@ -1888,18 +1896,22 @@ function createChillSoundButton() {
   chillSoundButton.innerHTML = `
     <div class="ambient-sound-button" id="ambientSoundButton">
       <div class="sound-button-icon">🔊</div>
-      <div class="sound-button-label">ambient sound</div>
+      <div class="sound-button-label">sounds</div>
     </div>
     <div class="ambient-sound-player" id="ambientSoundPlayer" style="display: none;">
       <div class="player-controls">
-        <button class="player-btn play-pause-btn" id="playPauseBtn" title="Play/Pause">▶️</button>
+        <button class="player-btn play-pause-btn" id="playPauseBtn" title="Play/Pause">⏸️</button>
         <button class="player-btn volume-btn" id="volumeBtn" title="Volume">🔊</button>
         <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30">
       </div>
       <div class="sound-selection">
-        <button class="sound-select-btn" id="soundPrevBtn">‹</button>
-        <span class="current-sound-name" id="currentSoundName">${chillSounds[currentChillSound].name}</span>
-        <button class="sound-select-btn" id="soundNextBtn">›</button>
+        ${chillSounds.map((sound, index) => `
+          <button class="sound-icon-btn ${index === currentChillSound ? 'active' : ''}" 
+                  data-sound-index="${index}" 
+                  title="${sound.name}">
+            ${sound.icon}
+          </button>
+        `).join('')}
       </div>
     </div>
   `;
@@ -1910,8 +1922,7 @@ function createChillSoundButton() {
   const playPauseBtn = chillSoundButton.querySelector('#playPauseBtn');
   const volumeBtn = chillSoundButton.querySelector('#volumeBtn');
   const volumeSlider = chillSoundButton.querySelector('#volumeSlider');
-  const soundPrevBtn = chillSoundButton.querySelector('#soundPrevBtn');
-  const soundNextBtn = chillSoundButton.querySelector('#soundNextBtn');
+  const soundIconButtons = chillSoundButton.querySelectorAll('.sound-icon-btn');
 
   // Main button click - toggle player visibility with scale animation
   ambientButton.addEventListener('click', () => {
@@ -1955,42 +1966,41 @@ function createChillSoundButton() {
     }
   });
 
-  // Sound selection
-  soundPrevBtn.addEventListener('click', () => cyclePreviousChillSound());
-  soundNextBtn.addEventListener('click', () => cycleNextChillSound());
+  // Sound icon button clicks
+  soundIconButtons.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      // Update current sound selection
+      currentChillSound = index;
+      
+      // Update active button styling
+      soundIconButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Save preference and play the selected sound
+      saveChillSoundPreferences();
+      playCurrentChillSound();
+      
+      // Update play/pause button to show pause (since we're now playing)
+      playPauseBtn.textContent = '⏸️';
+      playPauseBtn.title = 'Pause';
+    });
+  });
 
   document.body.appendChild(chillSoundButton);
 }
 
-// Cycle to previous chill sound
-function cyclePreviousChillSound() {
-  currentChillSound = (currentChillSound - 1 + chillSounds.length) % chillSounds.length;
-  updateChillSoundDisplay();
-  saveChillSoundPreferences();
-  if (chillBackgroundSound) {
-    // If currently playing, switch to new sound
-    playCurrentChillSound();
-  }
-}
-
-// Cycle to next chill sound
-function cycleNextChillSound() {
-  currentChillSound = (currentChillSound + 1) % chillSounds.length;
-  updateChillSoundDisplay();
-  saveChillSoundPreferences();
-  if (chillBackgroundSound) {
-    // If currently playing, switch to new sound
-    playCurrentChillSound();
-  }
-}
-
-// Update sound display
+// Update sound display for icon buttons
 function updateChillSoundDisplay() {
-  if (!chillSoundButton) return;
-  
-  const currentSoundName = chillSoundButton.querySelector('#currentSoundName');
-  if (currentSoundName) {
-    currentSoundName.textContent = chillSounds[currentChillSound].name;
+  const soundIconButtons = document.querySelectorAll('.sound-icon-btn');
+  if (soundIconButtons.length > 0) {
+    // Update active state for all buttons
+    soundIconButtons.forEach((btn, index) => {
+      if (index === currentChillSound) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
   }
 }
 
@@ -2044,8 +2054,7 @@ function playCurrentChillSound() {
 
 // Sound system using Web Audio API
 function createChillSoundSystem() {
-  // Initialize audio context but don't auto-start playing
-  // Music only starts when user clicks the ambient sound button
+  // Initialize audio context
   if (!chillAudioContext) {
     try {
       chillAudioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -2053,6 +2062,25 @@ function createChillSoundSystem() {
       console.log('Web Audio API not available:', error);
     }
   }
+  
+  // Auto-play functionality: play the last selected sound on page load
+  // Default to oceanWave1.mp3 (index 0) if none saved
+  setTimeout(() => {
+    // Give time for UI to be created first
+    if (chillSoundButton) {
+      playCurrentChillSound();
+      
+      // Update play/pause button to show pause state
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      if (playPauseBtn) {
+        playPauseBtn.textContent = '⏸️';
+        playPauseBtn.title = 'Pause';
+      }
+      
+      // Update button active states
+      updateChillSoundDisplay();
+    }
+  }, 1000); // 1 second delay to ensure everything is loaded
 }
 
 function createChillBackgroundSound() {
@@ -2161,7 +2189,578 @@ function removeChillEffects() {
   }
 }
 
-// ===== END CHILL THEME FUNCTIONS =====
+// ===== CHAOS THEME FUNCTIONALITY =====
+
+// Global chaos variables
+let chaosBoostMode = localStorage.getItem('chaos_boost_mode') === 'true';
+let chaosDemon = null;
+let chaosDemonInterval = null;
+let chaosGlitchOverlay = null;
+let chaosBoostButton = null;
+
+// Chaos Demon emojis and behaviors
+const chaosDemonEmojis = ['😈', '👹', '💀', '👺', '🔥', '⚡', '💥', '🌪️'];
+const chaosDemonPositions = [
+  'top-left', 'top-right', 'bottom-left', 'bottom-right', 
+  'center', 'edge-left', 'edge-right', 'edge-top'
+];
+
+// Chaos sound effects using Web Audio API and real files
+const chaosSounds = [
+  { name: 'glitch', file: 'chaos-glitch.mp3', frequency: [200, 800, 400], duration: 0.3, type: 'sawtooth' },
+  { name: 'laugh', file: 'chaos-laugh.mp3', frequency: [300, 600, 900], duration: 0.5, type: 'triangle' },
+  { name: 'explosion', file: 'chaos-explosion.mp3', frequency: [100, 50, 25], duration: 0.8, type: 'square' },
+  { name: 'scream', file: 'chaos-scream.mp3', frequency: [800, 1200, 600], duration: 0.4, type: 'sine' },
+  { name: 'zap', file: 'chaos-zap.mp3', frequency: [1000, 2000, 500], duration: 0.2, type: 'sawtooth' }
+];
+
+// Create chaos theme effects when activated
+function createChaosEffects() {
+  const body = document.body;
+  
+  // Create glitch overlay
+  createChaosGlitchOverlay();
+  
+  // Create Chaos Demon character
+  createChaosDemon();
+  
+  // Create Boost Chaos button (only for premium users)
+  if (hasPremiumAccess) {
+    createBoostChaosButton();
+  }
+  
+  // Setup chaos message interactions
+  setupChaosMessageInteractions();
+  
+  // Start chaos demon random appearances
+  startChaosDemonBehavior();
+  
+  // Apply chaos boost mode if enabled
+  if (chaosBoostMode) {
+    enableChaosBoost();
+  }
+}
+
+// Create chaos glitch overlay
+function createChaosGlitchOverlay() {
+  if (chaosGlitchOverlay) {
+    chaosGlitchOverlay.remove();
+  }
+  
+  chaosGlitchOverlay = document.createElement('div');
+  chaosGlitchOverlay.className = 'chaos-glitch-overlay';
+  chaosGlitchOverlay.id = 'chaosGlitchOverlay';
+  
+  document.body.appendChild(chaosGlitchOverlay);
+}
+
+// Create Chaos Demon character
+function createChaosDemon() {
+  if (chaosDemon) {
+    chaosDemon.remove();
+  }
+  
+  chaosDemon = document.createElement('div');
+  chaosDemon.className = 'chaos-demon';
+  chaosDemon.id = 'chaosDemon';
+  chaosDemon.style.display = 'none';
+  
+  // Set initial demon emoji
+  chaosDemon.textContent = getRandomChaosDemonEmoji();
+  
+  document.body.appendChild(chaosDemon);
+}
+
+// Create Boost Chaos button
+function createBoostChaosButton() {
+  if (chaosBoostButton) {
+    chaosBoostButton.remove();
+  }
+  
+  chaosBoostButton = document.createElement('button');
+  chaosBoostButton.className = 'boost-chaos-btn';
+  chaosBoostButton.id = 'boostChaosBtn';
+  chaosBoostButton.innerHTML = '🔥 Boost Chaos';
+  chaosBoostButton.title = 'Activate extreme chaos mode!';
+  
+  if (chaosBoostMode) {
+    chaosBoostButton.classList.add('active');
+    chaosBoostButton.innerHTML = '🌪️ CHAOS MAX';
+  }
+  
+  chaosBoostButton.addEventListener('click', toggleChaosBoost);
+  
+  document.body.appendChild(chaosBoostButton);
+}
+
+// Toggle chaos boost mode
+function toggleChaosBoost() {
+  chaosBoostMode = !chaosBoostMode;
+  localStorage.setItem('chaos_boost_mode', chaosBoostMode.toString());
+  
+  if (chaosBoostMode) {
+    enableChaosBoost();
+  } else {
+    disableChaosBoost();
+  }
+  
+  updateBoostChaosButton();
+}
+
+// Enable chaos boost mode
+function enableChaosBoost() {
+  document.body.classList.add('boost-chaos');
+  
+  // Increase demon activity
+  if (chaosDemonInterval) {
+    clearInterval(chaosDemonInterval);
+  }
+  startChaosDemonBehavior(true); // boost mode
+  
+  // Create additional chaos effects
+  createBoostChaosEffects();
+}
+
+// Disable chaos boost mode
+function disableChaosBoost() {
+  document.body.classList.remove('boost-chaos');
+  
+  // Return to normal demon activity
+  if (chaosDemonInterval) {
+    clearInterval(chaosDemonInterval);
+  }
+  startChaosDemonBehavior(false); // normal mode
+  
+  // Remove boost effects
+  removeBoostChaosEffects();
+}
+
+// Update boost chaos button
+function updateBoostChaosButton() {
+  if (!chaosBoostButton) return;
+  
+  if (chaosBoostMode) {
+    chaosBoostButton.classList.add('active');
+    chaosBoostButton.innerHTML = '🌪️ CHAOS MAX';
+    chaosBoostButton.title = 'Disable extreme chaos mode';
+  } else {
+    chaosBoostButton.classList.remove('active');
+    chaosBoostButton.innerHTML = '🔥 Boost Chaos';
+    chaosBoostButton.title = 'Activate extreme chaos mode!';
+  }
+}
+
+// Create additional boost chaos effects
+function createBoostChaosEffects() {
+  // Create multiple chaos demons for boost mode
+  for (let i = 1; i < 3; i++) {
+    const extraDemon = document.createElement('div');
+    extraDemon.className = 'chaos-demon chaos-demon-extra';
+    extraDemon.id = `chaosDemon${i}`;
+    extraDemon.textContent = getRandomChaosDemonEmoji();
+    extraDemon.style.display = 'none';
+    extraDemon.style.fontSize = '40px';
+    extraDemon.style.width = '60px';
+    extraDemon.style.height = '60px';
+    
+    document.body.appendChild(extraDemon);
+  }
+}
+
+// Remove boost chaos effects
+function removeBoostChaosEffects() {
+  // Remove extra demons
+  const extraDemons = document.querySelectorAll('.chaos-demon-extra');
+  extraDemons.forEach(demon => demon.remove());
+}
+
+// Start chaos demon random behavior
+function startChaosDemonBehavior(boostMode = false) {
+  const baseInterval = boostMode ? 3000 : 8000; // More frequent in boost mode
+  const randomVariation = boostMode ? 2000 : 5000;
+  
+  if (chaosDemonInterval) {
+    clearInterval(chaosDemonInterval);
+  }
+  
+  chaosDemonInterval = setInterval(() => {
+    if (currentTheme === 'chaos') {
+      // Random chance to show demon
+      if (Math.random() < (boostMode ? 0.8 : 0.4)) {
+        showChaosDemon();
+      }
+      
+      // In boost mode, also animate extra demons
+      if (boostMode) {
+        const extraDemons = document.querySelectorAll('.chaos-demon-extra');
+        extraDemons.forEach(demon => {
+          if (Math.random() < 0.3) {
+            showChaosDemon(demon);
+          }
+        });
+      }
+    }
+  }, baseInterval + Math.random() * randomVariation);
+}
+
+// Show chaos demon with random behavior
+function showChaosDemon(demonElement = null) {
+  const demon = demonElement || chaosDemon;
+  if (!demon || currentTheme !== 'chaos') return;
+  
+  // Set random emoji and position
+  demon.textContent = getRandomChaosDemonEmoji();
+  setRandomDemonPosition(demon);
+  
+  // Show demon with appearing animation
+  demon.style.display = 'block';
+  demon.classList.add('appearing');
+  
+  // Random behavior after appearing
+  setTimeout(() => {
+    demon.classList.remove('appearing');
+    
+    // Random chance for special behaviors
+    const behavior = Math.random();
+    if (behavior < 0.3) {
+      triggerDemonWink(demon);
+    } else if (behavior < 0.6) {
+      triggerDemonGesture(demon);
+    }
+  }, 1000);
+  
+  // Hide demon after random duration
+  const visibleDuration = chaosBoostMode ? 2000 + Math.random() * 2000 : 3000 + Math.random() * 4000;
+  setTimeout(() => {
+    hideChaosDemon(demon);
+  }, visibleDuration);
+}
+
+// Hide chaos demon
+function hideChaosDemon(demonElement = null) {
+  const demon = demonElement || chaosDemon;
+  if (!demon) return;
+  
+  demon.classList.add('disappearing');
+  
+  setTimeout(() => {
+    demon.style.display = 'none';
+    demon.classList.remove('disappearing', 'winking', 'middle-finger');
+  }, 1000);
+}
+
+// Set random position for chaos demon
+function setRandomDemonPosition(demon) {
+  const position = chaosDemonPositions[Math.floor(Math.random() * chaosDemonPositions.length)];
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  
+  let left, top;
+  
+  switch (position) {
+    case 'top-left':
+      left = Math.random() * 100;
+      top = Math.random() * 100;
+      break;
+    case 'top-right':
+      left = windowWidth - 100 - Math.random() * 100;
+      top = Math.random() * 100;
+      break;
+    case 'bottom-left':
+      left = Math.random() * 100;
+      top = windowHeight - 100 - Math.random() * 100;
+      break;
+    case 'bottom-right':
+      left = windowWidth - 100 - Math.random() * 100;
+      top = windowHeight - 100 - Math.random() * 100;
+      break;
+    case 'center':
+      left = windowWidth / 2 + (Math.random() - 0.5) * 200;
+      top = windowHeight / 2 + (Math.random() - 0.5) * 200;
+      break;
+    case 'edge-left':
+      left = -40 + Math.random() * 40;
+      top = Math.random() * windowHeight;
+      break;
+    case 'edge-right':
+      left = windowWidth - Math.random() * 40;
+      top = Math.random() * windowHeight;
+      break;
+    case 'edge-top':
+      left = Math.random() * windowWidth;
+      top = -40 + Math.random() * 40;
+      break;
+  }
+  
+  demon.style.left = Math.max(0, Math.min(windowWidth - 80, left)) + 'px';
+  demon.style.top = Math.max(0, Math.min(windowHeight - 80, top)) + 'px';
+}
+
+// Trigger demon wink animation
+function triggerDemonWink(demon) {
+  demon.classList.add('winking');
+  setTimeout(() => {
+    demon.classList.remove('winking');
+  }, 500);
+}
+
+// Trigger demon gesture animation
+function triggerDemonGesture(demon) {
+  const originalEmoji = demon.textContent;
+  demon.textContent = '🖕'; // Middle finger emoji
+  demon.classList.add('middle-finger');
+  
+  setTimeout(() => {
+    demon.textContent = originalEmoji;
+    demon.classList.remove('middle-finger');
+  }, 2000);
+}
+
+// Get random chaos demon emoji
+function getRandomChaosDemonEmoji() {
+  return chaosDemonEmojis[Math.floor(Math.random() * chaosDemonEmojis.length)];
+}
+
+// Setup chaos message interactions
+function setupChaosMessageInteractions() {
+  // Remove existing listeners
+  if (window.chaosMessageListener) {
+    document.removeEventListener('click', window.chaosMessageListener);
+  }
+  
+  window.chaosMessageListener = function(event) {
+    if (currentTheme !== 'chaos') return;
+    
+    const message = event.target.closest('.msg-bubble');
+    if (!message) return;
+    
+    // Apply random hover effects
+    applyChaosHoverEffect(message, event);
+  };
+  
+  document.addEventListener('click', window.chaosMessageListener);
+  
+  // Setup hover effects
+  if (window.chaosHoverListener) {
+    document.removeEventListener('mouseover', window.chaosHoverListener);
+  }
+  
+  window.chaosHoverListener = function(event) {
+    if (currentTheme !== 'chaos') return;
+    
+    const message = event.target.closest('.msg-bubble');
+    if (!message) return;
+    
+    // Apply subtle hover effects
+    applySubtleChaosHover(message);
+  };
+  
+  document.addEventListener('mouseover', window.chaosHoverListener);
+}
+
+// Apply chaos hover effect to message
+function applyChaosHoverEffect(message, event) {
+  const effects = ['tick', 'shake', 'glitch', 'flash'];
+  const effect = effects[Math.floor(Math.random() * effects.length)];
+  
+  switch (effect) {
+    case 'tick':
+      playChaosTickSound();
+      message.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        message.style.transform = '';
+      }, 200);
+      break;
+      
+    case 'shake':
+      message.style.animation = 'chaos-bubble-hover 0.3s ease infinite';
+      setTimeout(() => {
+        message.style.animation = '';
+      }, 900);
+      break;
+      
+    case 'glitch':
+      message.style.animation = 'chaos-bubble-glitch 0.2s infinite';
+      message.style.filter = 'hue-rotate(180deg)';
+      setTimeout(() => {
+        message.style.animation = '';
+        message.style.filter = '';
+      }, 600);
+      break;
+      
+    case 'flash':
+      message.style.background = `linear-gradient(45deg, 
+        ${getRandomChaosColor()}, 
+        ${getRandomChaosColor()})`;
+      setTimeout(() => {
+        message.style.background = '';
+      }, 300);
+      break;
+  }
+}
+
+// Apply subtle chaos hover effect
+function applySubtleChaosHover(message) {
+  if (Math.random() < 0.3) { // 30% chance
+    message.style.transform = 'translateY(-1px)';
+    message.style.boxShadow = '0 0 15px var(--chaos-glow)';
+    
+    setTimeout(() => {
+      message.style.transform = '';
+      message.style.boxShadow = '';
+    }, 500);
+  }
+}
+
+// Get random chaos color
+function getRandomChaosColor() {
+  const colors = [
+    'var(--chaos-primary)',
+    'var(--chaos-secondary)', 
+    'var(--chaos-accent)',
+    'var(--chaos-yellow)',
+    'var(--chaos-cyan)',
+    'var(--chaos-orange)'
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Play chaos sound effect for message send
+function playChaosMessageSound() {
+  if (!soundEnabled) return;
+  
+  const sound = chaosSounds[Math.floor(Math.random() * chaosSounds.length)];
+  
+  // Try to play audio file first, fallback to generated sound
+  try {
+    const audio = new Audio(`/sounds/${sound.file}`);
+    audio.volume = 0.3;
+    audio.play().catch(error => {
+      console.log('Could not play chaos sound file, using generated sound');
+      createChaosSound(sound);
+    });
+  } catch (error) {
+    createChaosSound(sound);
+  }
+}
+
+// Play chaos tick sound
+function playChaosTickSound() {
+  if (!soundEnabled) return;
+  
+  createSound(800, 0.1, 'square');
+}
+
+// Create chaos sound using Web Audio API
+function createChaosSound(soundConfig) {
+  if (!soundEnabled) return;
+  
+  try {
+    const { frequency, duration, type } = soundConfig;
+    
+    for (let i = 0; i < frequency.length; i++) {
+      setTimeout(() => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(frequency[i], audioContext.currentTime);
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration / frequency.length);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration / frequency.length);
+      }, (duration / frequency.length) * i * 1000);
+    }
+  } catch (error) {
+    console.log('Chaos sound not available:', error);
+  }
+}
+
+// Apply random chaos styling to chat bubble
+function applyChaosStyleToMessage(messageElement) {
+  if (currentTheme !== 'chaos') return;
+  
+  // Random font
+  const fontClass = `chaos-font-${Math.floor(Math.random() * 5) + 1}`;
+  messageElement.classList.add(fontClass);
+  
+  // Random shape (less frequent)
+  if (Math.random() < 0.3) {
+    const shapeClass = `chaos-shape-${Math.floor(Math.random() * 5) + 1}`;
+    messageElement.classList.add(shapeClass);
+  }
+  
+  // Random color (for own messages)
+  if (messageElement.classList.contains('msg-right')) {
+    const colorClass = `chaos-color-${Math.floor(Math.random() * 5) + 1}`;
+    messageElement.classList.add(colorClass);
+  }
+  
+  // Random entrance animation
+  const entranceAnimations = [
+    'animate__bounceIn',
+    'animate__rotateIn', 
+    'animate__zoomIn',
+    'animate__flipInX',
+    'animate__slideInUp'
+  ];
+  
+  if (Math.random() < 0.5) {
+    const animation = entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
+    messageElement.style.animation = 'chaos-bubble-entry 0.8s ease-out';
+  }
+}
+
+// Remove chaos effects when theme changes
+function removeChaosEffects() {
+  // Clear intervals
+  if (chaosDemonInterval) {
+    clearInterval(chaosDemonInterval);
+    chaosDemonInterval = null;
+  }
+  
+  // Remove chaos elements
+  if (chaosDemon) {
+    chaosDemon.remove();
+    chaosDemon = null;
+  }
+  
+  if (chaosGlitchOverlay) {
+    chaosGlitchOverlay.remove();
+    chaosGlitchOverlay = null;
+  }
+  
+  if (chaosBoostButton) {
+    chaosBoostButton.remove();
+    chaosBoostButton = null;
+  }
+  
+  // Remove extra demons
+  const extraDemons = document.querySelectorAll('.chaos-demon-extra');
+  extraDemons.forEach(demon => demon.remove());
+  
+  // Remove event listeners
+  if (window.chaosMessageListener) {
+    document.removeEventListener('click', window.chaosMessageListener);
+    window.chaosMessageListener = null;
+  }
+  
+  if (window.chaosHoverListener) {
+    document.removeEventListener('mouseover', window.chaosHoverListener);
+    window.chaosHoverListener = null;
+  }
+  
+  // Remove boost mode
+  document.body.classList.remove('boost-chaos');
+}
+
+// ===== END CHAOS THEME FUNCTIONALITY =====
 
 // Chaos theme color variations
 function randomizeChaosTheme() {
@@ -2676,10 +3275,17 @@ function addMsg(text, side, time) {
   document.getElementById('messages').appendChild(el);
   document.getElementById('messages').scrollTop = 99999;
   
+  // Apply chaos styling if chaos theme is active
+  if (currentTheme === 'chaos') {
+    applyChaosStyleToMessage(el);
+  }
+  
   // Trigger Hello Kitty reaction for incoming messages (left side)
   if (side === 'left' && currentTheme === 'hellokitty') {
     triggerKittyMessageReaction();
   }
+  
+  return el; // Return the element for further manipulation
 }
 
 // Odeslání zprávy
@@ -2687,12 +3293,21 @@ function sendMsg() {
   const inp = document.getElementById('chatInput');
   const text = inp.value.trim();
   if (!text) return;
-  addMsg(text, mySide);
+  const messageElement = addMsg(text, mySide);
   socket.emit('msg', text);
   inp.value = '';
   
-  // Play message send sound
-  playMessageSend();
+  // Play theme-specific sound
+  if (currentTheme === 'chaos') {
+    playChaosMessageSound();
+  } else {
+    playMessageSend();
+  }
+  
+  // Apply chaos styling if chaos theme is active
+  if (currentTheme === 'chaos' && messageElement) {
+    applyChaosStyleToMessage(messageElement);
+  }
 }
 
 // START BTN
