@@ -927,21 +927,18 @@ function applyMainTheme(themeName) {
     createHelloKittyEffects();
   } else if (themeName === 'chill') {
     createChillEffects();
- copilot/fix-89f43fc7-b6f0-4bf2-b35b-4505df91a81f
   } else if (themeName === 'phantom') {
     // Activate Phantom theme via the PhantomTheme class
     if (window.phantomTheme) {
       window.phantomTheme.activate();
     }
+  } else if (themeName === 'chaos') {
+    createChaosEffects();
   } else {
     // Deactivate Phantom theme if switching away from it
     if (window.phantomTheme && window.phantomTheme.isActive) {
       window.phantomTheme.deactivate();
     }
-
-  } else if (themeName === 'chaos') {
-    createChaosEffects();
-main
   }
   
   // Apply color variations for themes that support them
@@ -3393,6 +3390,9 @@ function createThemeItem(themeKey, theme, canUse) {
     };
   } else {
     item.title = currentLanguage === 'cs' ? 'Odemkni všechny motivy' : 'Unlock all themes';
+    item.onclick = () => {
+      selectTheme(themeKey); // This will show the premium notification
+    };
   }
   
   return item;
