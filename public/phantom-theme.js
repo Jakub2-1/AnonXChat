@@ -36,14 +36,7 @@ class PhantomTheme {
     this.stopSilhouetteAnimation = this.stopSilhouetteAnimation.bind(this);
     this.playJumpscareSound = this.playJumpscareSound.bind(this);
     this.checkPremiumAccess = this.checkPremiumAccess.bind(this);
-    this.toggleBoost = this.toggleBoost.bind(this);
-    this.showDissolvingText = this.showDissolvingText.bind(this);
     this.createFogOverlay = this.createFogOverlay.bind(this);
-    this.createBoostControls = this.createBoostControls.bind(this);
-    this.createGhostCharacter = this.createGhostCharacter.bind(this);
-    this.startGhostAnimation = this.startGhostAnimation.bind(this);
-    this.stopGhostAnimation = this.stopGhostAnimation.bind(this);
-    this.cleanupGhostElements = this.cleanupGhostElements.bind(this);
     this.startBenchShadowAnimation = this.startBenchShadowAnimation.bind(this);
     this.stopBenchShadowAnimation = this.stopBenchShadowAnimation.bind(this);
     this.createBenchShadow = this.createBenchShadow.bind(this);
