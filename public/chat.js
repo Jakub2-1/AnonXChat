@@ -281,7 +281,7 @@ const themeDefinitions = {
     icon: '🌸',
     className: 'theme-chill',
     category: 'premium',
-    description: 'Relaxing gradient with floating elements and ambient sounds'
+    description: 'Relaxing gradient with floating elements'
   },
   chaos: {
     name: 'Chaos',
@@ -1635,25 +1635,16 @@ function removeHelloKittyEffects() {
 let chillAssistant = null;
 let chillFloatingElements = null;
 let chillAnimationIntervals = [];
-let chillAudioContext = null;
-let chillBackgroundSound = null;
-let chillSoundButton = null;
-let currentChillSound = parseInt(localStorage.getItem('chill_sound_selection') || '0');
+
 
 // Enhanced relaxing sound files with icons for individual selection
-const chillSounds = [
-  { name: 'Ocean Waves', file: 'oceanWave1.mp3', icon: '🌊' },
-  { name: 'Forest Birds', file: 'forestBirds.mp3', icon: '🌿' },
-  { name: 'Alternative Ocean', file: 'oceanWave2.mp3', icon: '🎧' }
-];
+
 
 // Create chill theme effects
 function createChillEffects() {
   initializeChillAssistant();
   initializeFloatingElements();
   setupChillInteractions();
-  createChillSoundButton();
-  createChillSoundSystem();
 }
 
 // Initialize the chill assistant (zen stone, teapot, or cloud)
@@ -1881,265 +1872,20 @@ function showAssistantSpeech() {
   }, 3000);
 }
 
-// Create chill ambient sound button
-function createChillSoundButton() {
-  if (chillSoundButton) {
-    chillSoundButton.remove();
-    chillSoundButton = null;
-  }
-
-  chillSoundButton = document.createElement('div');
-  chillSoundButton.className = 'chill-ambient-sound-container';
-  chillSoundButton.innerHTML = `
-    <div class="ambient-sound-button" id="ambientSoundButton">
-      <div class="sound-button-icon">🔊</div>
-      <div class="sound-button-label">sounds</div>
-    </div>
-    <div class="ambient-sound-player" id="ambientSoundPlayer" style="display: none;">
-      <div class="player-controls">
-        <button class="player-btn play-pause-btn" id="playPauseBtn" title="Play/Pause">⏸️</button>
-        <button class="player-btn volume-btn" id="volumeBtn" title="Volume">🔊</button>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30">
-      </div>
-      <div class="sound-selection">
-        ${chillSounds.map((sound, index) => `
-          <button class="sound-icon-btn ${index === currentChillSound ? 'active' : ''}" 
-                  data-sound-index="${index}" 
-                  title="${sound.name}">
-            ${sound.icon}
-          </button>
-        `).join('')}
-      </div>
-    </div>
-  `;
-
-  // Add event listeners
-  const ambientButton = chillSoundButton.querySelector('#ambientSoundButton');
-  const player = chillSoundButton.querySelector('#ambientSoundPlayer');
-  const playPauseBtn = chillSoundButton.querySelector('#playPauseBtn');
-  const volumeBtn = chillSoundButton.querySelector('#volumeBtn');
-  const volumeSlider = chillSoundButton.querySelector('#volumeSlider');
-  const soundIconButtons = chillSoundButton.querySelectorAll('.sound-icon-btn');
-
-  // Main button click - toggle player visibility with scale animation
-  ambientButton.addEventListener('click', () => {
-    const isPlayerVisible = player.style.display !== 'none';
-    
-    // Add scale animation
-    ambientButton.classList.add('scaling');
-    setTimeout(() => {
-      ambientButton.classList.remove('scaling');
-    }, 300);
-    
-    if (isPlayerVisible) {
-      // Hide player
-      player.style.display = 'none';
-    } else {
-      // Show player
-      player.style.display = 'block';
-    }
-  });
-
-  // Play/Pause button
-  playPauseBtn.addEventListener('click', () => {
-    if (chillBackgroundSound) {
-      // Stop playing
-      stopChillBackgroundSound();
-      playPauseBtn.textContent = '▶️';
-      playPauseBtn.title = 'Play';
-    } else {
-      // Start playing
-      playCurrentChillSound();
-      playPauseBtn.textContent = '⏸️';
-      playPauseBtn.title = 'Pause';
-    }
-  });
-
-  // Volume controls
-  volumeSlider.addEventListener('input', (e) => {
-    const volume = e.target.value / 100;
-    if (chillBackgroundSound && chillBackgroundSound.audio) {
-      chillBackgroundSound.audio.volume = volume;
-    }
-  });
-
-  // Sound icon button clicks
-  soundIconButtons.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      // Update current sound selection
-      currentChillSound = index;
-      
-      // Update active button styling
-      soundIconButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      
-      // Save preference and play the selected sound
-      saveChillSoundPreferences();
-      playCurrentChillSound();
-      
-      // Update play/pause button to show pause (since we're now playing)
-      playPauseBtn.textContent = '⏸️';
-      playPauseBtn.title = 'Pause';
-    });
-  });
-
-  document.body.appendChild(chillSoundButton);
-}
-
-// Update sound display for icon buttons
-function updateChillSoundDisplay() {
-  const soundIconButtons = document.querySelectorAll('.sound-icon-btn');
-  if (soundIconButtons.length > 0) {
-    // Update active state for all buttons
-    soundIconButtons.forEach((btn, index) => {
-      if (index === currentChillSound) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
-  }
-}
-
-// Save sound preferences to localStorage
-function saveChillSoundPreferences() {
-  localStorage.setItem('chill_sound_selection', currentChillSound.toString());
-}
-
-// Play current selected chill sound
-function playCurrentChillSound() {
-  stopChillBackgroundSound();
-  
-  // Initialize audio context if needed
-  if (!chillAudioContext) {
-    try {
-      chillAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (error) {
-      console.log('Web Audio API not available:', error);
-    }
-  }
-  
-  try {
-    const audio = new Audio(`/sounds/${chillSounds[currentChillSound].file}`);
-    audio.loop = true;
-    
-    // Get volume from slider if available
-    const volumeSlider = document.getElementById('volumeSlider');
-    const volume = volumeSlider ? volumeSlider.value / 100 : 0.3;
-    audio.volume = volume;
-    
-    audio.play().catch(error => {
-      console.log('Could not play chill sound:', error);
-      // Fallback to Web Audio API generated sound
-      createChillBackgroundSound();
-    });
-    
-    // Store reference for stopping later
-    chillBackgroundSound = { audio };
-    
-    // Update play/pause button
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    if (playPauseBtn) {
-      playPauseBtn.textContent = '⏸️';
-      playPauseBtn.title = 'Pause';
-    }
-  } catch (error) {
-    console.log('Audio file not available, using generated sound');
-    createChillBackgroundSound();
-  }
-}
-
-// Sound system using Web Audio API
-function createChillSoundSystem() {
-  // Initialize audio context
-  if (!chillAudioContext) {
-    try {
-      chillAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (error) {
-      console.log('Web Audio API not available:', error);
-    }
-  }
-  
-  // Auto-play functionality: play the last selected sound on page load
-  // Default to oceanWave1.mp3 (index 0) if none saved
-  setTimeout(() => {
-    // Give time for UI to be created first
-    if (chillSoundButton) {
-      playCurrentChillSound();
-      
-      // Update play/pause button to show pause state
-      const playPauseBtn = document.getElementById('playPauseBtn');
-      if (playPauseBtn) {
-        playPauseBtn.textContent = '⏸️';
-        playPauseBtn.title = 'Pause';
-      }
-      
-      // Update button active states
-      updateChillSoundDisplay();
-    }
-  }, 1000); // 1 second delay to ensure everything is loaded
-}
-
-function createChillBackgroundSound() {
-  if (!chillAudioContext) return;
-  
-  // Create gentle lo-fi loop using oscillators
-  const gainNode = chillAudioContext.createGain();
-  gainNode.gain.setValueAtTime(0.1, chillAudioContext.currentTime);
-  gainNode.connect(chillAudioContext.destination);
-  
-  // Create multiple oscillators for ambient sound
-  const osc1 = chillAudioContext.createOscillator();
-  const osc2 = chillAudioContext.createOscillator();
-  
-  osc1.type = 'sine';
-  osc2.type = 'triangle';
-  
-  osc1.frequency.setValueAtTime(220, chillAudioContext.currentTime);
-  osc2.frequency.setValueAtTime(330, chillAudioContext.currentTime);
-  
-  // Add filter for lo-fi effect
-  const filter = chillAudioContext.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(800, chillAudioContext.currentTime);
-  
-  osc1.connect(filter);
-  osc2.connect(filter);
-  filter.connect(gainNode);
-  
-  // Start oscillators
-  osc1.start();
-  osc2.start();
-  
-  chillBackgroundSound = { osc1, osc2, gainNode };
-}
 
 
-function stopChillBackgroundSound() {
-  if (chillBackgroundSound) {
-    try {
-      if (chillBackgroundSound.audio) {
-        // Stop HTML5 audio
-        chillBackgroundSound.audio.pause();
-        chillBackgroundSound.audio.currentTime = 0;
-      } else if (chillBackgroundSound.osc1 && chillBackgroundSound.osc2) {
-        // Stop Web Audio API oscillators
-        chillBackgroundSound.osc1.stop();
-        chillBackgroundSound.osc2.stop();
-      }
-    } catch (error) {
-      // Oscillators or audio might already be stopped
-    }
-    chillBackgroundSound = null;
-    
-    // Update play/pause button
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    if (playPauseBtn) {
-      playPauseBtn.textContent = '▶️';
-      playPauseBtn.title = 'Play';
-    }
-  }
-}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Remove chill effects when theme changes
 function removeChillEffects() {
@@ -2150,21 +1896,6 @@ function removeChillEffects() {
   // Remove floating elements
   if (chillFloatingElements) {
     chillFloatingElements.innerHTML = '';
-  }
-  
-  // Remove sound button
-  if (chillSoundButton) {
-    chillSoundButton.remove();
-    chillSoundButton = null;
-  }
-  
-  // Stop background sound
-  stopChillBackgroundSound();
-  
-  // Close audio context
-  if (chillAudioContext) {
-    chillAudioContext.close();
-    chillAudioContext = null;
   }
   
   // Remove event listeners
