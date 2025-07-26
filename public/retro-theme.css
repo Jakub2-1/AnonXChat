@@ -193,6 +193,11 @@ body:not(.theme-retroneon) .retro-neon-logo {
   display: none !important;
 }
 
+/* Hide classic title when retro neon theme is active - only show neon logo */
+body.theme-retroneon .glow {
+  display: none !important;
+}
+
 /* Subtle neon grid effect behind logo (optional enhancement) */
 .retro-neon-logo::after {
   content: '';
