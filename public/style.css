@@ -253,9 +253,18 @@ body.theme-retroneon::after {
 }
 
 body.theme-digitalvoid {
-  background: var(--theme-bg-primary);
+  background: #000000 !important; /* Force absolute black background */
   color: var(--theme-text-primary);
   font-family: var(--theme-font-family);
+}
+
+/* Digital Void theme - Remove aurora background animations */
+body.theme-digitalvoid::before {
+  display: none !important;
+}
+
+body.theme-digitalvoid::after {
+  display: none !important;
 }
 
 /* Aurora animated background - Default */
