@@ -3659,28 +3659,74 @@ function populateThemeSelector() {
   freeGrid.innerHTML = '';
   premiumGrid.innerHTML = '';
   
-  // Populate free themes
+  // Separate themes by category and unlock status
+  const freeThemes = [];
+  const unlockedPremiumThemes = [];
+  const lockedPremiumThemes = [];
+  
   Object.entries(themeDefinitions).forEach(([key, theme]) => {
     if (theme.category === 'free') {
+      freeThemes.push({ key, theme });
+    } else if (theme.category === 'premium') {
+      if (isThemeUnlocked(key)) {
+        unlockedPremiumThemes.push({ key, theme });
+      } else {
+        lockedPremiumThemes.push({ key, theme });
+      }
+    }
+  });
+  
+  // Populate free themes with status indicator
+  freeThemes.forEach(({ key, theme }) => {
+    const themeItem = createThemeItem(key, theme, true);
+    freeGrid.appendChild(themeItem);
+  });
+  
+  // Add unlocked premium themes to the free grid if any exist
+  if (unlockedPremiumThemes.length > 0) {
+    // Add a separator if we have both free and unlocked premium themes
+    if (freeThemes.length > 0) {
+      const separator = document.createElement('div');
+      separator.className = 'theme-separator';
+      separator.innerHTML = `
+        <div class="separator-line"></div>
+        <div class="separator-text">
+          <span class="status-indicator unlocked-indicator">🔓</span>
+          ${currentLanguage === 'cs' ? 'Odemčené' : 'Unlocked'}
+        </div>
+        <div class="separator-line"></div>
+      `;
+      freeGrid.appendChild(separator);
+    }
+    
+    unlockedPremiumThemes.forEach(({ key, theme }) => {
       const themeItem = createThemeItem(key, theme, true);
       freeGrid.appendChild(themeItem);
-    }
+    });
+  }
+  
+  // Populate locked premium themes only
+  lockedPremiumThemes.forEach(({ key, theme }) => {
+    const themeItem = createThemeItem(key, theme, false);
+    premiumGrid.appendChild(themeItem);
   });
   
-  // Populate premium themes
-  Object.entries(themeDefinitions).forEach(([key, theme]) => {
-    if (theme.category === 'premium') {
-      const themeItem = createThemeItem(key, theme, isThemeUnlocked(key));
-      premiumGrid.appendChild(themeItem);
-    }
-  });
+  // Hide the premium hint since we now have individual purchase options
+  if (premiumHint) {
+    premiumHint.style.display = 'none';
+  }
   
-  // Show/hide premium hint - keep it since some users might want to unlock all at once
-  // But update text to be more generic about premium features
-  premiumHint.style.display = hasPremiumAccess ? 'none' : 'flex';
-  const unlockText = document.getElementById('unlockText');
-  if (unlockText) {
-    unlockText.textContent = currentLanguage === 'cs' ? 'Premium funkce budou dostupné v budoucnosti' : 'Premium features coming soon';
+  // Update premium section title to reflect locked themes only
+  const premiumTitle = document.querySelector('.theme-section:last-child .theme-section-title');
+  if (premiumTitle && lockedPremiumThemes.length > 0) {
+    premiumTitle.innerHTML = `
+      Premium Themes 
+      <span class="premium-badge" id="premiumBadge">💎</span>
+      <span class="locked-count">(${lockedPremiumThemes.length} locked)</span>
+    `;
+  } else if (premiumTitle && lockedPremiumThemes.length === 0) {
+    // Hide the premium section if all themes are unlocked
+    premiumTitle.parentElement.style.display = 'none';
   }
 }
 
@@ -3688,16 +3734,59 @@ function createThemeItem(themeKey, theme, canUse) {
   const item = document.createElement('div');
   item.className = `theme-item ${currentTheme === themeKey ? 'active' : ''} ${!canUse ? 'locked' : ''}`;
   
+  // Determine visual status indicator
+  let statusIndicator = '';
+  let statusClass = '';
+  
+  if (theme.category === 'free') {
+    statusIndicator = '✅';
+    statusClass = 'free-theme';
+  } else if (theme.category === 'premium') {
+    if (canUse) {
+      statusIndicator = '🔓';
+      statusClass = 'unlocked-theme';
+    } else {
+      statusIndicator = '🔒';
+      statusClass = 'locked-theme';
+    }
+  }
+  
+  // Add price information for locked premium themes
+  const themePrices = {
+    'pixelquest': 100,
+    'poltergeist': 150,
+    'hellokitty': 200,
+    'chill': 120,
+    'chaos': 180,
+    'retroneon': 250,
+    'digitalvoid': 300
+  };
+  
+  const price = themePrices[themeKey] || 100;
+  const priceInfo = !canUse && theme.category === 'premium' ? 
+    `<div class="theme-price-info">${price} AnonCoins</div>` : '';
+  
+  // Purchase button for locked premium themes
+  const purchaseButton = !canUse && theme.category === 'premium' ? 
+    `<div class="theme-purchase-button" onclick="event.stopPropagation(); showPremiumThemePurchaseDialog('${themeKey}');">
+      🛒 ${currentLanguage === 'cs' ? 'Koupit' : 'Purchase'}
+    </div>` : '';
+  
   // Determine unlock text based on theme category and unlock status
   let unlockText = '';
   if (!canUse && theme.category === 'premium') {
-    unlockText = currentLanguage === 'cs' ? 'Odemknout tento motiv' : 'Unlock this theme';
+    unlockText = currentLanguage === 'cs' ? 'Klikněte pro nákup' : 'Click to purchase';
   }
   
+  item.classList.add(statusClass);
+  
   item.innerHTML = `
+    <div class="theme-status-indicator">${statusIndicator}</div>
     <span class="theme-icon">${theme.icon}</span>
     <div class="theme-name">${theme.name}</div>
     <div class="theme-description">${theme.description}</div>
+    ${priceInfo}
+    ${purchaseButton}
     ${!canUse ? `<div class="theme-lock-overlay"><span class="theme-lock-icon">🔒</span></div>` : ''}
   `;
   
@@ -3708,7 +3797,7 @@ function createThemeItem(themeKey, theme, canUse) {
   } else {
     item.title = unlockText;
     item.onclick = () => {
-      selectTheme(themeKey); // This will show the premium notification
+      selectTheme(themeKey); // This will show the premium purchase dialog
     };
   }
   
@@ -3738,13 +3827,10 @@ function selectTheme(themeKey) {
       hideThemeSelector();
     }, 500);
   } else {
-    // Show premium message for locked themes with individual unlock text
+    // Enhanced premium theme purchase logic
     const theme = themeDefinitions[themeKey];
     if (theme && theme.category === 'premium' && !isThemeUnlocked(themeKey)) {
-      const unlockMessage = currentLanguage === 'cs' ? 
-        `🔒 ${theme.name} motiv! Tato funkce bude dostupná v budoucí verzi.` : 
-        `🔒 ${theme.name} theme! This feature will be available in future version.`;
-      showNotif(unlockMessage, false);
+      showPremiumThemePurchaseDialog(themeKey);
     }
   }
 }
@@ -3770,6 +3856,63 @@ document.addEventListener('click', function(e) {
     hideThemeSelector();
   }
 });
+
+// Enhanced premium theme purchase dialog
+function showPremiumThemePurchaseDialog(themeKey) {
+  const theme = themeDefinitions[themeKey];
+  if (!theme || theme.category !== 'premium') return;
+
+  const themePrices = {
+    'pixelquest': 100,
+    'poltergeist': 150,
+    'hellokitty': 200,
+    'chill': 120,
+    'chaos': 180,
+    'retroneon': 250,
+    'digitalvoid': 300
+  };
+
+  const price = themePrices[themeKey] || 100;
+  const currency = 'AnonCoins';
+
+  const confirmMessage = currentLanguage === 'cs' ? 
+    `🛒 Chcete koupit motiv "${theme.name}" za ${price} ${currency}?\n\n` +
+    `Toto je demonstrační nákup pro ukázku funkce.\n\n` +
+    `Motiv bude odemčen a můžete jej používat.` :
+    `🛒 Purchase "${theme.name}" theme for ${price} ${currency}?\n\n` +
+    `This is a demo purchase for feature demonstration.\n\n` +
+    `The theme will be unlocked and available for use.`;
+
+  if (confirm(confirmMessage)) {
+    if (unlockPremiumTheme(themeKey)) {
+      const successMessage = currentLanguage === 'cs' ? 
+        `🎉 Motiv "${theme.name}" byl úspěšně odemčen!` : 
+        `🎉 "${theme.name}" theme unlocked successfully!`;
+      
+      showNotif(successMessage, false);
+
+      // Ask if user wants to apply the theme immediately
+      const applyMessage = currentLanguage === 'cs' ? 
+        `Chcete motiv "${theme.name}" aplikovat nyní?` : 
+        `Would you like to apply the "${theme.name}" theme now?`;
+      
+      if (confirm(applyMessage)) {
+        selectTheme(themeKey);
+      } else {
+        // Just refresh the theme selector to show the newly unlocked theme
+        if (document.getElementById('themeSelectorModal').style.display === 'flex') {
+          populateThemeSelector();
+        }
+      }
+    } else {
+      const alreadyUnlockedMessage = currentLanguage === 'cs' ? 
+        `Motiv "${theme.name}" je již odemčen!` : 
+        `"${theme.name}" theme is already unlocked!`;
+      
+      showNotif(alreadyUnlockedMessage, false);
+    }
+  }
+}
 
 // SETTINGS DROPDOWN FUNCTIONALITY
 let settingsDropdownOpen = false;
