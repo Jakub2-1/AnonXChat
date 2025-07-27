@@ -107,7 +107,41 @@
   </div>
   
   <div class="online-count" id="onlineCount" style="display:none;">Online: 0</div>
-  <div class="theme-switcher" id="themeSwitcher" title="Switch Theme" role="button" aria-label="Switch Theme" tabindex="0">
+  
+  <!-- Unified Settings Button -->
+  <div class="settings-button" id="settingsButton" title="Settings" role="button" aria-label="Open Settings Menu" tabindex="0">
+    <span class="settings-icon">⚙️</span>
+  </div>
+  
+  <!-- Settings Dropdown Menu -->
+  <div class="settings-dropdown" id="settingsDropdown" style="display: none;">
+    <div class="settings-dropdown-content">
+      <div class="settings-item" id="settingsTheme" role="button" tabindex="0">
+        <span class="settings-item-icon">🎨</span>
+        <span class="settings-item-text" data-translate="theme">Theme</span>
+        <span class="settings-item-arrow">›</span>
+      </div>
+      <div class="settings-item" id="settingsLanguage" role="button" tabindex="0">
+        <span class="settings-item-icon">🌐</span>
+        <span class="settings-item-text" data-translate="language">Language</span>
+        <span class="settings-item-current" id="currentLanguageDisplay">🇬🇧</span>
+      </div>
+      <div class="settings-item" id="settingsStats" role="button" tabindex="0">
+        <span class="settings-item-icon">📊</span>
+        <span class="settings-item-text" data-translate="statistics">Statistics</span>
+        <span class="settings-item-arrow">›</span>
+      </div>
+      <div class="settings-divider"></div>
+      <div class="settings-item" id="settingsPremium" role="button" tabindex="0">
+        <span class="settings-item-icon">💎</span>
+        <span class="settings-item-text" data-translate="premiumThemes">Premium Themes</span>
+        <span class="settings-item-arrow">›</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Original buttons - hidden but preserved for functionality -->
+  <div class="theme-switcher" id="themeSwitcher" title="Switch Theme" role="button" aria-label="Switch Theme" tabindex="0" style="display: none;">
     <span class="theme-icon" id="themeIcon">👻</span>
   </div>
   
@@ -141,10 +175,10 @@
       </div>
     </div>
   </div>
-  <div class="language-switcher" id="languageSwitcher" title="Změnit jazyk / Change Language" role="button" aria-label="Change Language" tabindex="0">
+  <div class="language-switcher" id="languageSwitcher" title="Změnit jazyk / Change Language" role="button" aria-label="Change Language" tabindex="0" style="display: none;">
     <span class="language-icon" id="languageIcon">🇬🇧</span>
   </div>
-  <div class="stats-button" id="statsButton" title="Moje statistiky" role="button" aria-label="View Statistics" tabindex="0">
+  <div class="stats-button" id="statsButton" title="Moje statistiky" role="button" aria-label="View Statistics" tabindex="0" style="display: none;">
     <span class="stats-icon">📊</span>
   </div>
   <!-- Bug report / feedback button - moved to bottom right -->
