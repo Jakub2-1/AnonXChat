@@ -1,0 +1,182 @@
+[
+  {
+    "theme_id": "pixelquest",
+    "name": "Pixel Quest",
+    "description": "Retro 8-bit Gameboy style adventure with nostalgic gaming vibes",
+    "colors": {
+      "primary": "#9bb559",
+      "secondary": "#8bac0f",
+      "accent": "#306230",
+      "background": "#0f380f",
+      "text": "#9bb559"
+    },
+    "price": 100,
+    "is_premium": true,
+    "icon": "🎮",
+    "className": "theme-pixelquest",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.044Z"
+  },
+  {
+    "theme_id": "poltergeist",
+    "name": "Poltergeist",
+    "description": "Disturbing supernatural energy with haunting dark aesthetics",
+    "colors": {
+      "primary": "#8b0000",
+      "secondary": "#2f0000",
+      "accent": "#ff6b6b",
+      "background": "#000000",
+      "text": "#ffffff"
+    },
+    "price": 150,
+    "is_premium": true,
+    "icon": "👁️‍🗨️",
+    "className": "theme-poltergeist",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.044Z"
+  },
+  {
+    "theme_id": "hellokitty",
+    "name": "Hello Kitty",
+    "description": "Kawaii pink and cute vibes with adorable sparkle effects",
+    "colors": {
+      "primary": "#ff69b4",
+      "secondary": "#ff1493",
+      "accent": "#ffb6c1",
+      "background": "#ffeef0",
+      "text": "#8b008b"
+    },
+    "price": 200,
+    "is_premium": true,
+    "icon": "🎀",
+    "className": "theme-hellokitty",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.044Z"
+  },
+  {
+    "theme_id": "chill",
+    "name": "Chill",
+    "description": "Relaxing gradient with floating elements and serene atmosphere",
+    "colors": {
+      "primary": "#667eea",
+      "secondary": "#764ba2",
+      "accent": "#f093fb",
+      "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "text": "#ffffff"
+    },
+    "price": 120,
+    "is_premium": true,
+    "icon": "🌸",
+    "className": "theme-chill",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.045Z"
+  },
+  {
+    "theme_id": "chaos",
+    "name": "Chaos",
+    "description": "Wild multicolor madness with dynamic rainbow effects",
+    "colors": {
+      "primary": "#ff0080",
+      "secondary": "#8000ff",
+      "accent": "#00ff80",
+      "background": "linear-gradient(45deg, #ff0080, #8000ff, #00ff80, #ff8000)",
+      "text": "#ffffff"
+    },
+    "price": 180,
+    "is_premium": true,
+    "icon": "💥",
+    "className": "theme-chaos",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.045Z"
+  },
+  {
+    "theme_id": "retroneon",
+    "name": "Retro Neon",
+    "description": "80s cyberpunk neon lights with futuristic glow effects",
+    "colors": {
+      "primary": "#00ffff",
+      "secondary": "#ff00ff",
+      "accent": "#ffff00",
+      "background": "#000033",
+      "text": "#00ffff"
+    },
+    "price": 250,
+    "is_premium": true,
+    "icon": "🌈",
+    "className": "theme-retroneon",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.045Z"
+  },
+  {
+    "theme_id": "digitalvoid",
+    "name": "Digital Void",
+    "description": "Matrix-like digital darkness with green terminal aesthetics",
+    "colors": {
+      "primary": "#00ff41",
+      "secondary": "#003300",
+      "accent": "#00cc33",
+      "background": "#000000",
+      "text": "#00ff41"
+    },
+    "price": 300,
+    "is_premium": true,
+    "icon": "🕳️",
+    "className": "theme-digitalvoid",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.046Z"
+  },
+  {
+    "theme_id": "glow",
+    "name": "Glow",
+    "description": "Bright and cheerful light theme with glowing effects",
+    "colors": {
+      "primary": "#2563eb",
+      "secondary": "#dc2626",
+      "accent": "#f59e0b",
+      "background": "linear-gradient(135deg, #fafbff 0%, #f3f4ff 50%, #fef7d4 100%)",
+      "text": "#1e293b"
+    },
+    "price": 0,
+    "is_premium": false,
+    "icon": "🌟",
+    "className": "theme-glow",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.043Z"
+  },
+  {
+    "theme_id": "goth",
+    "name": "Goth",
+    "description": "Dark gothic atmosphere with mysterious elements",
+    "colors": {
+      "primary": "#8b1538",
+      "secondary": "#4c1d95",
+      "accent": "#7c2d12",
+      "background": "#0a0a0a",
+      "text": "#ffffff"
+    },
+    "price": 0,
+    "is_premium": false,
+    "icon": "💀",
+    "className": "theme-goth",
+    "category": "premium",
+    "preview_image": null,
+    "unlock_requirements": null,
+    "created_at": "2025-07-27T13:41:54.043Z"
+  }
+]
