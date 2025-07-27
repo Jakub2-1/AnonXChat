@@ -3676,57 +3676,93 @@ function populateThemeSelector() {
     }
   });
   
-  // Populate free themes with status indicator
+  // Populate free themes only in free grid
   freeThemes.forEach(({ key, theme }) => {
     const themeItem = createThemeItem(key, theme, true);
     freeGrid.appendChild(themeItem);
   });
   
-  // Add unlocked premium themes to the free grid if any exist
+  // Populate premium section with both unlocked and locked themes
+  // First add unlocked premium themes (if any)
   if (unlockedPremiumThemes.length > 0) {
-    // Add a separator if we have both free and unlocked premium themes
-    if (freeThemes.length > 0) {
-      const separator = document.createElement('div');
-      separator.className = 'theme-separator';
-      separator.innerHTML = `
-        <div class="separator-line"></div>
-        <div class="separator-text">
-          <span class="status-indicator unlocked-indicator">🔓</span>
-          ${currentLanguage === 'cs' ? 'Odemčené' : 'Unlocked'}
-        </div>
-        <div class="separator-line"></div>
-      `;
-      freeGrid.appendChild(separator);
-    }
+    // Add "Unlocked Themes" subsection header
+    const unlockedHeader = document.createElement('div');
+    unlockedHeader.className = 'premium-subsection-header';
+    unlockedHeader.innerHTML = `
+      <div class="subsection-title">
+        <span class="subsection-icon">⭐</span>
+        ${currentLanguage === 'cs' ? 'Odemčené motivy' : 'Unlocked Themes'}
+      </div>
+    `;
+    premiumGrid.appendChild(unlockedHeader);
     
+    // Add unlocked premium themes
     unlockedPremiumThemes.forEach(({ key, theme }) => {
       const themeItem = createThemeItem(key, theme, true);
-      freeGrid.appendChild(themeItem);
+      premiumGrid.appendChild(themeItem);
     });
+    
+    // Add separator if we have both unlocked and locked themes
+    if (lockedPremiumThemes.length > 0) {
+      const separator = document.createElement('div');
+      separator.className = 'premium-subsection-separator';
+      premiumGrid.appendChild(separator);
+    }
   }
   
-  // Populate locked premium themes only
-  lockedPremiumThemes.forEach(({ key, theme }) => {
-    const themeItem = createThemeItem(key, theme, false);
-    premiumGrid.appendChild(themeItem);
-  });
+  // Add locked premium themes (if any)
+  if (lockedPremiumThemes.length > 0) {
+    // Add "Locked Themes" subsection header only if we have unlocked themes too
+    if (unlockedPremiumThemes.length > 0) {
+      const lockedHeader = document.createElement('div');
+      lockedHeader.className = 'premium-subsection-header';
+      lockedHeader.innerHTML = `
+        <div class="subsection-title">
+          <span class="subsection-icon">🔒</span>
+          ${currentLanguage === 'cs' ? 'Zamčené motivy' : 'Locked Themes'}
+        </div>
+      `;
+      premiumGrid.appendChild(lockedHeader);
+    }
+    
+    // Add locked premium themes
+    lockedPremiumThemes.forEach(({ key, theme }) => {
+      const themeItem = createThemeItem(key, theme, false);
+      premiumGrid.appendChild(themeItem);
+    });
+  }
   
   // Hide the premium hint since we now have individual purchase options
   if (premiumHint) {
     premiumHint.style.display = 'none';
   }
   
-  // Update premium section title to reflect locked themes only
+  // Update premium section title
   const premiumTitle = document.querySelector('.theme-section:last-child .theme-section-title');
-  if (premiumTitle && lockedPremiumThemes.length > 0) {
-    premiumTitle.innerHTML = `
-      Premium Themes 
-      <span class="premium-badge" id="premiumBadge">💎</span>
-      <span class="locked-count">(${lockedPremiumThemes.length} locked)</span>
-    `;
-  } else if (premiumTitle && lockedPremiumThemes.length === 0) {
-    // Hide the premium section if all themes are unlocked
-    premiumTitle.parentElement.style.display = 'none';
+  if (premiumTitle) {
+    const totalPremiumThemes = unlockedPremiumThemes.length + lockedPremiumThemes.length;
+    if (totalPremiumThemes > 0) {
+      let titleText = 'Premium Themes';
+      let badgeText = '';
+      
+      if (unlockedPremiumThemes.length > 0 && lockedPremiumThemes.length > 0) {
+        badgeText = `(${unlockedPremiumThemes.length} unlocked, ${lockedPremiumThemes.length} locked)`;
+      } else if (lockedPremiumThemes.length > 0) {
+        badgeText = `(${lockedPremiumThemes.length} locked)`;
+      } else if (unlockedPremiumThemes.length > 0) {
+        badgeText = `(${unlockedPremiumThemes.length} unlocked)`;
+      }
+      
+      premiumTitle.innerHTML = `
+        ${titleText}
+        <span class="premium-badge" id="premiumBadge">⭐</span>
+        <span class="theme-count">${badgeText}</span>
+      `;
+      premiumTitle.parentElement.style.display = 'block';
+    } else {
+      // Hide the premium section if no premium themes exist
+      premiumTitle.parentElement.style.display = 'none';
+    }
   }
 }
 
@@ -3734,19 +3770,19 @@ function createThemeItem(themeKey, theme, canUse) {
   const item = document.createElement('div');
   item.className = `theme-item ${currentTheme === themeKey ? 'active' : ''} ${!canUse ? 'locked' : ''}`;
   
-  // Determine visual status indicator
+  // Determine visual status indicator - Updated per requirements
   let statusIndicator = '';
   let statusClass = '';
   
   if (theme.category === 'free') {
-    statusIndicator = '✅';
+    statusIndicator = '🎨'; // Blue palette icon for free themes
     statusClass = 'free-theme';
   } else if (theme.category === 'premium') {
     if (canUse) {
-      statusIndicator = '🔓';
+      statusIndicator = '⭐'; // Yellow star icon for unlocked premium themes
       statusClass = 'unlocked-theme';
     } else {
-      statusIndicator = '🔒';
+      statusIndicator = '⭐'; // Yellow star icon for locked premium themes (with lock overlay)
       statusClass = 'locked-theme';
     }
   }

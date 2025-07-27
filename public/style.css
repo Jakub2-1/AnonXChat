@@ -2177,15 +2177,46 @@ body.theme-glow .glow {
 }
 
 .theme-item.free-theme .theme-status-indicator {
-  background: rgba(34, 197, 94, 0.8);
+  background: rgba(59, 130, 246, 0.8); /* Blue for free themes */
 }
 
 .theme-item.unlocked-theme .theme-status-indicator {
-  background: rgba(59, 130, 246, 0.8);
+  background: rgba(255, 215, 0, 0.8); /* Yellow for unlocked premium themes */
 }
 
 .theme-item.locked-theme .theme-status-indicator {
-  background: rgba(239, 68, 68, 0.8);
+  background: rgba(255, 215, 0, 0.8); /* Yellow for locked premium themes */
+}
+
+/* Premium subsection headers */
+.premium-subsection-header {
+  margin: 20px 0 15px 0;
+}
+
+.premium-subsection-header:first-child {
+  margin-top: 0;
+}
+
+.subsection-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.subsection-icon {
+  font-size: 1.1rem;
+}
+
+/* Premium subsection separator */
+.premium-subsection-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  margin: 20px 0;
 }
 
 .theme-price-info {
