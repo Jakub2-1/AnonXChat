@@ -10,14 +10,14 @@
       "background": "#0f380f",
       "text": "#9bb559"
     },
-    "price": 100,
+    "price": 49,
     "is_premium": true,
     "icon": "🎮",
     "className": "theme-pixelquest",
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.044Z"
+    "created_at": "2025-07-27T18:48:47.408Z"
   },
   {
     "theme_id": "poltergeist",
@@ -30,14 +30,14 @@
       "background": "#000000",
       "text": "#ffffff"
     },
-    "price": 150,
+    "price": 79,
     "is_premium": true,
     "icon": "👁️‍🗨️",
     "className": "theme-poltergeist",
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.044Z"
+    "created_at": "2025-07-27T18:48:47.408Z"
   },
   {
     "theme_id": "hellokitty",
@@ -50,14 +50,14 @@
       "background": "#ffeef0",
       "text": "#8b008b"
     },
-    "price": 200,
+    "price": 99,
     "is_premium": true,
     "icon": "🎀",
     "className": "theme-hellokitty",
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.044Z"
+    "created_at": "2025-07-27T18:48:47.409Z"
   },
   {
     "theme_id": "chill",
@@ -70,14 +70,14 @@
       "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       "text": "#ffffff"
     },
-    "price": 120,
+    "price": 59,
     "is_premium": true,
     "icon": "🌸",
     "className": "theme-chill",
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.045Z"
+    "created_at": "2025-07-27T18:48:47.409Z"
   },
   {
     "theme_id": "chaos",
@@ -90,14 +90,14 @@
       "background": "linear-gradient(45deg, #ff0080, #8000ff, #00ff80, #ff8000)",
       "text": "#ffffff"
     },
-    "price": 180,
+    "price": 89,
     "is_premium": true,
     "icon": "💥",
     "className": "theme-chaos",
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.045Z"
+    "created_at": "2025-07-27T18:48:47.410Z"
   },
   {
     "theme_id": "retroneon",
@@ -110,14 +110,14 @@
       "background": "#000033",
       "text": "#00ffff"
     },
-    "price": 250,
+    "price": 129,
     "is_premium": true,
     "icon": "🌈",
     "className": "theme-retroneon",
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.045Z"
+    "created_at": "2025-07-27T18:48:47.410Z"
   },
   {
     "theme_id": "digitalvoid",
@@ -130,14 +130,14 @@
       "background": "#000000",
       "text": "#00ff41"
     },
-    "price": 300,
+    "price": 149,
     "is_premium": true,
     "icon": "🕳️",
     "className": "theme-digitalvoid",
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.046Z"
+    "created_at": "2025-07-27T18:48:47.410Z"
   },
   {
     "theme_id": "glow",
@@ -157,7 +157,7 @@
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.043Z"
+    "created_at": "2025-07-27T18:48:47.407Z"
   },
   {
     "theme_id": "goth",
@@ -177,6 +177,6 @@
     "category": "premium",
     "preview_image": null,
     "unlock_requirements": null,
-    "created_at": "2025-07-27T13:41:54.043Z"
+    "created_at": "2025-07-27T18:48:47.407Z"
   }
 ]

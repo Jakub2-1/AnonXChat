@@ -29,7 +29,6 @@ let hasPremiumAccess = localStorage.getItem('anonx_premium') === 'true' || devAc
 
 // Individual premium theme unlocks - enhanced system with backend integration
 let premiumThemesUnlocked = JSON.parse(localStorage.getItem('premiumThemesUnlocked') || '[]');
-let userCoins = 0; // Will be loaded from backend
 
 let currentThemeData = null;
 let currentPartnerId = null; // Store current partner ID for favorites
@@ -833,18 +832,12 @@ function canUseTheme(themeName) {
 // Enhanced function to sync with backend
 async function syncUserThemeData() {
   try {
-    const response = await fetch(`/api/themes/status/${anonUserId}`);
+    const response = await fetch(`/api/themes/${anonUserId}`);
     if (response.ok) {
       const data = await response.json();
-      premiumThemesUnlocked = data.purchasedThemes;
-      userCoins = data.userCoins;
-      localStorage.setItem('premiumThemesUnlocked', JSON.stringify(premiumThemesUnlocked));
-      
-      // Update coins display if exists
-      const coinsDisplay = document.getElementById('userCoins');
-      if (coinsDisplay) {
-        coinsDisplay.textContent = userCoins;
-      }
+      // Store themes data for unified display
+      window.userThemesData = data.themes;
+      localStorage.setItem('userThemesData', JSON.stringify(data.themes));
       
       return data;
     }
@@ -855,11 +848,22 @@ async function syncUserThemeData() {
 }
 
 // Enhanced function to unlock a specific premium theme via backend
-async function unlockPremiumTheme(themeName) {
-  const theme = themeDefinitions[themeName];
-  if (!theme || theme.category !== 'premium') return false;
-  
+// Show theme purchase dialog with CZK price
+function showThemePurchaseDialog(theme) {
+  const message = currentLanguage === 'cs' 
+    ? `Koupit motiv "${theme.name}"?\n\nCena: ${theme.priceCZK} CZK\n\nPo kliknutí na OK budete přesměrováni na platební stránku.`
+    : `Purchase "${theme.name}" theme?\n\nPrice: ${theme.priceCZK} CZK\n\nYou will be redirected to payment page after clicking OK.`;
+    
+  if (confirm(message)) {
+    purchaseThemeWithStripe(theme);
+  }
+}
+
+// Purchase theme with Stripe integration
+async function purchaseThemeWithStripe(theme) {
   try {
+    // TODO: Integrate with Stripe
+    // For now, simulate successful purchase
     const response = await fetch('/api/themes/purchase', {
       method: 'POST',
       headers: {
@@ -867,39 +871,47 @@ async function unlockPremiumTheme(themeName) {
       },
       body: JSON.stringify({
         userId: anonUserId,
-        themeId: themeName
+        themeId: theme.theme_id
       })
     });
     
     const result = await response.json();
     
     if (response.ok && result.success) {
-      // Update local state
-      if (!premiumThemesUnlocked.includes(themeName)) {
-        premiumThemesUnlocked.push(themeName);
-        localStorage.setItem('premiumThemesUnlocked', JSON.stringify(premiumThemesUnlocked));
-      }
-      
-      userCoins = result.remainingCoins;
-      
       // Show success notification
-      showNotif(`🎉 ${theme.name} theme unlocked! (${result.coinsSpent} coins spent)`, false);
+      showNotif(`🎉 ${theme.name} motiv úspěšně zakoupen!`, false);
       
-      // Update UI
+      // Update local data
       await syncUserThemeData();
-      updateThemeSelector();
+      populateThemeSelector();
+      
+      // Apply the newly purchased theme
+      applyMainTheme(theme.theme_id);
+      currentTheme = theme.theme_id;
+      localStorage.setItem('selectedTheme', currentTheme);
       
       return true;
     } else {
-      // Show error message
-      showNotif(`❌ ${result.error || 'Failed to purchase theme'}`, false);
+      showNotif(`❌ ${result.error || 'Nákup se nezdařil'}`, false);
       return false;
     }
   } catch (error) {
     console.error('Error purchasing theme:', error);
-    showNotif('❌ Error purchasing theme. Please try again.', false);
+    showNotif('❌ Chyba při nákupu motivu. Zkuste to znovu.', false);
     return false;
   }
+}
+
+// Legacy function - kept for compatibility
+async function unlockPremiumTheme(themeName) {
+  const themesData = window.userThemesData || [];
+  const theme = themesData.find(t => t.theme_id === themeName);
+  
+  if (theme) {
+    return await purchaseThemeWithStripe(theme);
+  }
+  
+  return false;
 }
 
 // Function to check if a specific premium theme is unlocked
@@ -3716,126 +3728,82 @@ function hideThemeSelector() {
 }
 
 function populateThemeSelector() {
-  const freeGrid = document.getElementById('freeThemesGrid');
-  const premiumGrid = document.getElementById('premiumThemesGrid');
-  const premiumHint = document.getElementById('premiumHint');
+  const themesGrid = document.getElementById('themesGrid');
+  
+  if (!themesGrid) return;
   
   // Clear existing items
-  freeGrid.innerHTML = '';
-  premiumGrid.innerHTML = '';
+  themesGrid.innerHTML = '';
   
-  // Separate themes by category and unlock status
-  const freeThemes = [];
-  const unlockedPremiumThemes = [];
-  const lockedPremiumThemes = [];
+  // Use themes data from backend if available
+  const themesData = window.userThemesData || JSON.parse(localStorage.getItem('userThemesData') || '[]');
   
+  if (themesData.length === 0) {
+    // Fallback to predefined themes if no backend data
+    populateThemeSelectorFallback();
+    return;
+  }
+  
+  // Create theme items for all themes (unified)
+  themesData.forEach(theme => {
+    const themeItem = createUnifiedThemeItem(theme);
+    themesGrid.appendChild(themeItem);
+  });
+}
+
+// Create unified theme item with lock icon and CZK price for premium themes
+function createUnifiedThemeItem(theme) {
+  const themeItem = document.createElement('div');
+  themeItem.className = `theme-item ${theme.owned ? 'theme-unlocked' : 'theme-locked'}`;
+  
+  const isPremium = theme.is_premium;
+  const isOwned = theme.owned;
+  
+  themeItem.innerHTML = `
+    <div class="theme-preview" style="background: ${theme.colors?.background || '#f0f0f0'}">
+      <span class="theme-icon">${theme.icon || '🎨'}</span>
+      ${isPremium && !isOwned ? '<div class="theme-lock-overlay"><span class="lock-icon">🔒</span></div>' : ''}
+    </div>
+    <div class="theme-info">
+      <div class="theme-name">${theme.name}</div>
+      ${isPremium && !isOwned ? `<div class="theme-price">${theme.priceCZK} CZK</div>` : ''}
+      ${isPremium && !isOwned ? '<button class="theme-buy-btn">Koupit</button>' : ''}
+    </div>
+  `;
+  
+  // Add click handler
+  themeItem.addEventListener('click', () => {
+    if (isOwned) {
+      // Apply theme immediately
+      applyMainTheme(theme.theme_id);
+      currentTheme = theme.theme_id;
+      localStorage.setItem('selectedTheme', currentTheme);
+      hideThemeSelector();
+    } else if (isPremium) {
+      // Show purchase dialog
+      showThemePurchaseDialog(theme);
+    }
+  });
+  
+  return themeItem;
+}
+
+// Fallback function for when backend data is not available
+function populateThemeSelectorFallback() {
+  const themesGrid = document.getElementById('themesGrid');
+  
+  // Create basic theme items from predefined themes
   Object.entries(themeDefinitions).forEach(([key, theme]) => {
-    if (theme.category === 'free') {
-      freeThemes.push({ key, theme });
-    } else if (theme.category === 'premium') {
-      if (isThemeUnlocked(key)) {
-        unlockedPremiumThemes.push({ key, theme });
-      } else {
-        lockedPremiumThemes.push({ key, theme });
-      }
-    }
+    const themeItem = createThemeItem(key, theme, theme.category === 'free' || isThemeUnlocked(key));
+    themesGrid.appendChild(themeItem);
   });
-  
-  // Populate free themes only in free grid
-  freeThemes.forEach(({ key, theme }) => {
-    const themeItem = createThemeItem(key, theme, true);
-    freeGrid.appendChild(themeItem);
-  });
-  
-  // Populate premium section with both unlocked and locked themes
-  // First add unlocked premium themes (if any)
-  if (unlockedPremiumThemes.length > 0) {
-    // Add "Unlocked Themes" subsection header
-    const unlockedHeader = document.createElement('div');
-    unlockedHeader.className = 'premium-subsection-header';
-    unlockedHeader.innerHTML = `
-      <div class="subsection-title">
-        <span class="subsection-icon">⭐</span>
-        ${currentLanguage === 'cs' ? 'Odemčené motivy' : 'Unlocked Themes'}
-      </div>
-    `;
-    premiumGrid.appendChild(unlockedHeader);
-    
-    // Add unlocked premium themes
-    unlockedPremiumThemes.forEach(({ key, theme }) => {
-      const themeItem = createThemeItem(key, theme, true);
-      premiumGrid.appendChild(themeItem);
-    });
-    
-    // Add separator if we have both unlocked and locked themes
-    if (lockedPremiumThemes.length > 0) {
-      const separator = document.createElement('div');
-      separator.className = 'premium-subsection-separator';
-      premiumGrid.appendChild(separator);
-    }
-  }
-  
-  // Add locked premium themes (if any)
-  if (lockedPremiumThemes.length > 0) {
-    // Add "Locked Themes" subsection header only if we have unlocked themes too
-    if (unlockedPremiumThemes.length > 0) {
-      const lockedHeader = document.createElement('div');
-      lockedHeader.className = 'premium-subsection-header';
-      lockedHeader.innerHTML = `
-        <div class="subsection-title">
-          <span class="subsection-icon">🔒</span>
-          ${currentLanguage === 'cs' ? 'Zamčené motivy' : 'Locked Themes'}
-        </div>
-      `;
-      premiumGrid.appendChild(lockedHeader);
-    }
-    
-    // Add locked premium themes
-    lockedPremiumThemes.forEach(({ key, theme }) => {
-      const themeItem = createThemeItem(key, theme, false);
-      premiumGrid.appendChild(themeItem);
-    });
-  }
-  
-  // Hide the premium hint since we now have individual purchase options
-  if (premiumHint) {
-    premiumHint.style.display = 'none';
-  }
-  
-  // Update premium section title
-  const premiumTitle = document.querySelector('.theme-section:last-child .theme-section-title');
-  if (premiumTitle) {
-    const totalPremiumThemes = unlockedPremiumThemes.length + lockedPremiumThemes.length;
-    if (totalPremiumThemes > 0) {
-      let titleText = 'Premium Themes';
-      let badgeText = '';
-      
-      if (unlockedPremiumThemes.length > 0 && lockedPremiumThemes.length > 0) {
-        badgeText = `(${unlockedPremiumThemes.length} unlocked, ${lockedPremiumThemes.length} locked)`;
-      } else if (lockedPremiumThemes.length > 0) {
-        badgeText = `(${lockedPremiumThemes.length} locked)`;
-      } else if (unlockedPremiumThemes.length > 0) {
-        badgeText = `(${unlockedPremiumThemes.length} unlocked)`;
-      }
-      
-      premiumTitle.innerHTML = `
-        ${titleText}
-        <span class="premium-badge" id="premiumBadge">⭐</span>
-        <span class="theme-count">${badgeText}</span>
-      `;
-      premiumTitle.parentElement.style.display = 'block';
-    } else {
-      // Hide the premium section if no premium themes exist
-      premiumTitle.parentElement.style.display = 'none';
-    }
-  }
 }
 
 function createThemeItem(themeKey, theme, canUse) {
   const item = document.createElement('div');
   item.className = `theme-item ${currentTheme === themeKey ? 'active' : ''} ${!canUse ? 'locked' : ''}`;
   
-  // Determine visual status indicator - Updated per requirements
+  // Determine visual status indicator
   let statusIndicator = '';
   let statusClass = '';
   
@@ -3852,27 +3820,25 @@ function createThemeItem(themeKey, theme, canUse) {
     }
   }
   
-  // Add price information for locked premium themes
+  // Add price information for locked premium themes (CZK prices)
   const themePrices = {
-    'pixelquest': 100,
-    'poltergeist': 150,
-    'hellokitty': 200,
-    'chill': 120,
-    'chaos': 180,
-    'retroneon': 250,
-    'digitalvoid': 300
+    'pixelquest': 49.00,
+    'poltergeist': 79.00,
+    'hellokitty': 99.00,
+    'chill': 59.00,
+    'chaos': 89.00,
+    'retroneon': 129.00,
+    'digitalvoid': 149.00
   };
   
-  const price = themePrices[themeKey] || 100;
+  const price = themePrices[themeKey] || 49.00;
   const priceInfo = !canUse && theme.category === 'premium' ? 
-    `<div class="theme-price-info">💰 ${price} AnonCoins</div>` : '';
+    `<div class="theme-price-info">${price} CZK</div>` : '';
   
-  // Purchase button for locked premium themes with affordability check
-  const canAfford = userCoins >= price;
+  // Purchase button for locked premium themes
   const purchaseButton = !canUse && theme.category === 'premium' ? 
-    `<div class="theme-purchase-button ${!canAfford ? 'insufficient-coins' : ''}" onclick="event.stopPropagation(); showPremiumThemePurchaseDialog('${themeKey}');">
+    `<div class="theme-purchase-button" onclick="event.stopPropagation(); showLegacyPurchaseDialog('${themeKey}', ${price});">
       🛒 ${currentLanguage === 'cs' ? 'Koupit' : 'Purchase'}
-      ${!canAfford ? '<span class="insufficient-text">💰 Nedostatek mincí</span>' : ''}
     </div>` : '';
   
   // Determine unlock text based on theme category and unlock status
@@ -3962,46 +3928,14 @@ document.addEventListener('click', function(e) {
 
 // Enhanced premium theme purchase dialog
 // Enhanced premium theme purchase dialog with backend integration
-async function showPremiumThemePurchaseDialog(themeKey) {
+// Legacy purchase dialog for compatibility
+async function showLegacyPurchaseDialog(themeKey, price) {
   const theme = themeDefinitions[themeKey];
   if (!theme || theme.category !== 'premium') return;
 
-  // Sync user data first to get current coin balance
-  await syncUserThemeData();
-
-  const themePrices = {
-    'pixelquest': 100,
-    'poltergeist': 150,
-    'hellokitty': 200,
-    'chill': 120,
-    'chaos': 180,
-    'retroneon': 250,
-    'digitalvoid': 300
-  };
-
-  const price = themePrices[themeKey] || 100;
-  const canAfford = userCoins >= price;
-  
-  if (!canAfford) {
-    const insufficientMessage = currentLanguage === 'cs' ? 
-      `❌ Nedostatečné AnonCoins!\n\nPotřebujete: ${price} AnonCoins\nMáte: ${userCoins} AnonCoins\nChybí vám: ${price - userCoins} AnonCoins\n\nZískejte více mincí dokončováním chatů a získáváním dobrých hodnocení!` :
-      `❌ Insufficient AnonCoins!\n\nRequired: ${price} AnonCoins\nYou have: ${userCoins} AnonCoins\nNeeded: ${price - userCoins} more AnonCoins\n\nEarn more coins by completing chats and getting good ratings!`;
-    
-    showNotif(insufficientMessage, false);
-    return;
-  }
-
   const confirmMessage = currentLanguage === 'cs' ? 
-    `🛒 Chcete koupit motiv "${theme.name}"?\n\n` +
-    `Cena: ${price} AnonCoins\n` +
-    `Váš zůstatek: ${userCoins} AnonCoins\n` +
-    `Zůstatek po nákupu: ${userCoins - price} AnonCoins\n\n` +
-    `${theme.description}` :
-    `🛒 Purchase "${theme.name}" theme?\n\n` +
-    `Price: ${price} AnonCoins\n` +
-    `Your balance: ${userCoins} AnonCoins\n` +
-    `Balance after purchase: ${userCoins - price} AnonCoins\n\n` +
-    `${theme.description}`;
+    `🛒 Chcete koupit motiv "${theme.name}"?\n\nCena: ${price} CZK\n\n${theme.description}\n\nPo kliknutí na OK budete přesměrováni na platební stránku.` :
+    `🛒 Purchase "${theme.name}" theme?\n\nPrice: ${price} CZK\n\n${theme.description}\n\nYou will be redirected to payment page after clicking OK.`;
 
   if (confirm(confirmMessage)) {
     const success = await unlockPremiumTheme(themeKey);
@@ -4021,6 +3955,11 @@ async function showPremiumThemePurchaseDialog(themeKey) {
       }
     }
   }
+}
+
+// Updated purchase dialog (legacy - kept for compatibility but no longer uses AnonCoins)
+async function showPremiumThemePurchaseDialog(themeKey) {
+  await showLegacyPurchaseDialog(themeKey, 49.00);
 }
 
 // SETTINGS DROPDOWN FUNCTIONALITY
@@ -4105,11 +4044,6 @@ document.getElementById('settingsLanguage').onclick = function() {
 document.getElementById('settingsStats').onclick = function() {
   hideSettingsDropdown();
   showStatsPanel();
-}
-
-document.getElementById('settingsPremium').onclick = function() {
-  hideSettingsDropdown();
-  showThemeSelector(); // Opens theme selector which includes premium themes
 }
 
 // Close settings dropdown when clicking outside
@@ -4210,54 +4144,6 @@ async function submitRatingToBackend(rating, chatDuration) {
       showXPNotification(result.xpGained, result.level);
     }
     
-    // Add coin rewards based on rating
-    let coinReward = 0;
-    switch (rating) {
-      case 'heart':
-        coinReward = 15; // Bonus for positive ratings
-        break;
-      case 'ghost':
-        coinReward = 5; // Small reward for neutral
-        break;
-      case 'poop':
-        coinReward = 2; // Minimal reward
-        break;
-    }
-    
-    // Give coin reward
-    if (coinReward > 0) {
-      try {
-        const coinResponse = await fetch('/api/user/coins/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            userId: anonUserId,
-            amount: coinReward
-          })
-        });
-        
-        if (coinResponse.ok) {
-          const coinResult = await coinResponse.json();
-          userCoins = coinResult.newBalance;
-          
-          // Update coins display
-          const coinsDisplay = document.getElementById('userCoins');
-          if (coinsDisplay) {
-            coinsDisplay.textContent = userCoins;
-          }
-          
-          // Show coin notification
-          setTimeout(() => {
-            showCoinNotification(coinReward, userCoins);
-          }, 1500);
-        }
-      } catch (error) {
-        console.error('Error adding coin reward:', error);
-      }
-    }
-    
     if (!response.ok) {
       console.error('Failed to submit rating to backend');
     }
@@ -4288,26 +4174,10 @@ function showXPNotification(xpGained, level) {
   }, 3000);
 }
 
+// Legacy coin notification function - no longer used as AnonCoins were removed
 function showCoinNotification(coinsGained, totalCoins) {
-  // Create coin notification popup
-  const popup = document.createElement('div');
-  popup.className = 'coin-popup';
-  popup.innerHTML = `
-    <div class="coin-popup-content">
-      <div class="coin-icon">💰</div>
-      <div class="coin-gained">+${coinsGained} AnonCoins</div>
-      <div class="coin-total">Total: ${totalCoins}</div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Animate and remove
-  setTimeout(() => popup.classList.add('show'), 100);
-  setTimeout(() => {
-    popup.classList.remove('show');
-    setTimeout(() => document.body.removeChild(popup), 300);
-  }, 3000);
+  // AnonCoins system has been removed in favor of real CZK payments
+  console.log('showCoinNotification called but AnonCoins system has been removed');
 }
 
 function submitRating(rating) {

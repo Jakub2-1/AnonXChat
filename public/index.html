@@ -118,7 +118,7 @@
     <div class="settings-dropdown-content">
       <div class="settings-item" id="settingsTheme" role="button" tabindex="0">
         <span class="settings-item-icon">🎨</span>
-        <span class="settings-item-text" data-translate="theme">Theme</span>
+        <span class="settings-item-text" data-translate="theme">Motiv</span>
         <span class="settings-item-arrow">›</span>
       </div>
       <div class="settings-item" id="settingsLanguage" role="button" tabindex="0">
@@ -132,11 +132,6 @@
         <span class="settings-item-arrow">›</span>
       </div>
       <div class="settings-divider"></div>
-      <div class="settings-item" id="settingsPremium" role="button" tabindex="0">
-        <span class="settings-item-icon">💎</span>
-        <span class="settings-item-text" data-translate="premiumThemes">Premium Themes</span>
-        <span class="settings-item-arrow">›</span>
-      </div>
     </div>
   </div>
   
@@ -149,31 +144,14 @@
   <div id="themeSelectorModal" class="theme-selector-modal" style="display:none;">
     <div class="theme-selector-content">
       <div class="theme-selector-header">
-        <h3 class="theme-selector-title">Choose Theme</h3>
+        <h3 class="theme-selector-title">Vyberte motiv</h3>
         <button class="theme-selector-close" id="themeSelectorClose">×</button>
       </div>
       
       <div class="theme-section">
-        <h4 class="theme-section-title">Free Themes</h4>
-        <div class="theme-grid" id="freeThemesGrid">
-          <!-- Free themes will be populated by JavaScript -->
-        </div>
-      </div>
-      
-      <div class="theme-section">
-        <h4 class="theme-section-title">
-          Premium Themes 
-          <span class="premium-badge" id="premiumBadge">💎</span>
-          <span class="user-coins" id="userCoinsDisplay" style="margin-left: 10px; font-size: 0.8em; color: #ffd700;">
-            💰 <span id="userCoins">0</span> AnonCoins
-          </span>
-        </h4>
-        <div class="theme-grid" id="premiumThemesGrid">
-          <!-- Premium themes will be populated by JavaScript -->
-        </div>
-        <div class="premium-unlock-hint" id="premiumHint" style="display:none;">
-          <span class="unlock-icon">🔒</span>
-          <span class="unlock-text" id="unlockText">Unlock all themes</span>
+        <h4 class="theme-section-title">Motivy</h4>
+        <div class="theme-grid" id="themesGrid">
+          <!-- All themes will be populated by JavaScript -->
         </div>
       </div>
     </div>
