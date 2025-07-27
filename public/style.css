@@ -4094,3 +4094,119 @@ body.theme-poltergeist .bug-feedback-button:hover {
     min-width: 120px;
   }
 }
+
+/* XP and Coin Notification Popups */
+.xp-popup, .coin-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.coin-popup {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  color: #333;
+}
+
+.xp-popup.show, .coin-popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.xp-popup-content, .coin-popup-content {
+  text-align: center;
+}
+
+.xp-icon, .coin-icon {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.xp-gained, .coin-gained {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.xp-level, .coin-total {
+  font-size: 1em;
+  opacity: 0.9;
+}
+
+/* Enhanced Theme Purchase UI */
+.theme-purchase-button {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.3s ease;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.theme-purchase-button:hover {
+  background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.theme-purchase-button.insufficient-coins {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  cursor: not-allowed;
+}
+
+.theme-purchase-button.insufficient-coins:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.insufficient-text {
+  font-size: 0.75em;
+  display: block;
+  margin-top: 2px;
+}
+
+.theme-price-info {
+  font-size: 0.8em;
+  color: #ffd700;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.user-coins {
+  background: rgba(255, 215, 0, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+/* Enhanced Theme Item Styles */
+.theme-item.locked .theme-preview {
+  filter: grayscale(50%) brightness(0.7);
+  position: relative;
+}
+
+.theme-item.locked .theme-preview::after {
+  content: '🔒';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}

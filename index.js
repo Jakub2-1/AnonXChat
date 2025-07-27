@@ -5,6 +5,10 @@ const io = require("socket.io")(http);
 const fs = require("fs").promises;
 const path = require("path");
 
+// Premium Theme System
+const PremiumThemeManager = require('./src/PremiumThemeManager');
+const themeManager = new PremiumThemeManager();
+
 const PORT = process.env.PORT || 3000;
 const USERS_FILE = path.join(__dirname, 'users.json');
 
@@ -94,7 +98,9 @@ async function updateUserStats(userId, rating, chatDuration) {
       // New fields for favorite partners and leveling
       totalXP: 0,
       favoritePartners: [],
-      mutualFavorites: []
+      mutualFavorites: [],
+      premiumThemes: [],
+      anonCoins: 50 // Starting coins for new users
     };
   }
   
@@ -123,7 +129,9 @@ async function updateUserStats(userId, rating, chatDuration) {
   if (!user.favoritePartners) user.favoritePartners = [];
   if (!user.mutualFavorites) user.mutualFavorites = [];
   if (user.totalXP === undefined) user.totalXP = 0;
-  
+  if (!user.premiumThemes) user.premiumThemes = [];
+  if (!user.anonCoins) user.anonCoins = 0;
+
   await saveUsers(users);
   return { success: true, xpGained, level: getUserLevel(user.totalXP) };
 }
@@ -297,6 +305,177 @@ app.get('/stats/:userId', async (req, res) => {
     });
   } catch (error) {
     console.error('Error getting user stats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Premium Themes API Endpoints
+
+// Get all available themes
+app.get('/api/themes', async (req, res) => {
+  try {
+    await themeManager.initialize();
+    const themes = themeManager.getAllThemes();
+    res.json({ themes: themes.map(theme => theme.toJSON()) });
+  } catch (error) {
+    console.error('Error getting themes:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get themes available to a specific user
+app.get('/api/themes/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    await themeManager.initialize();
+    
+    const users = await loadUsers();
+    const user = users[userId];
+    const hasPremiumAccess = user?.premiumAccess || false;
+    
+    const availableThemes = themeManager.getUserAvailableThemes(userId, hasPremiumAccess);
+    const purchasedThemes = themeManager.getUserPurchasedThemes(userId);
+    
+    res.json({ 
+      availableThemes: availableThemes.map(theme => theme.toJSON()),
+      purchasedThemes,
+      userCoins: user?.anonCoins || 0
+    });
+  } catch (error) {
+    console.error('Error getting user themes:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Purchase a premium theme
+app.post('/api/themes/purchase', async (req, res) => {
+  try {
+    const { userId, themeId } = req.body;
+    
+    if (!userId || !themeId) {
+      return res.status(400).json({ error: 'userId and themeId are required' });
+    }
+    
+    await themeManager.initialize();
+    
+    // Get user data
+    const users = await loadUsers();
+    const user = users[userId];
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const userCoins = user.anonCoins || 0;
+    
+    // Process the purchase
+    const result = await themeManager.purchaseTheme(userId, themeId, userCoins);
+    
+    // Update user's coins and purchased themes
+    user.anonCoins = result.remainingCoins;
+    if (!user.premiumThemes) user.premiumThemes = [];
+    if (!user.premiumThemes.includes(themeId)) {
+      user.premiumThemes.push(themeId);
+    }
+    
+    await saveUsers(users);
+    
+    res.json({
+      success: true,
+      message: 'Theme purchased successfully',
+      theme: result.theme,
+      coinsSpent: result.coinsSpent,
+      remainingCoins: result.remainingCoins
+    });
+  } catch (error) {
+    console.error('Error purchasing theme:', error);
+    
+    if (error.message.includes('not found') || 
+        error.message.includes('already purchased') || 
+        error.message.includes('Insufficient coins') ||
+        error.message.includes('already free')) {
+      return res.status(400).json({ error: error.message });
+    }
+    
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get user's theme purchase status
+app.get('/api/themes/status/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    await themeManager.initialize();
+    
+    const users = await loadUsers();
+    const user = users[userId];
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const purchasedThemes = themeManager.getUserPurchasedThemes(userId);
+    const allThemes = themeManager.getAllThemes();
+    const premiumThemes = themeManager.getPremiumThemes();
+    
+    res.json({
+      purchasedThemes,
+      totalPurchases: purchasedThemes.length,
+      availablePremiumThemes: premiumThemes.length,
+      userCoins: user.anonCoins || 0,
+      allThemes: allThemes.map(theme => ({
+        id: theme.theme_id,
+        name: theme.name,
+        price: theme.price,
+        owned: purchasedThemes.includes(theme.theme_id),
+        isPremium: theme.is_premium
+      }))
+    });
+  } catch (error) {
+    console.error('Error getting theme status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Add coins to user (for testing/admin purposes)
+app.post('/api/user/coins/add', async (req, res) => {
+  try {
+    const { userId, amount } = req.body;
+    
+    if (!userId || typeof amount !== 'number' || amount <= 0) {
+      return res.status(400).json({ error: 'Valid userId and amount are required' });
+    }
+    
+    const users = await loadUsers();
+    
+    if (!users[userId]) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const user = users[userId];
+    user.anonCoins = (user.anonCoins || 0) + amount;
+    
+    await saveUsers(users);
+    
+    res.json({
+      success: true,
+      message: `Added ${amount} coins`,
+      newBalance: user.anonCoins
+    });
+  } catch (error) {
+    console.error('Error adding coins:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get theme statistics (admin endpoint)
+app.get('/api/admin/themes/stats', async (req, res) => {
+  try {
+    await themeManager.initialize();
+    const stats = themeManager.getThemeStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error getting theme stats:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

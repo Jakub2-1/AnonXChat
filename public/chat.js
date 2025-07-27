@@ -9,7 +9,16 @@
  */
 
 // proměnné
-let socket;
+// Initialize theme system and sync with backend
+async function initializeThemeSystem() {
+  await syncUserThemeData();
+  applyMainTheme(currentTheme);
+}
+
+// Call initialization on page load
+document.addEventListener('DOMContentLoaded', function() {
+  initializeThemeSystem();
+});
 let mySide = 'right';
 let partnerActive = true;
 let typingTimeout;
@@ -18,8 +27,9 @@ let currentTheme = localStorage.getItem('selectedTheme') || 'glow'; // Default t
 const devAccessKey = localStorage.getItem('devKey');
 let hasPremiumAccess = localStorage.getItem('anonx_premium') === 'true' || devAccessKey === 'MY_SECRET_KEY'; // Premium access flag
 
-// Individual premium theme unlocks - new system
+// Individual premium theme unlocks - enhanced system with backend integration
 let premiumThemesUnlocked = JSON.parse(localStorage.getItem('premiumThemesUnlocked') || '[]');
+let userCoins = 0; // Will be loaded from backend
 
 let currentThemeData = null;
 let currentPartnerId = null; // Store current partner ID for favorites
@@ -820,21 +830,76 @@ function canUseTheme(themeName) {
   return false;
 }
 
-// Function to unlock a specific premium theme
-function unlockPremiumTheme(themeName) {
+// Enhanced function to sync with backend
+async function syncUserThemeData() {
+  try {
+    const response = await fetch(`/api/themes/status/${anonUserId}`);
+    if (response.ok) {
+      const data = await response.json();
+      premiumThemesUnlocked = data.purchasedThemes;
+      userCoins = data.userCoins;
+      localStorage.setItem('premiumThemesUnlocked', JSON.stringify(premiumThemesUnlocked));
+      
+      // Update coins display if exists
+      const coinsDisplay = document.getElementById('userCoins');
+      if (coinsDisplay) {
+        coinsDisplay.textContent = userCoins;
+      }
+      
+      return data;
+    }
+  } catch (error) {
+    console.error('Error syncing user theme data:', error);
+  }
+  return null;
+}
+
+// Enhanced function to unlock a specific premium theme via backend
+async function unlockPremiumTheme(themeName) {
   const theme = themeDefinitions[themeName];
   if (!theme || theme.category !== 'premium') return false;
   
-  if (!premiumThemesUnlocked.includes(themeName)) {
-    premiumThemesUnlocked.push(themeName);
-    localStorage.setItem('premiumThemesUnlocked', JSON.stringify(premiumThemesUnlocked));
+  try {
+    const response = await fetch('/api/themes/purchase', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: anonUserId,
+        themeId: themeName
+      })
+    });
     
-    // Show unlock notification
-    showNotif(`🎉 ${theme.name} theme unlocked!`, false);
-    return true;
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      // Update local state
+      if (!premiumThemesUnlocked.includes(themeName)) {
+        premiumThemesUnlocked.push(themeName);
+        localStorage.setItem('premiumThemesUnlocked', JSON.stringify(premiumThemesUnlocked));
+      }
+      
+      userCoins = result.remainingCoins;
+      
+      // Show success notification
+      showNotif(`🎉 ${theme.name} theme unlocked! (${result.coinsSpent} coins spent)`, false);
+      
+      // Update UI
+      await syncUserThemeData();
+      updateThemeSelector();
+      
+      return true;
+    } else {
+      // Show error message
+      showNotif(`❌ ${result.error || 'Failed to purchase theme'}`, false);
+      return false;
+    }
+  } catch (error) {
+    console.error('Error purchasing theme:', error);
+    showNotif('❌ Error purchasing theme. Please try again.', false);
+    return false;
   }
-  
-  return false; // Already unlocked
 }
 
 // Function to check if a specific premium theme is unlocked
@@ -3800,12 +3865,14 @@ function createThemeItem(themeKey, theme, canUse) {
   
   const price = themePrices[themeKey] || 100;
   const priceInfo = !canUse && theme.category === 'premium' ? 
-    `<div class="theme-price-info">${price} AnonCoins</div>` : '';
+    `<div class="theme-price-info">💰 ${price} AnonCoins</div>` : '';
   
-  // Purchase button for locked premium themes
+  // Purchase button for locked premium themes with affordability check
+  const canAfford = userCoins >= price;
   const purchaseButton = !canUse && theme.category === 'premium' ? 
-    `<div class="theme-purchase-button" onclick="event.stopPropagation(); showPremiumThemePurchaseDialog('${themeKey}');">
+    `<div class="theme-purchase-button ${!canAfford ? 'insufficient-coins' : ''}" onclick="event.stopPropagation(); showPremiumThemePurchaseDialog('${themeKey}');">
       🛒 ${currentLanguage === 'cs' ? 'Koupit' : 'Purchase'}
+      ${!canAfford ? '<span class="insufficient-text">💰 Nedostatek mincí</span>' : ''}
     </div>` : '';
   
   // Determine unlock text based on theme category and unlock status
@@ -3894,9 +3961,13 @@ document.addEventListener('click', function(e) {
 });
 
 // Enhanced premium theme purchase dialog
-function showPremiumThemePurchaseDialog(themeKey) {
+// Enhanced premium theme purchase dialog with backend integration
+async function showPremiumThemePurchaseDialog(themeKey) {
   const theme = themeDefinitions[themeKey];
   if (!theme || theme.category !== 'premium') return;
+
+  // Sync user data first to get current coin balance
+  await syncUserThemeData();
 
   const themePrices = {
     'pixelquest': 100,
@@ -3909,24 +3980,32 @@ function showPremiumThemePurchaseDialog(themeKey) {
   };
 
   const price = themePrices[themeKey] || 100;
-  const currency = 'AnonCoins';
+  const canAfford = userCoins >= price;
+  
+  if (!canAfford) {
+    const insufficientMessage = currentLanguage === 'cs' ? 
+      `❌ Nedostatečné AnonCoins!\n\nPotřebujete: ${price} AnonCoins\nMáte: ${userCoins} AnonCoins\nChybí vám: ${price - userCoins} AnonCoins\n\nZískejte více mincí dokončováním chatů a získáváním dobrých hodnocení!` :
+      `❌ Insufficient AnonCoins!\n\nRequired: ${price} AnonCoins\nYou have: ${userCoins} AnonCoins\nNeeded: ${price - userCoins} more AnonCoins\n\nEarn more coins by completing chats and getting good ratings!`;
+    
+    showNotif(insufficientMessage, false);
+    return;
+  }
 
   const confirmMessage = currentLanguage === 'cs' ? 
-    `🛒 Chcete koupit motiv "${theme.name}" za ${price} ${currency}?\n\n` +
-    `Toto je demonstrační nákup pro ukázku funkce.\n\n` +
-    `Motiv bude odemčen a můžete jej používat.` :
-    `🛒 Purchase "${theme.name}" theme for ${price} ${currency}?\n\n` +
-    `This is a demo purchase for feature demonstration.\n\n` +
-    `The theme will be unlocked and available for use.`;
+    `🛒 Chcete koupit motiv "${theme.name}"?\n\n` +
+    `Cena: ${price} AnonCoins\n` +
+    `Váš zůstatek: ${userCoins} AnonCoins\n` +
+    `Zůstatek po nákupu: ${userCoins - price} AnonCoins\n\n` +
+    `${theme.description}` :
+    `🛒 Purchase "${theme.name}" theme?\n\n` +
+    `Price: ${price} AnonCoins\n` +
+    `Your balance: ${userCoins} AnonCoins\n` +
+    `Balance after purchase: ${userCoins - price} AnonCoins\n\n` +
+    `${theme.description}`;
 
   if (confirm(confirmMessage)) {
-    if (unlockPremiumTheme(themeKey)) {
-      const successMessage = currentLanguage === 'cs' ? 
-        `🎉 Motiv "${theme.name}" byl úspěšně odemčen!` : 
-        `🎉 "${theme.name}" theme unlocked successfully!`;
-      
-      showNotif(successMessage, false);
-
+    const success = await unlockPremiumTheme(themeKey);
+    if (success) {
       // Ask if user wants to apply the theme immediately
       const applyMessage = currentLanguage === 'cs' ? 
         `Chcete motiv "${theme.name}" aplikovat nyní?` : 
@@ -3940,12 +4019,6 @@ function showPremiumThemePurchaseDialog(themeKey) {
           populateThemeSelector();
         }
       }
-    } else {
-      const alreadyUnlockedMessage = currentLanguage === 'cs' ? 
-        `Motiv "${theme.name}" je již odemčen!` : 
-        `"${theme.name}" theme is already unlocked!`;
-      
-      showNotif(alreadyUnlockedMessage, false);
     }
   }
 }
@@ -4137,6 +4210,54 @@ async function submitRatingToBackend(rating, chatDuration) {
       showXPNotification(result.xpGained, result.level);
     }
     
+    // Add coin rewards based on rating
+    let coinReward = 0;
+    switch (rating) {
+      case 'heart':
+        coinReward = 15; // Bonus for positive ratings
+        break;
+      case 'ghost':
+        coinReward = 5; // Small reward for neutral
+        break;
+      case 'poop':
+        coinReward = 2; // Minimal reward
+        break;
+    }
+    
+    // Give coin reward
+    if (coinReward > 0) {
+      try {
+        const coinResponse = await fetch('/api/user/coins/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: anonUserId,
+            amount: coinReward
+          })
+        });
+        
+        if (coinResponse.ok) {
+          const coinResult = await coinResponse.json();
+          userCoins = coinResult.newBalance;
+          
+          // Update coins display
+          const coinsDisplay = document.getElementById('userCoins');
+          if (coinsDisplay) {
+            coinsDisplay.textContent = userCoins;
+          }
+          
+          // Show coin notification
+          setTimeout(() => {
+            showCoinNotification(coinReward, userCoins);
+          }, 1500);
+        }
+      } catch (error) {
+        console.error('Error adding coin reward:', error);
+      }
+    }
+    
     if (!response.ok) {
       console.error('Failed to submit rating to backend');
     }
@@ -4154,6 +4275,28 @@ function showXPNotification(xpGained, level) {
       <div class="xp-icon">✨</div>
       <div class="xp-gained">+${xpGained} XP</div>
       <div class="xp-level">${level.name} (Lvl ${level.level})</div>
+    </div>
+  `;
+  
+  document.body.appendChild(popup);
+  
+  // Animate and remove
+  setTimeout(() => popup.classList.add('show'), 100);
+  setTimeout(() => {
+    popup.classList.remove('show');
+    setTimeout(() => document.body.removeChild(popup), 300);
+  }, 3000);
+}
+
+function showCoinNotification(coinsGained, totalCoins) {
+  // Create coin notification popup
+  const popup = document.createElement('div');
+  popup.className = 'coin-popup';
+  popup.innerHTML = `
+    <div class="coin-popup-content">
+      <div class="coin-icon">💰</div>
+      <div class="coin-gained">+${coinsGained} AnonCoins</div>
+      <div class="coin-total">Total: ${totalCoins}</div>
     </div>
   `;
   
