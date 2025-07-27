@@ -1,5 +1,16 @@
 {
   "test_user": [
     "pixelquest"
+  ],
+  "demo_user1": [
+    "pixelquest",
+    "hellokitty",
+    "digitalvoid"
+  ],
+  "demo_user2": [
+    "chill"
+  ],
+  "demo_user3": [
+    "pixelquest"
   ]
 }

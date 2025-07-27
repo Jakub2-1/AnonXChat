@@ -93,6 +93,40 @@ class PremiumThemeManager {
    */
   async createPredefinedThemes() {
     const predefinedThemes = [
+      // Free themes
+      {
+        theme_id: 'glow',
+        name: 'Glow',
+        description: 'Bright and cheerful light theme with glowing effects',
+        colors: {
+          primary: '#2563eb',
+          secondary: '#dc2626',
+          accent: '#f59e0b',
+          background: 'linear-gradient(135deg, #fafbff 0%, #f3f4ff 50%, #fef7d4 100%)',
+          text: '#1e293b'
+        },
+        price: 0,
+        is_premium: false,
+        icon: '🌟',
+        className: 'theme-glow'
+      },
+      {
+        theme_id: 'goth',
+        name: 'Goth',
+        description: 'Dark gothic atmosphere with mysterious elements',
+        colors: {
+          primary: '#8b1538',
+          secondary: '#4c1d95',
+          accent: '#7c2d12',
+          background: '#0a0a0a',
+          text: '#ffffff'
+        },
+        price: 0,
+        is_premium: false,
+        icon: '💀',
+        className: 'theme-goth'
+      },
+      // Premium themes
       {
         theme_id: 'pixelquest',
         name: 'Pixel Quest',
