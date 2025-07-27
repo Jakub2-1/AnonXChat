@@ -2160,6 +2160,154 @@ body.theme-glow .glow {
   font-size: 1.2rem;
 }
 
+/* Enhanced Theme Selector Styles */
+.theme-status-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.theme-item.free-theme .theme-status-indicator {
+  background: rgba(34, 197, 94, 0.8);
+}
+
+.theme-item.unlocked-theme .theme-status-indicator {
+  background: rgba(59, 130, 246, 0.8);
+}
+
+.theme-item.locked-theme .theme-status-indicator {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+.theme-price-info {
+  font-size: 0.7rem;
+  color: #ffd700;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.theme-purchase-button {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border: none;
+  border-radius: 0.5rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-top: 8px;
+  padding: 6px 12px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.theme-purchase-button:hover {
+  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4);
+}
+
+.theme-separator {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  grid-column: 1 / -1;
+}
+
+.separator-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.separator-text {
+  margin: 0 15px;
+  font-size: 0.8rem;
+  color: #fff;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-indicator {
+  font-size: 0.9rem;
+}
+
+.free-indicator {
+  color: #22c55e;
+}
+
+.unlocked-indicator {
+  color: #3b82f6;
+}
+
+.locked-indicator {
+  color: #ef4444;
+}
+
+.locked-count {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  font-weight: normal;
+}
+
+/* Premium section enhancements */
+.theme-section.enhanced-premium-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.enhanced-premium-info {
+  text-align: center;
+  margin-top: 15px;
+  padding: 12px;
+  background: rgba(240, 147, 251, 0.1);
+  border: 1px solid rgba(240, 147, 251, 0.3);
+  border-radius: 0.8rem;
+  color: #f093fb;
+  font-size: 0.85rem;
+}
+
+/* Responsive improvements for theme items */
+@media (max-width: 640px) {
+  .theme-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+  
+  .theme-item {
+    padding: 12px;
+  }
+  
+  .theme-icon {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+  
+  .theme-name {
+    font-size: 0.8rem;
+  }
+  
+  .theme-description {
+    font-size: 0.65rem;
+  }
+  
+  .theme-purchase-button {
+    font-size: 0.65rem;
+    padding: 5px 10px;
+  }
+}
+
 /* Chaos theme animation */
 @keyframes chaos-flicker {
   0%, 98% { filter: hue-rotate(0deg) brightness(1); }
