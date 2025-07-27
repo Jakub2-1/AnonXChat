@@ -153,7 +153,14 @@ const languageDefinitions = {
     maxLevel: '(Maximální level!)',
     toNextLevel: 'do dalšího levelu',
     favoriteCount: 'Oblíbených',
-    mutualCount: 'Vzájemných'
+    mutualCount: 'Vzájemných',
+    
+    // Settings dropdown
+    settings: 'Nastavení',
+    theme: 'Motiv',
+    language: 'Jazyk',
+    statistics: 'Statistiky',
+    premiumThemes: 'Premium motivy'
   },
   
   en: {
@@ -243,7 +250,14 @@ const languageDefinitions = {
     maxLevel: '(Maximum level!)',
     toNextLevel: 'to next level',
     favoriteCount: 'Favorites',
-    mutualCount: 'Mutual'
+    mutualCount: 'Mutual',
+    
+    // Settings dropdown
+    settings: 'Settings',
+    theme: 'Theme',
+    language: 'Language',
+    statistics: 'Statistics',
+    premiumThemes: 'Premium Themes'
   }
 };
 
@@ -3153,6 +3167,9 @@ function updateLanguageToggle() {
   if (languageIcon) {
     languageIcon.textContent = currentLanguage === 'cs' ? '🇬🇧' : '🇨🇿';
   }
+  
+  // Update settings dropdown language display
+  updateCurrentLanguageDisplay();
 }
 
 function getText(key) {
@@ -3271,6 +3288,15 @@ function updateAllTexts() {
       labelText.textContent = getText('showPublicBadge');
     }
   }
+  
+  // Settings dropdown
+  const settingsTexts = document.querySelectorAll('[data-translate]');
+  settingsTexts.forEach(element => {
+    const key = element.getAttribute('data-translate');
+    if (key) {
+      element.textContent = getText(key);
+    }
+  });
 }
 
 // Sound toggle functionality
@@ -3742,6 +3768,114 @@ document.addEventListener('click', function(e) {
   const themeSelectorModal = document.getElementById('themeSelectorModal');
   if (themeSelectorModal.style.display === 'flex' && e.target === themeSelectorModal) {
     hideThemeSelector();
+  }
+});
+
+// SETTINGS DROPDOWN FUNCTIONALITY
+let settingsDropdownOpen = false;
+
+// Settings button click handler
+document.getElementById('settingsButton').onclick = function(e) {
+  e.stopPropagation();
+  toggleSettingsDropdown();
+}
+
+function toggleSettingsDropdown() {
+  const dropdown = document.getElementById('settingsDropdown');
+  const settingsButton = document.getElementById('settingsButton');
+  
+  if (settingsDropdownOpen) {
+    hideSettingsDropdown();
+  } else {
+    showSettingsDropdown();
+  }
+}
+
+function showSettingsDropdown() {
+  const dropdown = document.getElementById('settingsDropdown');
+  const settingsButton = document.getElementById('settingsButton');
+  
+  // Update language display
+  updateCurrentLanguageDisplay();
+  
+  dropdown.style.display = 'block';
+  setTimeout(() => {
+    dropdown.classList.add('show');
+  }, 10);
+  
+  settingsDropdownOpen = true;
+  
+  // Add rotation to settings icon
+  const settingsIcon = settingsButton.querySelector('.settings-icon');
+  if (settingsIcon) {
+    settingsIcon.style.transform = 'scale(1.1) rotate(90deg)';
+  }
+}
+
+function hideSettingsDropdown() {
+  const dropdown = document.getElementById('settingsDropdown');
+  const settingsButton = document.getElementById('settingsButton');
+  
+  dropdown.classList.remove('show');
+  
+  setTimeout(() => {
+    dropdown.style.display = 'none';
+  }, 300);
+  
+  settingsDropdownOpen = false;
+  
+  // Reset settings icon rotation
+  const settingsIcon = settingsButton.querySelector('.settings-icon');
+  if (settingsIcon) {
+    settingsIcon.style.transform = '';
+  }
+}
+
+function updateCurrentLanguageDisplay() {
+  const languageDisplay = document.getElementById('currentLanguageDisplay');
+  
+  if (languageDisplay) {
+    languageDisplay.textContent = currentLanguage === 'cs' ? '🇨🇿' : '🇬🇧';
+  }
+}
+
+// Settings dropdown item click handlers
+document.getElementById('settingsTheme').onclick = function() {
+  hideSettingsDropdown();
+  showThemeSelector();
+}
+
+document.getElementById('settingsLanguage').onclick = function() {
+  hideSettingsDropdown();
+  switchLanguage();
+}
+
+document.getElementById('settingsStats').onclick = function() {
+  hideSettingsDropdown();
+  showStatsPanel();
+}
+
+document.getElementById('settingsPremium').onclick = function() {
+  hideSettingsDropdown();
+  showThemeSelector(); // Opens theme selector which includes premium themes
+}
+
+// Close settings dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const settingsDropdown = document.getElementById('settingsDropdown');
+  const settingsButton = document.getElementById('settingsButton');
+  
+  if (settingsDropdownOpen && 
+      !settingsDropdown.contains(e.target) && 
+      !settingsButton.contains(e.target)) {
+    hideSettingsDropdown();
+  }
+});
+
+// Close settings dropdown on escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && settingsDropdownOpen) {
+    hideSettingsDropdown();
   }
 });
 

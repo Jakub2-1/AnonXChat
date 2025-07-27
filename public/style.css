@@ -1176,14 +1176,15 @@ body.theme-glow .glow {
 }
 
 /*
- * UI/UX Optimization: Enhanced Floating Action Buttons
+ * UI/UX Optimization: Enhanced Floating Action Buttons with Settings Button
  * Reason: Better accessibility, consistent design, improved interaction patterns
  * Impact: More accessible controls, better mobile experience, consistent visual design
  */
 .theme-switcher,
 .language-switcher,
 .stats-button,
-.bug-feedback-button {
+.bug-feedback-button,
+.settings-button {
   position: fixed;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(1.25rem);
@@ -1209,7 +1210,13 @@ body.theme-glow .glow {
   -webkit-user-select: none;
 }
 
-/* Specific positioning */
+/* Settings button positioning */
+.settings-button {
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+}
+
+/* Original buttons positioning (now hidden but preserved) */
 .theme-switcher {
   top: var(--spacing-lg);
   right: 10rem;
@@ -1239,7 +1246,8 @@ body.theme-glow .glow {
 .theme-switcher:hover,
 .language-switcher:hover,
 .stats-button:hover,
-.bug-feedback-button:hover {
+.bug-feedback-button:hover,
+.settings-button:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: translateY(-0.125rem);
   box-shadow: 0 0.75rem 2.5rem rgba(0, 0, 0, 0.4);
@@ -1249,7 +1257,8 @@ body.theme-glow .glow {
 .theme-switcher:focus,
 .language-switcher:focus,
 .stats-button:focus,
-.bug-feedback-button:focus {
+.bug-feedback-button:focus,
+.settings-button:focus {
   outline: 0.125rem solid rgba(255, 255, 255, 0.6);
   outline-offset: 0.125rem;
   background: rgba(255, 255, 255, 0.15);
@@ -1258,14 +1267,16 @@ body.theme-glow .glow {
 .theme-switcher:focus:not(:focus-visible),
 .language-switcher:focus:not(:focus-visible),
 .stats-button:focus:not(:focus-visible),
-.bug-feedback-button:focus:not(:focus-visible) {
+.bug-feedback-button:focus:not(:focus-visible),
+.settings-button:focus:not(:focus-visible) {
   outline: none;
 }
 
 .theme-switcher:active,
 .language-switcher:active,
 .stats-button:active,
-.bug-feedback-button:active {
+.bug-feedback-button:active,
+.settings-button:active {
   transform: translateY(0.0625rem);
   transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1273,7 +1284,8 @@ body.theme-glow .glow {
 .theme-icon,
 .language-icon,
 .stats-icon,
-.feedback-icon {
+.feedback-icon,
+.settings-icon {
   display: block;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: inherit;
@@ -1282,8 +1294,9 @@ body.theme-glow .glow {
 .theme-switcher:hover .theme-icon,
 .language-switcher:hover .language-icon,
 .stats-button:hover .stats-icon,
-.bug-feedback-button:hover .feedback-icon {
-  transform: scale(1.1);
+.bug-feedback-button:hover .feedback-icon,
+.settings-button:hover .settings-icon {
+  transform: scale(1.1) rotate(15deg);
 }
 
 /* Language switcher specific styles removed - now handled by common floating button styles above */
@@ -1302,6 +1315,134 @@ body.theme-glow .glow {
 .language-switcher:hover .language-icon {
   transform: scale(1.1);
 }
+
+/*
+ * Settings Dropdown Menu Styles
+ * Modern dropdown with smooth animations and clean design
+ */
+.settings-dropdown {
+  position: fixed;
+  top: calc(var(--spacing-lg) + var(--touch-target-comfortable) + 0.5rem);
+  right: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(1.5rem);
+  -webkit-backdrop-filter: blur(1.5rem);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.4);
+  z-index: var(--z-modal);
+  min-width: 12rem;
+  opacity: 0;
+  transform: translateY(-0.5rem) scale(0.95);
+  transition: all var(--animation-duration-normal) var(--animation-timing-bounce);
+  pointer-events: none;
+}
+
+.settings-dropdown.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.settings-dropdown-content {
+  padding: var(--spacing-xs);
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--animation-duration-fast) var(--animation-timing);
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  gap: var(--spacing-sm);
+}
+
+.settings-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(0.125rem);
+}
+
+.settings-item:focus {
+  background: rgba(255, 255, 255, 0.1);
+  outline: 0.125rem solid rgba(255, 255, 255, 0.4);
+  outline-offset: 0.125rem;
+}
+
+.settings-item:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.settings-item:active {
+  transform: scale(0.98);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-item-icon {
+  font-size: 1.1rem;
+  width: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.settings-item-text {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.settings-item-arrow {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  transition: transform var(--animation-duration-fast) var(--animation-timing);
+}
+
+.settings-item:hover .settings-item-arrow {
+  transform: translateX(0.125rem);
+  opacity: 1;
+}
+
+.settings-item-current {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.settings-divider {
+  height: 0.0625rem;
+  background: rgba(255, 255, 255, 0.1);
+  margin: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+/* Settings dropdown animations */
+@keyframes settings-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes settings-dropdown-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.95);
+  }
+}
+
 /*
  * UI/UX Optimization: Enhanced Centered Layout
  * Reason: Better responsive design, flexible spacing, improved mobile experience
@@ -2283,16 +2424,31 @@ body.theme-glow .glow {
   /* Floating action buttons optimization */
   .theme-switcher,
   .language-switcher,
-  .stats-button {
+  .stats-button,
+  .settings-button {
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 1rem;
     min-height: var(--touch-target-min);
     min-width: var(--touch-target-min);
   }
   
+  /* Settings button positioning for small mobile */
+  .settings-button { 
+    right: var(--spacing-sm); 
+    top: var(--spacing-sm);
+  }
+  
+  /* Original buttons positioning (hidden) */
   .theme-switcher { right: 4rem; }
   .language-switcher { right: 0.75rem; }
   .stats-button { right: 7.5rem; }
+  
+  /* Settings dropdown positioning for mobile */
+  .settings-dropdown {
+    right: var(--spacing-sm);
+    top: calc(var(--spacing-sm) + var(--touch-target-min) + 0.5rem);
+    min-width: 10rem;
+  }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
@@ -2301,9 +2457,22 @@ body.theme-glow .glow {
     font-size: clamp(2rem, 5vw, 2.75rem);
   }
   
+  /* Settings button positioning for large mobile */
+  .settings-button { 
+    right: var(--spacing-lg); 
+    top: var(--spacing-lg);
+  }
+  
+  /* Original buttons positioning (hidden) */
   .theme-switcher { right: 7.5rem; }
   .language-switcher { right: 4.375rem; }  
   .stats-button { right: 12.5rem; }
+  
+  /* Settings dropdown positioning for large mobile */
+  .settings-dropdown {
+    right: var(--spacing-lg);
+    top: calc(var(--spacing-lg) + var(--touch-target-comfortable) + 0.5rem);
+  }
 }
 
 @media (max-width: 768px) {
@@ -2323,11 +2492,25 @@ body.theme-glow .glow {
   .theme-switcher,
   .language-switcher,
   .stats-button,
-  .bug-feedback-button {
+  .bug-feedback-button,
+  .settings-button {
     padding: var(--spacing-sm);
     font-size: 1.2rem;
     min-height: var(--touch-target-comfortable);
     min-width: var(--touch-target-comfortable);
+  }
+  
+  /* Settings dropdown adjustments for mobile */
+  .settings-dropdown {
+    min-width: 11rem;
+  }
+  
+  .settings-item {
+    padding: var(--spacing-md);
+  }
+  
+  .settings-item-text {
+    font-size: var(--font-size-md);
   }
 }
 
