@@ -99,8 +99,7 @@ async function updateUserStats(userId, rating, chatDuration) {
       totalXP: 0,
       favoritePartners: [],
       mutualFavorites: [],
-      premiumThemes: [],
-      anonCoins: 50 // Starting coins for new users
+      premiumThemes: []
     };
   }
   
@@ -130,7 +129,6 @@ async function updateUserStats(userId, rating, chatDuration) {
   if (!user.mutualFavorites) user.mutualFavorites = [];
   if (user.totalXP === undefined) user.totalXP = 0;
   if (!user.premiumThemes) user.premiumThemes = [];
-  if (!user.anonCoins) user.anonCoins = 0;
 
   await saveUsers(users);
   return { success: true, xpGained, level: getUserLevel(user.totalXP) };
@@ -323,7 +321,7 @@ app.get('/api/themes', async (req, res) => {
   }
 });
 
-// Get themes available to a specific user
+// Get themes available to a specific user (unified API)
 app.get('/api/themes/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -331,15 +329,19 @@ app.get('/api/themes/:userId', async (req, res) => {
     
     const users = await loadUsers();
     const user = users[userId];
-    const hasPremiumAccess = user?.premiumAccess || false;
     
-    const availableThemes = themeManager.getUserAvailableThemes(userId, hasPremiumAccess);
+    const allThemes = themeManager.getAllThemes();
     const purchasedThemes = themeManager.getUserPurchasedThemes(userId);
     
+    // Mark each theme with ownership status
+    const themesWithOwnership = allThemes.map(theme => ({
+      ...theme.toJSON(),
+      owned: !theme.is_premium || purchasedThemes.includes(theme.theme_id),
+      priceCZK: theme.price
+    }));
+    
     res.json({ 
-      availableThemes: availableThemes.map(theme => theme.toJSON()),
-      purchasedThemes,
-      userCoins: user?.anonCoins || 0
+      themes: themesWithOwnership
     });
   } catch (error) {
     console.error('Error getting user themes:', error);
@@ -347,7 +349,50 @@ app.get('/api/themes/:userId', async (req, res) => {
   }
 });
 
-// Purchase a premium theme
+// Buy theme with real payment (Stripe integration)
+async function buyTheme(themeId, userId) {
+  try {
+    await themeManager.initialize();
+    
+    const theme = themeManager.getTheme(themeId);
+    if (!theme) {
+      throw new Error('Theme not found');
+    }
+    
+    if (!theme.is_premium) {
+      throw new Error('Theme is already free');
+    }
+    
+    // Check if user already owns the theme
+    if (themeManager.userOwnsTheme(userId, themeId)) {
+      throw new Error('Theme already purchased');
+    }
+    
+    // TODO: Integrate with Stripe payment processing
+    // For now, we'll simulate successful payment
+    // In production, this would create a Stripe checkout session
+    
+    // Process the purchase
+    const result = await themeManager.purchaseTheme(userId, themeId);
+    
+    // Update user's purchased themes
+    const users = await loadUsers();
+    const user = users[userId];
+    if (user) {
+      if (!user.premiumThemes) user.premiumThemes = [];
+      if (!user.premiumThemes.includes(themeId)) {
+        user.premiumThemes.push(themeId);
+      }
+      await saveUsers(users);
+    }
+    
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Purchase a premium theme with real payment
 app.post('/api/themes/purchase', async (req, res) => {
   try {
     const { userId, themeId } = req.body;
@@ -356,43 +401,19 @@ app.post('/api/themes/purchase', async (req, res) => {
       return res.status(400).json({ error: 'userId and themeId are required' });
     }
     
-    await themeManager.initialize();
-    
-    // Get user data
-    const users = await loadUsers();
-    const user = users[userId];
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    const userCoins = user.anonCoins || 0;
-    
-    // Process the purchase
-    const result = await themeManager.purchaseTheme(userId, themeId, userCoins);
-    
-    // Update user's coins and purchased themes
-    user.anonCoins = result.remainingCoins;
-    if (!user.premiumThemes) user.premiumThemes = [];
-    if (!user.premiumThemes.includes(themeId)) {
-      user.premiumThemes.push(themeId);
-    }
-    
-    await saveUsers(users);
+    const result = await buyTheme(themeId, userId);
     
     res.json({
       success: true,
       message: 'Theme purchased successfully',
       theme: result.theme,
-      coinsSpent: result.coinsSpent,
-      remainingCoins: result.remainingCoins
+      priceCZK: result.priceCZK
     });
   } catch (error) {
     console.error('Error purchasing theme:', error);
     
     if (error.message.includes('not found') || 
         error.message.includes('already purchased') || 
-        error.message.includes('Insufficient coins') ||
         error.message.includes('already free')) {
       return res.status(400).json({ error: error.message });
     }
@@ -422,48 +443,17 @@ app.get('/api/themes/status/:userId', async (req, res) => {
       purchasedThemes,
       totalPurchases: purchasedThemes.length,
       availablePremiumThemes: premiumThemes.length,
-      userCoins: user.anonCoins || 0,
       allThemes: allThemes.map(theme => ({
         id: theme.theme_id,
         name: theme.name,
         price: theme.price,
-        owned: purchasedThemes.includes(theme.theme_id),
+        priceCZK: theme.price,
+        owned: !theme.is_premium || purchasedThemes.includes(theme.theme_id),
         isPremium: theme.is_premium
       }))
     });
   } catch (error) {
     console.error('Error getting theme status:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Add coins to user (for testing/admin purposes)
-app.post('/api/user/coins/add', async (req, res) => {
-  try {
-    const { userId, amount } = req.body;
-    
-    if (!userId || typeof amount !== 'number' || amount <= 0) {
-      return res.status(400).json({ error: 'Valid userId and amount are required' });
-    }
-    
-    const users = await loadUsers();
-    
-    if (!users[userId]) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    const user = users[userId];
-    user.anonCoins = (user.anonCoins || 0) + amount;
-    
-    await saveUsers(users);
-    
-    res.json({
-      success: true,
-      message: `Added ${amount} coins`,
-      newBalance: user.anonCoins
-    });
-  } catch (error) {
-    console.error('Error adding coins:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

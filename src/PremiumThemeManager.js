@@ -138,7 +138,7 @@ class PremiumThemeManager {
           background: '#0f380f',
           text: '#9bb559'
         },
-        price: 100,
+        price: 49.00,
         icon: '🎮',
         className: 'theme-pixelquest'
       },
@@ -153,7 +153,7 @@ class PremiumThemeManager {
           background: '#000000',
           text: '#ffffff'
         },
-        price: 150,
+        price: 79.00,
         icon: '👁️‍🗨️',
         className: 'theme-poltergeist'
       },
@@ -168,7 +168,7 @@ class PremiumThemeManager {
           background: '#ffeef0',
           text: '#8b008b'
         },
-        price: 200,
+        price: 99.00,
         icon: '🎀',
         className: 'theme-hellokitty'
       },
@@ -183,7 +183,7 @@ class PremiumThemeManager {
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           text: '#ffffff'
         },
-        price: 120,
+        price: 59.00,
         icon: '🌸',
         className: 'theme-chill'
       },
@@ -198,7 +198,7 @@ class PremiumThemeManager {
           background: 'linear-gradient(45deg, #ff0080, #8000ff, #00ff80, #ff8000)',
           text: '#ffffff'
         },
-        price: 180,
+        price: 89.00,
         icon: '💥',
         className: 'theme-chaos'
       },
@@ -213,7 +213,7 @@ class PremiumThemeManager {
           background: '#000033',
           text: '#00ffff'
         },
-        price: 250,
+        price: 129.00,
         icon: '🌈',
         className: 'theme-retroneon'
       },
@@ -228,7 +228,7 @@ class PremiumThemeManager {
           background: '#000000',
           text: '#00ff41'
         },
-        price: 300,
+        price: 149.00,
         icon: '🕳️',
         className: 'theme-digitalvoid'
       }
@@ -295,9 +295,9 @@ class PremiumThemeManager {
   }
 
   /**
-   * Process theme purchase
+   * Process theme purchase with real payment
    */
-  async purchaseTheme(userId, themeId, userCoins = 0) {
+  async purchaseTheme(userId, themeId) {
     await this.initialize();
     
     const theme = this.themes.get(themeId);
@@ -315,12 +315,7 @@ class PremiumThemeManager {
       throw new Error('Theme already purchased');
     }
 
-    // Check if user has enough coins (for future implementation)
-    if (userCoins < theme.price) {
-      throw new Error(`Insufficient coins. Required: ${theme.price}, Available: ${userCoins}`);
-    }
-
-    // Add theme to user's purchases
+    // Add theme to user's purchases (payment confirmation will be handled by Stripe webhook)
     if (!this.userPurchases.has(userId)) {
       this.userPurchases.set(userId, new Set());
     }
@@ -331,8 +326,7 @@ class PremiumThemeManager {
     return {
       success: true,
       theme: theme.toJSON(),
-      coinsSpent: theme.price,
-      remainingCoins: userCoins - theme.price
+      priceCZK: theme.price
     };
   }
 
